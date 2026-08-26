@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0.0",
+  "registry_id": "ct.registry.penta-fabric.v1",
+  "fabric_id": "ct.fabric.penta.v1",
+  "mesh_id": "ct.mesh.penta.v1",
+  "canonical_name": "PentaFabric",
+  "aliases": ["Pentafabric", "prenrafrabic"],
+  "generation": 61,
+  "state": "controlled_test",
+  "authority": {
+    "autonomy_ceiling": "A2",
+    "decision_ceiling": "D2",
+    "d3_human_reserved": true,
+    "self_approval": false,
+    "provider_write_inherited": false,
+    "money_movement_inherited": false,
+    "rights_grant_inherited": false
+  },
+  "nomenclature": {
+    "PentaFabric": "Canonical orchestration fabric",
+    "PentaAgentic": "Generation 61 agent family",
+    "PentaMesh": "Redundant interoperability and routing mesh",
+    "PentaEdge": "Authority, identity, least-data, and side-effect gate",
+    "PentaJobs": "Deadline-aware work and software-factory dispatch",
+    "PentaCrons": "Timezone-aware recurring schedule governance",
+    "PentaSpecter": "Bug and maintenance planning agent",
+    "PentaSecure": "Security finding and patch packaging agent",
+    "PentaVault": "Proprietary asset custody and lineage layer",
+    "PentaRelease": "Patch, hotfix, and release-impact packaging layer",
+    "PentaWave": "Versioned wave-continuity and handoff layer"
+  },
+  "layers": [
+    {"ordinal": 0, "name": "Founder and Reserved Authority", "boundary": "D3_HUMAN_RESERVED"},
+    {"ordinal": 1, "name": "CHLOM Rights and Governance", "boundary": "D2_MAX"},
+    {"ordinal": 2, "name": "PentaFabric Orchestration", "boundary": "D2_MAX"},
+    {"ordinal": 3, "name": "Cultural and Convergent Intelligence", "boundary": "D2_MAX"},
+    {"ordinal": 4, "name": "PentaMesh and PentaEdge", "boundary": "D2_MAX"},
+    {"ordinal": 5, "name": "PentaAgentic Generational Layer", "boundary": "D2_MAX"},
+    {"ordinal": 6, "name": "PentaJobs and PentaCrons", "boundary": "D2_MAX"},
+    {"ordinal": 7, "name": "Software Factory and Distribution", "boundary": "D2_MAX"},
+    {"ordinal": 8, "name": "PentaSpecter and PentaSecure", "boundary": "D2_MAX"},
+    {"ordinal": 9, "name": "Vault, Evidence, Analytics, and Continuity", "boundary": "D2_MAX"}
+  ],
+  "agents": [
+    ["ct.agent.gen61.penta.specter", "did:chlom:agent:pentaspecter"],
+    ["ct.agent.gen61.penta.secure", "did:chlom:agent:pentasecure"],
+    ["ct.agent.gen61.penta.mesh", "did:chlom:agent:pentamesh_router"],
+    ["ct.agent.gen61.penta.edge", "did:chlom:agent:pentaedge_guard"],
+    ["ct.agent.gen61.penta.vault", "did:chlom:agent:pentavault_custodian"],
+    ["ct.agent.gen61.penta.jobs", "did:chlom:agent:pentajob_orchestrator"],
+    ["ct.agent.gen61.penta.crons", "did:chlom:agent:pentacron_governor"],
+    ["ct.agent.gen61.penta.release", "did:chlom:agent:penta_release_packager"],
+    ["ct.agent.gen61.penta.verifier", "did:chlom:agent:penta_verifier"],
+    ["ct.agent.gen61.penta.continuity", "did:chlom:agent:penta_continuity"]
+  ],
+  "proprietary_algorithms": [
+    "ct.asset.penta.alg.maintenance-window.v1",
+    "ct.asset.penta.alg.release-class.v1",
+    "ct.asset.penta.alg.jobs-dispatch.v1",
+    "ct.asset.penta.alg.specter-triage.v1",
+    "ct.asset.penta.alg.secure-release.v1",
+    "ct.asset.penta.alg.maintenance-orchestrator.v1",
+    "ct.asset.penta.alg.wave-continuity.v1",
+    "ct.asset.penta.alg.edge-authority.v1",
+    "ct.asset.penta.alg.mesh-redundancy.v1",
+    "ct.asset.penta.alg.vault-custody.v1",
+    "ct.asset.penta.alg.agentic-handoff.v1"
+  ],
+  "implementation_boundary": {
+    "classification": "PUBLIC_CONTRACT_RESTRICTED_IMPLEMENTATION",
+    "implementation_location": "Supabase Vault / ThriveBase private runtime",
+    "public_body_allowed": false,
+    "repository_projection": "contract, interface, stable ID, DID, version, and digest by reference only"
+  },
+  "maintenance": {
+    "timezone": "America/New_York",
+    "start_local": "02:00",
+    "deadline_local": "05:00",
+    "strict_window_minutes": 180,
+    "new_work_after_deadline": false,
+    "scheduler_family": "PentaCrons"
+  },
+  "interfaces": [
+    {"system_id": "ct.system.penta-control-api.v1", "provider": "Supabase Edge Functions", "auth": "JWT", "state": "controlled_test", "invocation_verification": "pending"},
+    {"system_id": "ct.system.penta-mcp.v1", "provider": "Supabase Edge Functions", "protocol": "2026-07-28", "auth": "JWT", "state": "controlled_test", "invocation_verification": "pending"}
+  ],
+  "distribution": {
+    "parent": "crownthrive1/chlom-protocol",
+    "children": ["crownthrive1/CrownThrive-Support", "crownthrive1/CrownThrive-CIE"],
+    "software_factory_project_key": "crownthrive-os-v2-factory",
+    "required_lanes": ["discover", "architect", "generate", "security", "test", "package", "deploy", "assurance"]
+  }
+}

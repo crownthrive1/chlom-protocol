@@ -1,4 +1,4 @@
-# CHLOM™ — Phase 2 Governed Registry
+# CHLOM™ - Phase 2 Governed Registry
 
 **Compliance Hybrid Licensing and Ownership Model** is CrownThrive's governed rights and institutional operating system for **Rights, Rules, Roles, Revenue, Records, and Remedies**.
 
@@ -8,18 +8,32 @@
 CHLOM is being rebuilt first as a cloud-first, API-first, event-driven, multi-tenant and human-governed platform. The objective is to govern assets, rights, policies, actors, revenue, evidence, agreements, corrections and remedies consistently across CrownThrive before optional decentralized settlement is introduced.
 
 ## Six canonical functions
-1. **Rights** — assets, versions, provenance, authority, permissions and restrictions.
-2. **Rules** — policies, conditions, eligibility, risk and approval requirements.
-3. **Roles** — organizations, actors, credentials, delegated authority and separation of duties.
-4. **Revenue** — fees, allocations, royalties, commissions, holds, adjustments and reconciliation.
-5. **Records** — DAIL events, evidence references, approvals, versions, agreements and audit history.
-6. **Remedies** — disputes, holds, corrections, suspensions, revocations, appeals and restoration.
+1. **Rights** - assets, versions, provenance, authority, permissions and restrictions.
+2. **Rules** - policies, conditions, eligibility, risk and approval requirements.
+3. **Roles** - organizations, actors, credentials, delegated authority and separation of duties.
+4. **Revenue** - fees, allocations, royalties, commissions, holds, adjustments and reconciliation.
+5. **Records** - DAIL events, evidence references, approvals, versions, agreements and audit history.
+6. **Remedies** - disputes, holds, corrections, suspensions, revocations, appeals and restoration.
 
 ## Canonical corrections
 - **DLA** = Dynamic Licensing Asset.
 - **DAIL** = Decentralized Autonomous Information Ledger.
 - Historical **Decentralized Licensing Authority** responsibilities move to Licensing Stewardship / Issuer Authority.
 - Historical DAL meanings are split among DAIL, Case Management, Identity/Attestations, and Revenue Allocation.
+
+## PentaFabric Generation 61
+
+PentaFabric™ is the controlled-test orchestration layer now being integrated across CHLOM, the Cultural Imprint Engine, the Convergent Ecosystem, ThriveBase, DAIL, CrownLytics, and the CrownThrive Autonomous Software Factory.
+
+The public nomenclature is:
+
+`PentaFabric -> PentaAgentic -> PentaMesh/PentaEdge -> PentaJobs/PentaCrons -> Software Factory -> PentaSpecter/PentaSecure -> PentaVault/DAIL/Continuity`
+
+`prenrafrabic` is preserved as a founder-provided alias of the stable `PentaFabric` identity, not as a second runtime object.
+
+Generation 61 contains ten bounded specialist agents for maintenance, security, routing, edge governance, proprietary custody, jobs, schedules, release packaging, independent verification, and wave continuity. D3 remains human-reserved; no Penta component inherits money-movement, rights-grant, provider-write, or self-approval authority.
+
+The proprietary algorithm implementations remain Vault-controlled. This repository exposes only public-safe contracts, IDs, DIDs, versions, architecture and digests by reference. See `docs/architecture/PENTA_FABRIC.md` and `registry/penta/penta-fabric.v1.json`.
 
 ## Repository map
 ```text
@@ -35,7 +49,7 @@ artifacts/            retained formal/research artifacts
 ```
 
 ## Public / private boundary
-The source recovery package classifies major CHLOM materials as internal or restricted. This public repository therefore stores source metadata and reconciled public-safe abstractions, not confidential documents, raw evidence, secrets, Fingerprint implementation details or private economic logic.
+The source recovery package classifies major CHLOM materials as internal or restricted. This public repository therefore stores source metadata and reconciled public-safe abstractions, not confidential documents, raw evidence, secrets, Fingerprint implementation details, proprietary Penta algorithm bodies or private economic logic.
 
 ## Validation
 ```bash

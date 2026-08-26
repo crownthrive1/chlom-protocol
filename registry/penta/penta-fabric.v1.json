@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "registry_id": "ct.registry.penta-fabric.v1",
   "fabric_id": "ct.fabric.penta.v1",
   "mesh_id": "ct.mesh.penta.v1",
@@ -21,6 +21,7 @@
     "PentaAgentic": "Generation 61 agent family",
     "PentaMesh": "Redundant interoperability and routing mesh",
     "PentaEdge": "Authority, identity, least-data, and side-effect gate",
+    "PentaFederation": "Bounded federation governance and routing facade",
     "PentaJobs": "Deadline-aware work and PentaFactory dispatch",
     "PentaCrons": "Timezone-aware recurring schedule governance",
     "PentaSpecter": "Bug and maintenance planning agent",
@@ -28,14 +29,15 @@
     "PentaVault": "Proprietary asset custody and lineage layer",
     "PentaRelease": "Patch, hotfix, and release-impact packaging layer",
     "PentaWave": "Versioned wave-continuity and handoff layer",
-    "PentaFactory": "Canonical CrownThrive framework/software production factory"
+    "PentaFactory": "Canonical CrownThrive framework/software production factory",
+    "PentaBooks": "Governed book-production specialist bound into Generation 61"
   },
   "layers": [
     {"ordinal": 0, "name": "Founder and Reserved Authority", "boundary": "D3_HUMAN_RESERVED"},
     {"ordinal": 1, "name": "CHLOM Rights and Governance", "boundary": "D2_MAX"},
     {"ordinal": 2, "name": "PentaFabric Orchestration", "boundary": "D2_MAX"},
     {"ordinal": 3, "name": "Cultural and Convergent Intelligence", "boundary": "D2_MAX"},
-    {"ordinal": 4, "name": "PentaMesh and PentaEdge", "boundary": "D2_MAX"},
+    {"ordinal": 4, "name": "PentaMesh, PentaEdge, and PentaFederation", "boundary": "D2_MAX"},
     {"ordinal": 5, "name": "PentaAgentic Generational Layer", "boundary": "D2_MAX"},
     {"ordinal": 6, "name": "PentaJobs and PentaCrons", "boundary": "D2_MAX"},
     {"ordinal": 7, "name": "PentaFactory and Distribution", "boundary": "D2_MAX"},
@@ -43,15 +45,17 @@
     {"ordinal": 9, "name": "Vault, Evidence, Analytics, and Continuity", "boundary": "D2_MAX"}
   ],
   "agents": [
-    {"agent_id":"ct.agent.gen61.penta.specter","did":"did:chlom:agent:pentaspecter"},
-    {"agent_id":"ct.agent.gen61.penta.secure","did":"did:chlom:agent:pentasecure"},
-    {"agent_id":"ct.agent.gen61.penta.mesh","did":"did:chlom:agent:pentamesh_router"},
-    {"agent_id":"ct.agent.gen61.penta.edge","did":"did:chlom:agent:pentaedge_guard"},
-    {"agent_id":"ct.agent.gen61.penta.vault","did":"did:chlom:agent:pentavault_custodian"},
-    {"agent_id":"ct.agent.gen61.penta.jobs","did":"did:chlom:agent:pentajob_orchestrator"},
-    {"agent_id":"ct.agent.gen61.penta.crons","did":"did:chlom:agent:pentacron_governor"},
-    {"agent_id":"ct.agent.gen61.penta.release","did":"did:chlom:agent:penta_release_packager"},
     {"agent_id":"ct.agent.gen61.penta.verifier","did":"did:chlom:agent:penta_verifier"},
+    {"agent_id":"ct.agent.gen61.penta.books","did":"did:chlom:agent:pentabooks"},
+    {"agent_id":"ct.agent.gen61.penta.crons","did":"did:chlom:agent:pentacron_governor"},
+    {"agent_id":"ct.agent.gen61.penta.edge","did":"did:chlom:agent:pentaedge_guard"},
+    {"agent_id":"ct.agent.gen61.penta.federation","did":"did:chlom:agent:pentafederation_governor"},
+    {"agent_id":"ct.agent.gen61.penta.jobs","did":"did:chlom:agent:pentajob_orchestrator"},
+    {"agent_id":"ct.agent.gen61.penta.mesh","did":"did:chlom:agent:pentamesh_router"},
+    {"agent_id":"ct.agent.gen61.penta.release","did":"did:chlom:agent:penta_release_packager"},
+    {"agent_id":"ct.agent.gen61.penta.secure","did":"did:chlom:agent:pentasecure"},
+    {"agent_id":"ct.agent.gen61.penta.specter","did":"did:chlom:agent:pentaspecter"},
+    {"agent_id":"ct.agent.gen61.penta.vault","did":"did:chlom:agent:pentavault_custodian"},
     {"agent_id":"ct.agent.gen61.penta.continuity","did":"did:chlom:agent:penta_continuity"}
   ],
   "proprietary_assets": [

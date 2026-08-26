@@ -1,6 +1,6 @@
 # PentaFabric™ Generation 61
 
-PentaFabric is CrownThrive's governed orchestration fabric for coordinating institutional identity, maintenance, security, routing, proprietary custody, PentaFactory work, release packaging, repository distribution, and wave continuity.
+PentaFabric is CrownThrive's governed orchestration fabric for coordinating institutional identity, maintenance, security, routing, proprietary custody, PentaFactory work, release packaging, repository distribution, federation, and wave continuity.
 
 Status: `controlled_test`. This page is a public-safe architecture projection. Protected implementation bodies remain in Vault/private ThriveBase runtime.
 
@@ -10,6 +10,7 @@ Status: `controlled_test`. This page is a public-safe architecture projection. P
 - **PentaAgentic**: Generation 61 specialized agent family.
 - **PentaMesh**: redundant internal interoperability and route-selection fabric.
 - **PentaEdge**: identity, authority, least-data, and side-effect guard.
+- **PentaFederation**: bounded federation governance and routing facade over the existing CrownThrive federation fabric.
 - **PentaJobs**: deadline-aware work queue and PentaFactory handoff.
 - **PentaCrons**: recurring schedule and maintenance-window governance.
 - **PentaSpecter**: maintenance defect discovery, reproduction planning, and bug-squash workflow.
@@ -18,6 +19,7 @@ Status: `controlled_test`. This page is a public-safe architecture projection. P
 - **PentaRelease**: patch, security update, security patch, hotfix, and major-fix candidate packaging.
 - **PentaWave**: versioned handoff from one governed wave to the next.
 - **PentaFactory**: canonical CrownThrive framework/software production factory. Existing factory IDs and schema keys remain compatibility identities unless separately migrated.
+- **PentaBooks**: governed book-production specialist registered into Generation 61 without inheriting broader authority.
 
 ## Ten-layer stack
 
@@ -25,18 +27,39 @@ Status: `controlled_test`. This page is a public-safe architecture projection. P
 1. CHLOM Rights and Governance: rights, rules, roles, DIDs, DAIL, evidence, and compliance.
 2. PentaFabric Orchestration: bounded policy composition and orchestration.
 3. Cultural and Convergent Intelligence: Cultural Imprint Engine classification and Convergent Ecosystem topology.
-4. PentaMesh and PentaEdge: typed routes, redundancy, identity holds, and side-effect boundaries.
+4. PentaMesh, PentaEdge, and PentaFederation: typed routes, redundancy, identity holds, federation controls, and side-effect boundaries.
 5. PentaAgentic: Generation 61 agents with independent verification.
 6. PentaJobs and PentaCrons: deadline-aware work and timezone-aware schedules.
 7. PentaFactory and Distribution: generate, test, package, distribute, verify, and roll back through governed parent/child repositories.
 8. PentaSpecter and PentaSecure: maintenance, bug squashing, security packaging, and assurance.
 9. Vault, Evidence, Analytics, and Continuity: PentaVault, DAIL, CrownLytics observations, and recovery.
 
+## Generation 61 agent set
+
+The current live Generation 61 registry contains twelve bounded members:
+
+- Penta Independent Verifier
+- PentaBooks
+- PentaCrons Governor
+- PentaEdge Guard
+- PentaFederation Governor
+- PentaJobs Orchestrator
+- PentaMesh Router
+- PentaRelease Packager
+- PentaSecure
+- PentaSpecter
+- PentaVault Custodian
+- PentaWave Continuity
+
+All remain `candidate_only`, A2/D2 maximum, with D3 human-reserved.
+
 ## Maintenance contract
 
 PentaSpecter is scheduled for a strict daily 2:00 AM through 5:00 AM `America/New_York` maintenance window. The runtime uses local-time gating around DST-safe scheduler candidates. It creates no new Penta maintenance work after the 5:00 AM deadline.
 
 Before mutation, the Penta maintenance path evaluates the existing CHLOM maintenance state and preflight. A deny or hold from the maintenance authority remains a deny or hold; PentaFabric does not create a bypass.
+
+On August 26, 2026, the scheduled Penta maintenance window opened at 2:00:00 AM America/New_York without manual invocation. PentaSpecter and PentaSecure executed under CHLOM preflight, discovered no qualifying defect or security package work, and manufactured no false findings.
 
 The maintenance workflow is designed to:
 

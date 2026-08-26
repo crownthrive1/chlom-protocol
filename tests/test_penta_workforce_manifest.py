@@ -62,6 +62,10 @@ class PentaWorkforceManifestTests(unittest.TestCase):
             "PentaPay™",
             "PentaCost™",
             "PentaLegal™",
+            "PentaExecutive™",
+            "PentaLegislative™",
+            "PentaJudicial™",
+            "PentaDemocracy™",
         }
         self.assertTrue(expected.issubset(set(self.manifest["modules"])))
 
@@ -77,6 +81,11 @@ class PentaWorkforceManifestTests(unittest.TestCase):
         self.assertTrue(g["restrictive_ramifications_require_appeal"])
         self.assertTrue(g["manager_contract_requires_target"])
         self.assertTrue(g["cost_hard_cap"])
+        self.assertTrue(g["one_membership_one_vote"])
+        self.assertTrue(g["d2_d3_ballot_human_ratification"])
+        self.assertTrue(g["judicial_conflict_requires_recusal"])
+        self.assertEqual(g["emergency_executive_action_max_hours"], 72)
+        self.assertFalse(g["branch_authority_manufacture"])
 
     def test_trademark_claim_does_not_fake_registration(self):
         mark = self.manifest["trademark"]
@@ -85,7 +94,7 @@ class PentaWorkforceManifestTests(unittest.TestCase):
         self.assertFalse(mark["federal_registration_claimed"])
         self.assertTrue(mark["registered_symbol_requires_verified_registration"])
         self.assertTrue(mark["preserve_penta_mark_in_wrapped_names"])
-        self.assertIn("not a USPTO filing", self.readme)
+        self.assertIn("not a USPTO filing", self.readme.replace("**", ""))
 
     def test_database_enforces_role_separation_and_cost_cap(self):
         self.assertIn("v_role.role_key = 'penta.role.board'", self.sql)
@@ -106,9 +115,20 @@ class PentaWorkforceManifestTests(unittest.TestCase):
         self.assertIn("where canonical_name ilike 'Penta%'", self.sql)
         self.assertIn("registration_status='registered'", self.sql)
 
-    def test_manifest_declares_all_21_tables(self):
-        self.assertEqual(self.manifest["database"]["table_count"], 21)
+    def test_manifest_declares_all_21_workforce_tables(self):
+        self.assertEqual(self.manifest["database"]["workforce_table_count"], 21)
         self.assertEqual(len(self.manifest["database"]["tables"]), 21)
+        self.assertEqual(self.manifest["database"]["governance_table_count"], 17)
+
+    def test_governance_extension_is_bound(self):
+        governance = self.manifest["governance_extension"]
+        self.assertEqual(governance["executive"], "PentaExecutive™") if "executive" in governance else None
+        self.assertEqual(governance["branches"]["executive"], "PentaExecutive™")
+        self.assertEqual(governance["branches"]["legislative"], "PentaLegislative™")
+        self.assertEqual(governance["branches"]["judicial"], "PentaJudicial™")
+        self.assertEqual(governance["democratic_substrate"], "PentaDemocracy™")
+        self.assertFalse(governance["executive_creates_new_supervisory_rank"])
+        self.assertTrue(governance["d2_d3_human_ratification"])
 
 
 if __name__ == "__main__":

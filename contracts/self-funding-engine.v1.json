@@ -53,5 +53,20 @@
   "secret_handling": "reference_only",
   "runtime": "supabase:tzajnzshmtzjenqulehq:ct.self_funding",
   "edge_function": "ct-self-funding-settlement",
+  "edge_function_version": 2,
+  "runtime_source": "runtime/self-funding-engine/v1/ct-self-funding-settlement/index.ts",
+  "implementation_certification": {
+    "standard": "PentaCertify/SFE-IMPLEMENTATION-1.0",
+    "risk_class": "D2",
+    "disposition": "certified",
+    "certification_id": "ct.assure.572d5af5213e7d82527ca344452980c5",
+    "certified_at": "2026-08-27T13:48:31.990623Z"
+  },
+  "production_money_movement": {
+    "disposition": "hold",
+    "risk_class": "D3",
+    "certification_id": "ct.assure.c797204a2422bacbacde073d7e15db78",
+    "reason": "D3 human governance and production authority remain unsatisfied"
+  },
   "live_money_movement": "blocked_until_certified"
 }

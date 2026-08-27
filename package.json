@@ -4,7 +4,7 @@
   "private": true,
   "description": "Governed provider-neutral blockchain RPC, Google Blockchain Analytics, evidence, API, and MCP runtime for CHLOM.",
   "engines": {
-    "node": ">=20"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev",

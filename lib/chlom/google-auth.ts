@@ -6,7 +6,7 @@ import {
 } from "google-auth-library";
 import { ChlomError } from "./errors";
 
-const BIGQUERY_SCOPE = "https://www.googleapis.com/auth/bigquery";
+const BIGQUERY_SCOPES = ["https://www.googleapis.com/auth/bigquery"];
 let cachedClient: AuthClient | undefined;
 
 function requiredEnvironment(name: string): string {
@@ -45,7 +45,7 @@ async function createVercelFederatedClient(): Promise<AuthClient> {
     service_account_impersonation_url:
       "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/" +
       `${serviceAccountEmail}:generateAccessToken`,
-    scope: BIGQUERY_SCOPE,
+    scopes: BIGQUERY_SCOPES,
     subject_token_supplier: {
       getSubjectToken: () =>
         getVercelOidcToken({ audience: tokenAudience }),
@@ -64,7 +64,7 @@ async function createVercelFederatedClient(): Promise<AuthClient> {
 }
 
 async function createLocalAdcClient(): Promise<AuthClient> {
-  const auth = new GoogleAuth({ scopes: [BIGQUERY_SCOPE] });
+  const auth = new GoogleAuth({ scopes: BIGQUERY_SCOPES });
   return auth.getClient();
 }
 

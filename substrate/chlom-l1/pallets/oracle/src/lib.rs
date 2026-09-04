@@ -5,13 +5,13 @@ pub use pallet::*;
 #[frame_support::pallet]
 pub mod pallet {
     use chlom_primitives::{AuthorityClass, Id32, SignalAction, ZERO_ID};
-    use codec::{Decode, Encode, MaxEncodedLen};
+    use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
     use frame_support::{pallet_prelude::*, traits::EnsureOrigin};
     use frame_system::pallet_prelude::*;
     use scale_info::TypeInfo;
     use sp_runtime::RuntimeDebug;
 
-    #[derive(Clone, Copy, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
     pub enum SignalState {
         Reported,
         Acknowledged,
@@ -21,7 +21,7 @@ pub mod pallet {
         Superseded,
     }
 
-    #[derive(Clone, Copy, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
     pub enum CaseState {
         Open,
         Triage,
@@ -33,7 +33,7 @@ pub mod pallet {
         Superseded,
     }
 
-    #[derive(Clone, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
     pub struct OracleSignal {
         pub oracle_subject_id: Id32,
         pub target_type: Id32,
@@ -48,7 +48,7 @@ pub mod pallet {
         pub record_hash: Id32,
     }
 
-    #[derive(Clone, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
     pub struct ReviewCase {
         pub signal_id: Id32,
         pub target_type: Id32,

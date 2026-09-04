@@ -5,14 +5,14 @@ pub use pallet::*;
 #[frame_support::pallet]
 pub mod pallet {
     use chlom_primitives::{split_by_basis_points, BasisPoints, Id32, FULL_BASIS_POINTS, ZERO_ID};
-    use codec::{Decode, Encode, MaxEncodedLen};
+    use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
     use frame_support::{pallet_prelude::*, traits::EnsureOrigin, BoundedVec};
     use frame_system::pallet_prelude::*;
     use scale_info::TypeInfo;
     use sp_runtime::RuntimeDebug;
     use sp_std::vec::Vec;
 
-    #[derive(Clone, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
     pub struct SplitLeg {
         pub leg_id: Id32,
         pub beneficiary_subject_id: Id32,
@@ -21,7 +21,7 @@ pub mod pallet {
         pub conditions_hash: Id32,
     }
 
-    #[derive(Clone, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
     #[scale_info(skip_type_params(MaxLegs))]
     pub struct RevenuePolicy<MaxLegs: Get<u32>> {
         pub calculation_basis: Id32,
@@ -32,7 +32,7 @@ pub mod pallet {
         pub record_hash: Id32,
     }
 
-    #[derive(Clone, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
     pub struct SettlementPreview {
         pub policy_id: Id32,
         pub source_object_id: Id32,

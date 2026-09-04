@@ -3,7 +3,7 @@
 extern crate alloc;
 
 use alloc::vec::Vec;
-use codec::{Decode, Encode, MaxEncodedLen};
+use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 
@@ -13,7 +13,7 @@ pub type Amount = u128;
 pub const FULL_BASIS_POINTS: u32 = 10_000;
 pub const ZERO_ID: Id32 = [0u8; 32];
 
-#[derive(Clone, Copy, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
 pub enum AuthorityClass {
     D0,
     D1,
@@ -36,7 +36,7 @@ impl AuthorityClass {
     }
 }
 
-#[derive(Clone, Copy, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
 pub enum RecordState {
     Draft,
     Asserted,
@@ -52,7 +52,7 @@ pub enum RecordState {
     Retired,
 }
 
-#[derive(Clone, Copy, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
 pub enum DlaState {
     Hold,
     EligibleInternal,
@@ -61,7 +61,7 @@ pub enum DlaState {
     Retired,
 }
 
-#[derive(Clone, Copy, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
 pub enum LicenseStatus {
     Pending,
     Active,
@@ -71,7 +71,7 @@ pub enum LicenseStatus {
     Superseded,
 }
 
-#[derive(Clone, Copy, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
 pub enum OfferState {
     Draft,
     StagedInternal,
@@ -82,7 +82,7 @@ pub enum OfferState {
     Superseded,
 }
 
-#[derive(Clone, Copy, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
 pub enum TokenClassKind {
     UniqueAsset,
     SmartLicense,
@@ -95,7 +95,7 @@ pub enum TokenClassKind {
     GovernanceCandidate,
 }
 
-#[derive(Clone, Copy, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
 pub enum ExternalIssuanceState {
     ProductionGated,
     TestnetEligible,
@@ -104,7 +104,7 @@ pub enum ExternalIssuanceState {
     Retired,
 }
 
-#[derive(Clone, Copy, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
 pub enum SignalAction {
     Observe,
     Review,

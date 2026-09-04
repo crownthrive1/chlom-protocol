@@ -115,12 +115,25 @@ jobs:
           git -C "$RUNNER_TEMP/polkadot-sdk" diff -- templates/solochain > "$RUNNER_TEMP/chlom-release/chlom-runtime-overlay.patch"
           test -s "$RUNNER_TEMP/chlom-release/chlom-runtime-overlay.patch"
 
-      - name: Compile CHLOM pallets and composed native runtime
+      - name: Resolve and seal the overlay lockfile
         working-directory: ${{ runner.temp }}/polkadot-sdk
         run: |
           set -euo pipefail
-          cargo +"$RUST_TOOLCHAIN" check -p solochain-template-node --features runtime-benchmarks --locked
+          cargo +"$RUST_TOOLCHAIN" check -p solochain-template-node --features runtime-benchmarks
+          cp Cargo.lock "$RUNNER_TEMP/chlom-release/Cargo.lock"
+          git diff -- Cargo.lock > "$RUNNER_TEMP/chlom-release/Cargo.lock.patch"
+          test -s "$RUNNER_TEMP/chlom-release/Cargo.lock.patch"
+          cargo +"$RUST_TOOLCHAIN" metadata --locked --format-version 1 \
+            > "$RUNNER_TEMP/chlom-release/cargo-metadata.json"
+          test -s "$RUNNER_TEMP/chlom-release/cargo-metadata.json"
+
+      - name: Compile locked CHLOM native runtime
+        working-directory: ${{ runner.temp }}/polkadot-sdk
+        run: |
+          set -euo pipefail
+          cmp Cargo.lock "$RUNNER_TEMP/chlom-release/Cargo.lock"
           cargo +"$RUST_TOOLCHAIN" build --release -p solochain-template-node --features runtime-benchmarks --locked
+          cmp Cargo.lock "$RUNNER_TEMP/chlom-release/Cargo.lock"
 
       - name: Package native node and runtime Wasm
         shell: bash
@@ -171,6 +184,9 @@ jobs:
             "$OUT/chlom-runtime.wasm" \
             "$OUT/chlom-local.json" \
             "$OUT/chlom-local-raw.json" \
+            "$OUT/Cargo.lock" \
+            "$OUT/Cargo.lock.patch" \
+            "$OUT/cargo-metadata.json" \
             "$OUT/materialization-manifest.json" \
             "$OUT/chlom-runtime-overlay.patch" \
             "$OUT/benchmark-machine.txt" \
@@ -191,6 +207,7 @@ jobs:
               "source_commit": os.environ["GITHUB_SHA"],
               "polkadot_sdk_commit": os.environ["POLKADOT_SDK_COMMIT"],
               "rust_toolchain": os.environ["RUST_TOOLCHAIN"],
+              "dependency_lock_sealed": True,
               "runtime_spec_name": "chlom-runtime",
               "pallet_count": 8,
               "consensus": ["Aura", "GRANDPA"],

@@ -1,0 +1,88 @@
+{
+  "contract": "ct.chlom.signed-session-provider-migration-manifest.v1",
+  "provider": "Supabase",
+  "project_id": "tzajnzshmtzjenqulehq",
+  "captured_at": "2026-09-04T17:10:00Z",
+  "hash_algorithm": "SHA-256",
+  "canonical_provider_table": "supabase_migrations.schema_migrations",
+  "migrations": [
+    {
+      "version": "20260904161544",
+      "name": "chlom_signed_session_http_canary_v1",
+      "statement_count": 1,
+      "sql_bytes": 16701,
+      "sql_sha256": "56c6a79150b809850e8084677453071e201a6a6a98efc69894f071e0d46d0f7e"
+    },
+    {
+      "version": "20260904161702",
+      "name": "chlom_signed_session_canary_public_bridges_v1",
+      "statement_count": 1,
+      "sql_bytes": 1259,
+      "sql_sha256": "aa778cd99a61e22641329550f1760de7449765264959573a334a4c25db72edba"
+    },
+    {
+      "version": "20260904161742",
+      "name": "chlom_signed_session_canary_readback_v1",
+      "statement_count": 1,
+      "sql_bytes": 2143,
+      "sql_sha256": "70002567f4f5213c405484977026555377f8e6f68dfe6eea954301110db828cf"
+    },
+    {
+      "version": "20260904161857",
+      "name": "chlom_signed_session_http_canary_source_custody_marker_v1",
+      "statement_count": 1,
+      "sql_bytes": 663,
+      "sql_sha256": "a57f1f5c39e2717acdf3271b15fa10e218811263291b5679eaf722dfa3a78e25"
+    },
+    {
+      "version": "20260904162045",
+      "name": "chlom_signed_session_canary_expected_operator_v1",
+      "statement_count": 1,
+      "sql_bytes": 1057,
+      "sql_sha256": "ec9419d4cc5e0e8cad081e6465f7832aa9bd725cc37bb1a480f7566ed06f038f"
+    },
+    {
+      "version": "20260904163741",
+      "name": "chlom_signed_session_canary_negative_boundary_v2",
+      "statement_count": 1,
+      "sql_bytes": 9830,
+      "sql_sha256": "e31d2f32f073d21c5d5610f8ec5380db38970587496a0230cf3c9f55e696d043"
+    },
+    {
+      "version": "20260904164029",
+      "name": "chlom_signed_session_canary_readback_uuid_fix_v1",
+      "statement_count": 1,
+      "sql_bytes": 2047,
+      "sql_sha256": "b9488a0b9ebc8e385a84c9757b2390e5d2a5c54da635884e0545a9acd437c569"
+    },
+    {
+      "version": "20260904164840",
+      "name": "chlom_gateway_bounded_mutation_timeout_v1",
+      "statement_count": 1,
+      "sql_bytes": 665,
+      "sql_sha256": "051e6e6ad429407898331825d85308380811e6b81b1b87a7d5f96da7e9a4a8b7"
+    }
+  ],
+  "active_edge_function": {
+    "slug": "chlom-signed-session-canary-v1",
+    "function_id": "2e696205-fdd1-42ec-9a97-fe875202802b",
+    "provider_version": 5,
+    "verify_jwt": true,
+    "bundle_sha256": "08f0f6a516dac513beed8b0d9d1b17a384947a2ba3c21d30415d72f39c987354"
+  },
+  "canonical_pass": {
+    "run_key": "ct.canary.chlom.signed-session-http.production.20260904.08",
+    "result": "PASS",
+    "provider_session": "GoTrue founder session",
+    "capabilities_http_status": 200,
+    "mutation_http_status": 200,
+    "replay_http_status": 200,
+    "unauthorized_http_status": 401,
+    "idempotent_replay_verified": true,
+    "duplicate_domain_mutations": 0,
+    "founder_session_revoked": true,
+    "raw_tokens_persisted": false
+  },
+  "custody_state": "PROVIDER_HISTORY_HASH_BOUND_AND_ACTIVE_SOURCE_COMMITTED",
+  "external_execution_enabled": false
+}

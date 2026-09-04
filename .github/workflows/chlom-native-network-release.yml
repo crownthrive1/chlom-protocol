@@ -28,6 +28,7 @@ concurrency:
 
 env:
   POLKADOT_SDK_COMMIT: d173a5f32494b0b281a92b370f67fe803fc0ce47
+  RUST_TOOLCHAIN: 1.84.1
   CARGO_TERM_COLOR: always
   CARGO_NET_GIT_FETCH_WITH_CLI: "true"
 
@@ -80,12 +81,14 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             clang cmake jq libssl-dev libudev-dev pkg-config protobuf-compiler
 
-      - name: Install Rust and Wasm target
+      - name: Install SDK-pinned Rust and Wasm target
         run: |
+          set -euo pipefail
           rustup set profile minimal
-          rustup toolchain install stable --component rust-src --component rustfmt --component clippy
-          rustup default stable
-          rustup target add wasm32-unknown-unknown
+          rustup toolchain install "$RUST_TOOLCHAIN" --component rust-src --component rustfmt --component clippy
+          rustup default "$RUST_TOOLCHAIN"
+          rustup target add wasm32-unknown-unknown --toolchain "$RUST_TOOLCHAIN"
+          test "$(rustc --version | awk '{print $2}')" = "$RUST_TOOLCHAIN"
           rustc --version --verbose
           cargo --version --verbose
 
@@ -99,6 +102,7 @@ jobs:
           git -C "$SDK" fetch --depth 1 origin "$POLKADOT_SDK_COMMIT"
           git -C "$SDK" checkout --detach FETCH_HEAD
           test "$(git -C "$SDK" rev-parse HEAD)" = "$POLKADOT_SDK_COMMIT"
+          grep -F "ci-unified:bullseye-${RUST_TOOLCHAIN}-" "$SDK/.github/env"
 
       - name: Materialize CHLOM runtime into official solo-chain template
         run: |
@@ -115,8 +119,8 @@ jobs:
         working-directory: ${{ runner.temp }}/polkadot-sdk
         run: |
           set -euo pipefail
-          cargo check -p solochain-template-node --features runtime-benchmarks
-          cargo build --release -p solochain-template-node --features runtime-benchmarks
+          cargo +"$RUST_TOOLCHAIN" check -p solochain-template-node --features runtime-benchmarks --locked
+          cargo +"$RUST_TOOLCHAIN" build --release -p solochain-template-node --features runtime-benchmarks --locked
 
       - name: Package native node and runtime Wasm
         shell: bash
@@ -186,6 +190,7 @@ jobs:
               "source_repository": os.environ["GITHUB_REPOSITORY"],
               "source_commit": os.environ["GITHUB_SHA"],
               "polkadot_sdk_commit": os.environ["POLKADOT_SDK_COMMIT"],
+              "rust_toolchain": os.environ["RUST_TOOLCHAIN"],
               "runtime_spec_name": "chlom-runtime",
               "pallet_count": 8,
               "consensus": ["Aura", "GRANDPA"],

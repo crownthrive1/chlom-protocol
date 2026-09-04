@@ -5,13 +5,13 @@ pub use pallet::*;
 #[frame_support::pallet]
 pub mod pallet {
     use chlom_primitives::{ExternalIssuanceState, Id32, TokenClassKind, ZERO_ID};
-    use codec::{Decode, Encode, MaxEncodedLen};
+    use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
     use frame_support::{pallet_prelude::*, traits::EnsureOrigin};
     use frame_system::pallet_prelude::*;
     use scale_info::TypeInfo;
     use sp_runtime::RuntimeDebug;
 
-    #[derive(Clone, Copy, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
     pub enum TokenEventType {
         CandidateRegistered,
         TestnetMintConfirmed,
@@ -23,7 +23,7 @@ pub mod pallet {
         ProviderFailure,
     }
 
-    #[derive(Clone, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
     pub struct TokenClass {
         pub kind: TokenClassKind,
         pub transferable: bool,
@@ -33,7 +33,7 @@ pub mod pallet {
         pub record_hash: Id32,
     }
 
-    #[derive(Clone, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
     pub struct ChainAdapter {
         pub network_id: Id32,
         pub implementation_hash: Id32,
@@ -43,7 +43,7 @@ pub mod pallet {
         pub record_hash: Id32,
     }
 
-    #[derive(Clone, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
     pub struct TokenizedObject {
         pub token_class_id: Id32,
         pub source_object_type: Id32,
@@ -60,7 +60,7 @@ pub mod pallet {
         pub record_hash: Id32,
     }
 
-    #[derive(Clone, Decode, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(Clone, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
     pub struct TokenEventRecord {
         pub tokenized_object_id: Id32,
         pub event_type: TokenEventType,

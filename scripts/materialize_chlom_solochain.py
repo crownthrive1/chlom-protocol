@@ -37,6 +37,18 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
     return text.replace(old, new, 1)
 
 
+def self_contain_package_manifest(text: str) -> str:
+    replacements = {
+        "version.workspace = true": 'version = "0.1.0"',
+        "edition.workspace = true": 'edition = "2021"',
+        "license.workspace = true": 'license = "Apache-2.0"',
+        "repository.workspace = true": 'repository = "https://github.com/crownthrive1/chlom-protocol"',
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return text
+
+
 def write_text(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
@@ -70,6 +82,11 @@ def main() -> int:
     if primitive_target.exists():
         shutil.rmtree(primitive_target)
     shutil.copytree(source / "primitives", primitive_target)
+    primitive_cargo = primitive_target / "Cargo.toml"
+    write_text(
+        primitive_cargo,
+        self_contain_package_manifest(primitive_cargo.read_text(encoding="utf-8")),
+    )
 
     copied: list[Path] = []
     for name in PALLETS:
@@ -78,7 +95,7 @@ def main() -> int:
             shutil.rmtree(target)
         shutil.copytree(source / "pallets" / name, target)
         cargo = target / "Cargo.toml"
-        cargo_text = cargo.read_text(encoding="utf-8")
+        cargo_text = self_contain_package_manifest(cargo.read_text(encoding="utf-8"))
         cargo_text = cargo_text.replace(
             "chlom-primitives.workspace = true",
             'chlom-primitives = { path = "../../chlom-primitives", default-features = false }',

@@ -1,0 +1,177 @@
+name: CHLOM Native Network Release v2
+
+on:
+  push:
+    branches:
+      - "feat/chlom-network-production-convergence-*"
+    paths:
+      - "substrate/chlom-l1/**"
+      - "scripts/materialize_chlom_solochain.py"
+      - "scripts/chlom_network_canary.sh"
+      - ".github/workflows/chlom-native-network-release-v2.yml"
+  pull_request:
+    paths:
+      - "substrate/chlom-l1/**"
+      - "scripts/materialize_chlom_solochain.py"
+      - "scripts/chlom_network_canary.sh"
+      - ".github/workflows/chlom-native-network-release-v2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chlom-native-network-v2-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  POLKADOT_SDK_COMMIT: d173a5f32494b0b281a92b370f67fe803fc0ce47
+  RUST_TOOLCHAIN: 1.84.1
+  CARGO_TERM_COLOR: always
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+
+jobs:
+  native-release:
+    name: Reproducible native runtime, Wasm, genesis and recovery
+    runs-on: ubuntu-22.04
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact CHLOM source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Validate source contracts
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/materialize_chlom_solochain.py
+          bash -n scripts/chlom_network_canary.sh
+          python3 scripts/validate_chlom_substrate_manifest.py
+
+      - name: Install native dependencies and SDK-pinned Rust
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang cmake jq libssl-dev libudev-dev pkg-config protobuf-compiler
+          rustup set profile minimal
+          rustup toolchain install "$RUST_TOOLCHAIN" --component rust-src --component rustfmt --component clippy
+          rustup target add wasm32-unknown-unknown --toolchain "$RUST_TOOLCHAIN"
+          test "$(rustc +"$RUST_TOOLCHAIN" --version | awk '{print $2}')" = "$RUST_TOOLCHAIN"
+          rustc +"$RUST_TOOLCHAIN" --version --verbose | tee "$RUNNER_TEMP/rust-toolchain.txt"
+          cargo +"$RUST_TOOLCHAIN" --version --verbose | tee -a "$RUNNER_TEMP/rust-toolchain.txt"
+
+      - name: Fetch exact Polkadot SDK and materialize CHLOM
+        run: |
+          set -euo pipefail
+          SDK="$RUNNER_TEMP/polkadot-sdk"
+          OUT="$RUNNER_TEMP/chlom-release"
+          mkdir -p "$OUT"
+          git init "$SDK"
+          git -C "$SDK" remote add origin https://github.com/paritytech/polkadot-sdk.git
+          git -C "$SDK" fetch --depth 1 origin "$POLKADOT_SDK_COMMIT"
+          git -C "$SDK" checkout --detach FETCH_HEAD
+          test "$(git -C "$SDK" rev-parse HEAD)" = "$POLKADOT_SDK_COMMIT"
+          grep -F "ci-unified:bullseye-${RUST_TOOLCHAIN}-" "$SDK/.github/env"
+          python3 scripts/materialize_chlom_solochain.py --sdk-dir "$SDK" --repo-dir "$GITHUB_WORKSPACE" --manifest "$OUT/materialization-manifest.json"
+          git -C "$SDK" diff -- templates/solochain > "$OUT/chlom-runtime-overlay.patch"
+          test -s "$OUT/chlom-runtime-overlay.patch"
+          cp "$RUNNER_TEMP/rust-toolchain.txt" "$OUT/rust-toolchain.txt"
+
+      - name: Resolve and seal dependency lock
+        working-directory: ${{ runner.temp }}/polkadot-sdk
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/chlom-release"
+          cargo +"$RUST_TOOLCHAIN" check -p solochain-template-node --features runtime-benchmarks
+          cp Cargo.lock "$OUT/Cargo.lock"
+          git diff -- Cargo.lock > "$OUT/Cargo.lock.patch"
+          test -s "$OUT/Cargo.lock.patch"
+          cargo +"$RUST_TOOLCHAIN" metadata --locked --format-version 1 > "$OUT/cargo-metadata.json"
+          sha256sum "$OUT/Cargo.lock" "$OUT/Cargo.lock.patch" "$OUT/cargo-metadata.json" > "$OUT/dependency-lock-sha256.txt"
+
+      - name: Build locked native binary and runtime Wasm
+        working-directory: ${{ runner.temp }}/polkadot-sdk
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/chlom-release"
+          cmp Cargo.lock "$OUT/Cargo.lock"
+          cargo +"$RUST_TOOLCHAIN" build --release -p solochain-template-node --features runtime-benchmarks --locked
+          cmp Cargo.lock "$OUT/Cargo.lock"
+          NODE="$PWD/target/release/solochain-template-node"
+          WASM=$(find "$PWD/target/release/wbuild/solochain-template-runtime" -type f \( -name '*.compact.compressed.wasm' -o -name '*.compact.wasm' -o -name '*.wasm' \) | sort | head -n 1)
+          test -x "$NODE" && test -n "$WASM" && test -s "$WASM"
+          install -m 0755 "$NODE" "$OUT/chlom-node"
+          install -m 0644 "$WASM" "$OUT/chlom-runtime.wasm"
+          "$OUT/chlom-node" --version | tee "$OUT/node-version.txt"
+
+      - name: Prove deterministic genesis generation
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/chlom-release"
+          "$OUT/chlom-node" build-spec --chain local --disable-default-bootnode > "$OUT/chlom-local-a.json"
+          "$OUT/chlom-node" build-spec --chain local --disable-default-bootnode > "$OUT/chlom-local-b.json"
+          cmp "$OUT/chlom-local-a.json" "$OUT/chlom-local-b.json"
+          cp "$OUT/chlom-local-a.json" "$OUT/chlom-local.json"
+          "$OUT/chlom-node" build-spec --chain "$OUT/chlom-local.json" --raw --disable-default-bootnode > "$OUT/chlom-local-raw-a.json"
+          "$OUT/chlom-node" build-spec --chain "$OUT/chlom-local.json" --raw --disable-default-bootnode > "$OUT/chlom-local-raw-b.json"
+          cmp "$OUT/chlom-local-raw-a.json" "$OUT/chlom-local-raw-b.json"
+          cp "$OUT/chlom-local-raw-a.json" "$OUT/chlom-local-raw.json"
+          jq -e '.name == "CHLOM Local Network" and .id == "chlom_local" and .genesis.raw.top != null' "$OUT/chlom-local-raw.json"
+          sha256sum "$OUT/chlom-local.json" "$OUT/chlom-local-raw.json" > "$OUT/genesis-sha256.txt"
+
+      - name: Record benchmark hardware calibration
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/chlom-release"
+          set +e
+          "$OUT/chlom-node" benchmark machine --chain "$OUT/chlom-local-raw.json" --allow-fail > "$OUT/benchmark-machine.txt" 2>&1
+          RC=$?
+          set -e
+          test -s "$OUT/benchmark-machine.txt"
+          cat "$OUT/benchmark-machine.txt"
+          jq -n --argjson exit_code "$RC" --arg state "$([ "$RC" -eq 0 ] && echo RECORDED || echo COMMAND_FAILED)" '{contract:"ct.chlom.benchmark-machine-calibration.v1",state:$state,exit_code:$exit_code,artifact_validity_gate:false,reference_hardware_compliance_is_separate:true}' > "$OUT/benchmark-machine-receipt.json"
+          test "$RC" -eq 0
+
+      - name: Run two-authority interruption and recovery canary
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/chlom-release"
+          bash scripts/chlom_network_canary.sh "$OUT/chlom-node" "$OUT/chlom-local-raw.json" "$OUT/network-canary"
+          jq -e '.result == "PASS" and .recovery.bob_state_reused == true and .recovery.genesis_preserved == true' "$OUT/network-canary/network-recovery-receipt.json"
+
+      - name: Seal native release manifest
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/chlom-release"
+          sha256sum "$OUT/chlom-node" "$OUT/chlom-runtime.wasm" "$OUT/chlom-local.json" "$OUT/chlom-local-raw.json" "$OUT/Cargo.lock" "$OUT/Cargo.lock.patch" "$OUT/cargo-metadata.json" "$OUT/materialization-manifest.json" "$OUT/chlom-runtime-overlay.patch" "$OUT/benchmark-machine.txt" "$OUT/benchmark-machine-receipt.json" "$OUT/network-canary/network-recovery-receipt.json" > "$OUT/SHA256SUMS"
+          python3 - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          out=Path(os.environ['RUNNER_TEMP'])/'chlom-release'
+          sums={}
+          for line in (out/'SHA256SUMS').read_text().splitlines():
+              digest,name=line.split(maxsplit=1); sums[Path(name).name]=digest
+          receipt={
+            'contract':'ct.chlom.native-network-release.v2','result':'PASS',
+            'source_repository':os.environ['GITHUB_REPOSITORY'],'source_commit':os.environ['GITHUB_SHA'],
+            'polkadot_sdk_commit':os.environ['POLKADOT_SDK_COMMIT'],'rust_toolchain':os.environ['RUST_TOOLCHAIN'],
+            'dependency_lock_sealed':True,'native_binary_built':True,'runtime_wasm_built':True,
+            'deterministic_human_chain_spec':True,'deterministic_raw_chain_spec':True,
+            'benchmark_machine_calibration_recorded':True,'two_authority_recovery_canary':'PASS',
+            'runtime_spec_name':'chlom-runtime','pallet_count':8,'consensus':['Aura','GRANDPA'],
+            'production_validator_keys_generated':False,'public_authority_activated':False,
+            'external_money_movement':False,'external_token_mint':False,'legal_title_adjudication':False,
+            'sha256':sums}
+          canonical=json.dumps(receipt,sort_keys=True,separators=(',',':'))
+          receipt['receipt_sha256']=hashlib.sha256(canonical.encode()).hexdigest()
+          (out/'native-network-release-receipt.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
+          PY
+          sha256sum "$OUT/native-network-release-receipt.json" >> "$OUT/SHA256SUMS"
+          cat "$OUT/native-network-release-receipt.json"
+
+      - name: Upload immutable native release evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: chlom-native-network-v2-${{ github.sha }}
+          path: ${{ runner.temp }}/chlom-release
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6

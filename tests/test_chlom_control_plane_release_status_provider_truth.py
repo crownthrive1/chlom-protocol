@@ -27,7 +27,7 @@ class ChlomControlPlaneReleaseStatusProviderTruthTests(unittest.TestCase):
     def test_dispatcher_mapping_is_allowlisted_and_existence_checked(self):
         for version in ("v1", "v2", "v3"):
             self.assertIn(
-                f"public.chlom_api_dispatch_{version[-1]}(text,jsonb,text)",
+                f"public.chlom_api_dispatch_{version}(text,jsonb,text)",
                 self.normalized,
             )
         self.assertIn("to_regprocedure(v_database_dispatch) is not null", self.normalized)

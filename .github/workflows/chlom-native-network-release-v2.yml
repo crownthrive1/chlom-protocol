@@ -127,8 +127,13 @@ jobs:
           set -e
           test -s "$OUT/benchmark-machine.txt"
           cat "$OUT/benchmark-machine.txt"
-          jq -n --argjson exit_code "$RC" --arg state "$([ "$RC" -eq 0 ] && echo RECORDED || echo COMMAND_FAILED)" '{contract:"ct.chlom.benchmark-machine-calibration.v1",state:$state,exit_code:$exit_code,artifact_validity_gate:false,reference_hardware_compliance_is_separate:true}' > "$OUT/benchmark-machine-receipt.json"
-          test "$RC" -eq 0
+          if [ "$RC" -eq 0 ]; then
+            STATE="REFERENCE_HARDWARE_PASS"
+          else
+            STATE="REFERENCE_HARDWARE_NONCOMPLIANT"
+          fi
+          jq -n --argjson exit_code "$RC" --arg state "$STATE" '{contract:"ct.chlom.benchmark-machine-calibration.v1",state:$state,exit_code:$exit_code,calibration_recorded:true,artifact_validity_gate:false,reference_hardware_compliance_is_separate:true,production_validator_host_certified:false}' > "$OUT/benchmark-machine-receipt.json"
+          jq -e '.calibration_recorded == true and .artifact_validity_gate == false and .production_validator_host_certified == false' "$OUT/benchmark-machine-receipt.json"
 
       - name: Run two-authority interruption and recovery canary
         run: |
@@ -149,13 +154,15 @@ jobs:
           sums={}
           for line in (out/'SHA256SUMS').read_text().splitlines():
               digest,name=line.split(maxsplit=1); sums[Path(name).name]=digest
+          calibration=json.loads((out/'benchmark-machine-receipt.json').read_text())
           receipt={
             'contract':'ct.chlom.native-network-release.v2','result':'PASS',
             'source_repository':os.environ['GITHUB_REPOSITORY'],'source_commit':os.environ['GITHUB_SHA'],
             'polkadot_sdk_commit':os.environ['POLKADOT_SDK_COMMIT'],'rust_toolchain':os.environ['RUST_TOOLCHAIN'],
             'dependency_lock_sealed':True,'native_binary_built':True,'runtime_wasm_built':True,
             'deterministic_human_chain_spec':True,'deterministic_raw_chain_spec':True,
-            'benchmark_machine_calibration_recorded':True,'two_authority_recovery_canary':'PASS',
+            'benchmark_machine_calibration':calibration,
+            'two_authority_recovery_canary':'PASS',
             'runtime_spec_name':'chlom-runtime','pallet_count':8,'consensus':['Aura','GRANDPA'],
             'production_validator_keys_generated':False,'public_authority_activated':False,
             'external_money_movement':False,'external_token_mint':False,'legal_title_adjudication':False,

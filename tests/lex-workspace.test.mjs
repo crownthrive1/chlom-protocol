@@ -1,0 +1,26 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import {SCHEMA,escapeHTML,importWorkspace,splitRevenue,readiness,hashFile,validateDraft,licenseBrief} from '../public/lex-core.js';
+import handler,{allowedOrigin,cookies} from '../api/lex.js';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const request=(method,url,headers={},body)=>({method,url,headers:{host:'lex.test',...headers},...(body===undefined?{}:{body})});
+async function invoke(req){const headers={};let raw='';const res={statusCode:0,setHeader(k,v){headers[k]=v;},end(v){raw=v;}};await handler(req,res);return {status:res.statusCode,headers,data:JSON.parse(raw)};}
+for(const file of ['public/lex.js','public/lex-core.js','api/lex.js'])test('LEX syntax: '+file,()=>{const p=spawnSync(process.execPath,['--check',root+file],{encoding:'utf8'});assert.equal(p.status,0,p.stderr);});
+test('LEX HTML escaping rejects executable markup',()=>{assert.equal(escapeHTML('<script>"&'), '&lt;script&gt;&quot;&amp;');});
+test('LEX imports keep authored content but discard IDs and authority states',()=>{const [r]=importWorkspace(JSON.stringify({schema:SCHEMA,drafts:[{kind:'asset',title:'Work',payload:{owner:'Author'},state:'APPROVED',id:'external',revision:99}]}));assert.equal(r.title,'Work');assert.equal(r.id,undefined);assert.equal(r.state,undefined);assert.equal(r.revision,undefined);});
+test('LEX rejects an arbitrary or malformed import',()=>{assert.throws(()=>importWorkspace('{}'));assert.throws(()=>validateDraft({kind:'asset',title:'Work',payload:[]}));assert.throws(()=>validateDraft({kind:'asset',title:'Work',payload:{value:'界'.repeat(22000)}}));});
+test('LEX readiness tolerates untrusted non-string metadata',()=>{assert.equal(readiness({owner:123,source:{},use:[],exclusions:null}).complete,0);});
+test('LEX revenue split reconciles remainder cents',()=>{const r=splitRevenue('0.01','0',['33.33','33.33','33.34']);assert.deepEqual(r.allocations_cents,[0,0,1]);assert.equal(r.allocations_cents.reduce((a,b)=>a+b,0),r.net_cents);});
+test('LEX split rejects invalid totals and negative fees',()=>{assert.throws(()=>splitRevenue(100,0,[50,40]));assert.throws(()=>splitRevenue(100,-1,[100]));assert.throws(()=>splitRevenue(100,101,[100]));});
+test('LEX SHA-256 matches the known abc digest without network access',async()=>{assert.equal(await hashFile(new Blob(['abc'])),'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');});
+test('LEX license exports remain explicitly unexecuted',()=>{const b=licenseBrief({title:'Work',payload:{}});assert.match(b,/NOT AN EXECUTED LICENSE/);assert.match(b,/does not grant rights/);});
+test('LEX same-origin guard rejects absent and hostile origins',()=>{assert.equal(allowedOrigin(request('POST','/',{})),false);assert.equal(allowedOrigin(request('POST','/',{origin:'https://evil.test'})),false);assert.equal(allowedOrigin(request('POST','/',{origin:'https://lex.test'})),true);});
+test('LEX ignores malformed cookie encoding',()=>{assert.deepEqual(cookies({headers:{cookie:'valid=abc; bad=%FF'}}),{valid:'abc'});});
+test('LEX health never asserts money movement or legal title',async()=>{const r=await invoke(request('GET','/api/lex?route=health'));assert.equal(r.status,200);assert.equal(r.data.payment_execution,false);assert.equal(r.data.legal_title_adjudication,false);});
+test('LEX rejects unauthenticated private draft access',async()=>{const r=await invoke(request('GET','/api/lex?route=drafts'));assert.equal(r.status,401);});
+test('LEX rejects cross-origin writes before processing',async()=>{const r=await invoke(request('POST','/api/lex?route=save',{origin:'https://evil.test','content-type':'application/json'},{}));assert.equal(r.status,403);});
+test('LEX rejects unsupported methods and malformed public IDs',async()=>{assert.equal((await invoke(request('DELETE','/api/lex?route=health'))).status,405);assert.equal((await invoke(request('GET','/api/lex?route=resolve&id=private'))).status,400);});
+test('LEX anonymous session has no user or credentials',async()=>{const r=await invoke(request('GET','/api/lex?route=session'));assert.equal(r.status,200);assert.equal(r.data.user,null);assert.equal(r.data.access_token,undefined);});
+test('LEX rejects oversized request bodies',async()=>{const r=await invoke(request('POST','/api/lex?route=save',{origin:'https://lex.test','content-type':'application/json','content-length':'999999'},{}));assert.equal(r.status,413);});

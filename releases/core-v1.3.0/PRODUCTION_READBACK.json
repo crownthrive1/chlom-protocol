@@ -1,0 +1,318 @@
+{
+  "schema": "ct.chlom.core.production-readback.v1",
+  "observed_at": "2026-09-20T02:59:38.397Z",
+  "deployment_id": "dpl_AQFwVRojkpDqJuEh3z1VcRSAhqaU",
+  "build_sha": "a8b994eccfe767398a097d9c2ff24736f3863ebd",
+  "source_tree": "cc8080bbaf0fe81cacba954b801d942bd7132aaa",
+  "origin": "https://chlom-protocol.vercel.app",
+  "browser_title": "CHLOM — The governed core",
+  "anonymous_operator_submit_enabled": false,
+  "responses": [
+    {
+      "ok": true,
+      "brand": "CHLOM",
+      "version": "1.3.0",
+      "backend_configured": true,
+      "dispatcher": "chlom_api_dispatch_v3",
+      "mode": "core_control_plane",
+      "payment_execution": false,
+      "token_issuance": false
+    },
+    {
+      "ok": true,
+      "source": "canonical_chlom_core",
+      "observed_at": "2026-09-20T02:59:38.397Z",
+      "availability": {
+        "protocol": "available",
+        "control_plane": "available",
+        "wallet": "available",
+        "mesh": "available"
+      },
+      "protocol": {
+        "contract": "ct.chlom.protocol-status.v2",
+        "production_control_plane": true,
+        "external_l1_state": "PRODUCTION_GATED",
+        "ownership_interest_count": 20,
+        "rights_instrument_count": 26,
+        "dla_version_count": 20,
+        "lex_offer_count": 2,
+        "agreement_count": 2,
+        "entitlement_count": 2,
+        "tokenized_object_count": 2,
+        "external_production_mint_confirmed_count": 0,
+        "settlement_preview_count": 2,
+        "money_movement_count": 0,
+        "open_review_case_count": 0,
+        "wallet_snapshot_count": 0,
+        "open_remedy_case_count": 0,
+        "policy_pack_count": 0,
+        "production_zk_circuit_count": 0,
+        "verified_production_zk_proof_count": 0,
+        "tokenomics_authorized_count": 0,
+        "tokenomics_issuance_executed_count": 0,
+        "public_authority_node_count": 0,
+        "external_action_confirmed_count": 0,
+        "dail": {
+          "integrity_state": "PASS_VERIFIED_PREFIX_CATCHUP_PENDING",
+          "public_chain_anchor_state": "PRODUCTION_GATED_PROVIDER_RECEIPT_REQUIRED",
+          "verified_prefix_ok": true,
+          "sequence_span_lag": 54,
+          "current_head_sequence_id": 6613825,
+          "verified_through_sequence_id": 6613771
+        },
+        "observed_at": "2026-09-20T02:59:37.165523+00:00"
+      },
+      "control_plane": {
+        "ok": true,
+        "contract": "ct.chlom.public-control-plane-status.v1",
+        "release_state": "BOUNDED_OPERATIONAL",
+        "release_version": null,
+        "boundaries": {
+          "internal_control_plane": "OPERATIONAL",
+          "native_runtime": "PRODUCTION_CANDIDATE",
+          "validator_network": "PROVIDER_GATED",
+          "external_money_movement": "PROVIDER_GATED",
+          "production_token_mint": "PROVIDER_AND_LEGAL_GOVERNANCE_GATED",
+          "legal_title_adjudication": "OUT_OF_MACHINE_AUTHORITY"
+        },
+        "authenticated_gateway": {
+          "slug": "chlom-control-plane-v1",
+          "verify_jwt": true,
+          "anonymous_access_state": "DENIED_BY_EDGE_AND_DATABASE"
+        },
+        "dail": {
+          "integrity_state": "PASS_VERIFIED_PREFIX_CATCHUP_PENDING",
+          "public_chain_anchor_state": "PRODUCTION_GATED_PROVIDER_RECEIPT_REQUIRED",
+          "verified_prefix_ok": true,
+          "sequence_span_lag": 54,
+          "current_head_sequence_id": 6613825,
+          "verified_through_sequence_id": 6613771
+        },
+        "external_execution_enabled": false,
+        "observed_at": "2026-09-20T02:59:38.328994+00:00"
+      },
+      "wallet": {
+        "contract": "ct.wallet.production-status.v3",
+        "environment": "production",
+        "production_state": "PRODUCTION_RESTRICTED_EXTERNAL_RAILS",
+        "enforcement_state": "enforced",
+        "fail_closed": true,
+        "inventory": {
+          "active_wallets": 6,
+          "verified_internal_accounts": 7,
+          "service_bindings": 682,
+          "gate_receipts": 1957
+        },
+        "external_wallet": {
+          "state": "pending_site_injection",
+          "wallet_services_state": "configured",
+          "required": false,
+          "user_approval_required": true
+        },
+        "agent_wallet": {
+          "health_state": "pass",
+          "runner_state": "active",
+          "fresh": false,
+          "max_unattended_value_minor": 0
+        },
+        "stablecoin_checkout": {
+          "state": "HOLD",
+          "crypto_offered": false
+        },
+        "observed_at": "2026-09-20T02:59:35.005252+00:00"
+      },
+      "mesh": {
+        "contract": "ct.chlom.mesh.status.v2",
+        "status": "operational",
+        "decision": "ALLOW_READ",
+        "release_readiness": "HOLD_BINDING_GATES",
+        "all_binding_gates_clear": false,
+        "binding_summary": {
+          "total": 33349,
+          "operational": 32900,
+          "pending": 157,
+          "held": 1,
+          "degraded": 0,
+          "deactivated": 1,
+          "other": 290
+        },
+        "latest_heartbeat": {
+          "state": "hot",
+          "binding_count": 33349,
+          "hold_count": 0,
+          "degraded_count": 0,
+          "observed_at": "2026-09-20T02:56:02.057482+00:00"
+        }
+      }
+    },
+    {
+      "ok": true,
+      "schema": "ct.chlom.protocol.capabilities.v1",
+      "version": "1.0.0",
+      "operations": [
+        "policy.evaluate",
+        "utility.evaluate",
+        "proof.commit",
+        "proof.verify",
+        "proof.zk.verify"
+      ],
+      "authentication": "CHLOM bearer token required for POST",
+      "policyRegistry": "unconfigured",
+      "utilityRegistry": "unconfigured",
+      "policyMode": "configured_rules_and_evidence_review",
+      "utilityMode": "snapshot_eligibility_without_reservation",
+      "proofMode": "salted_digest_commitments_and_registered_groth16_verification",
+      "zeroKnowledge": {
+        "verifier": "groth16_bn254",
+        "verifierAvailable": true,
+        "registryState": "unconfigured",
+        "configuredActiveCircuitCount": 0,
+        "configuredCircuitActive": false,
+        "proofGenerationAvailable": false,
+        "keyValidation": "deferred_until_verification",
+        "productionActivationVerified": false,
+        "moduleAudit": "not_independently_audited",
+        "curveLibrary": "@noble/curves@2.4.0",
+        "rawPrivateWitnessAccepted": false,
+        "trustedSetupPerformed": false,
+        "limits": {
+          "publicSignals": 16,
+          "circuits": 16,
+          "inputBytes": 8192,
+          "workerTimeoutMs": 5000,
+          "concurrentPerProcess": 1,
+          "verificationsPerMinutePerProcess": 20
+        }
+      },
+      "boundaries": {
+        "rawPrivateEvidenceAccepted": false,
+        "zeroKnowledgeImplemented": true,
+        "zeroKnowledgeProofGeneration": false,
+        "legalDeterminations": false,
+        "automatedPolicyAdoption": false,
+        "tokenIssuance": false,
+        "tokenTransfers": false,
+        "atomicDebits": false,
+        "accessGranting": false,
+        "publicChainAnchoring": false
+      },
+      "confidentiality": "Generate commitments locally for confidential work. API proof operations disclose the evidence digest and salt to this server. Publish only publicCommitment."
+    },
+    {
+      "ok": true,
+      "version": "1.0.0",
+      "connection": "injected_evm_wallet",
+      "discovery": [
+        "EIP-6963",
+        "EIP-1193"
+      ],
+      "proof_verification": false,
+      "proof_scope": "browser_observation_only",
+      "challenge_ttl_seconds": 300,
+      "account_authentication": false,
+      "contract_wallet_verification": false,
+      "walletconnect_relay": false,
+      "embedded_wallet": false,
+      "payment_execution": false,
+      "token_issuance": false,
+      "one_time_nonce": false
+    },
+    {
+      "ok": true,
+      "schema": "ct.chlom.chain-evidence-fabric.health.v2",
+      "runtimeSchema": "ct.chlom.chain-evidence-fabric.runtime.v1",
+      "service": "CHLOM Chain Evidence Fabric",
+      "canonicalService": "chlom-protocol",
+      "role": "rights_rules_roles_revenue_records_remedies_authority",
+      "version": "1.3.0",
+      "status": "OPERATIONAL",
+      "readinessStatus": "CONFIGURATION_HOLD",
+      "readiness_status": "CONFIGURATION_HOLD",
+      "operatingMode": "GOVERNANCE_CONTROL_PLANE_ONLY",
+      "operating_mode": "GOVERNANCE_CONTROL_PLANE_ONLY",
+      "release": "production",
+      "environment": "production",
+      "providerState": "BOUND_PRODUCTION",
+      "provider_state": "BOUND_PRODUCTION",
+      "projectId": "prj_HewLgMjUiVBNCl0FADFbSggSp2QN",
+      "project_id": "prj_HewLgMjUiVBNCl0FADFbSggSp2QN",
+      "repository": "crownthrive1/chlom-protocol",
+      "buildSha": "a8b994eccfe767398a097d9c2ff24736f3863ebd",
+      "build_sha": "a8b994eccfe767398a097d9c2ff24736f3863ebd",
+      "deploymentId": "dpl_AQFwVRojkpDqJuEh3z1VcRSAhqaU",
+      "deployment_id": "dpl_AQFwVRojkpDqJuEh3z1VcRSAhqaU",
+      "observedAt": "2026-09-20T02:59:34.713Z",
+      "observed_at": "2026-09-20T02:59:34.713Z",
+      "readiness": {
+        "apiTokenConfigured": false,
+        "googleAnalyticsConfigured": false,
+        "googleAnalyticsLocation": "US",
+        "configuredRpcChains": [],
+        "configuredRpcProviders": [],
+        "governanceState": "hold",
+        "chainWriteEnabled": false,
+        "ecacConfigured": false,
+        "allowedOriginsConfigured": false,
+        "holds": [
+          "CHLOM_API_TOKEN",
+          "CHAIN_OR_ANALYTICS_PROVIDER",
+          "CHLOM_GOVERNANCE_STATE",
+          "CHLOM_ECAC_DIGEST"
+        ]
+      },
+      "capabilityStates": {
+        "governanceAndRights": "OPERATIONAL",
+        "providerLiveness": "OPERATIONAL",
+        "authenticatedApi": "GATED",
+        "rpcReadLane": "GATED",
+        "blockchainAnalytics": "GATED",
+        "chainBroadcast": "GATED"
+      },
+      "capability_states": {
+        "governance_and_rights": "OPERATIONAL",
+        "provider_liveness": "OPERATIONAL",
+        "authenticated_api": "GATED",
+        "rpc_read_lane": "GATED",
+        "blockchain_analytics": "GATED",
+        "chain_broadcast": "GATED"
+      },
+      "boundaries": {
+        "privateKeysAccepted": false,
+        "arbitrarySqlAccepted": false,
+        "arbitraryRpcEndpointAccepted": false,
+        "rpcReadAllowlist": true,
+        "chainBroadcastFailClosed": true
+      },
+      "providerNotice": {
+        "googleBlockchainRpcStatus": "TRANSITIONAL_DEPRECATED",
+        "googleBlockchainRpcSunset": "2026-12-15",
+        "durableGoogleLane": "Blockchain Analytics / BigQuery"
+      },
+      "mcp": {
+        "endpoint": "/api/mcp",
+        "latestProtocolVersion": "2026-07-28",
+        "supportedProtocolVersions": [
+          "2026-07-28",
+          "2025-11-25"
+        ],
+        "transport": "streamable_http_stateless",
+        "chainBroadcastToolExposed": false
+      },
+      "endpoints": {
+        "health": "/health",
+        "rest": [
+          "/api/v1/rpc",
+          "/api/v1/analytics",
+          "/api/v1/attest"
+        ],
+        "mcp": "/api/mcp"
+      },
+      "providerReadback": true,
+      "provider_readback": true,
+      "writeState": "GATED",
+      "write_state": "GATED",
+      "passManufactured": false,
+      "pass_manufactured": false
+    }
+  ]
+}

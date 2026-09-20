@@ -1,0 +1,337 @@
+{
+  "schema": "ct.chlom.core-release.v1",
+  "release_id": "ct.chlom.core.v1.3.0",
+  "version": "1.3.0",
+  "tag": "core-v1.3.0",
+  "title": "CHLOM Core 1.3.0 \u2014 Control plane, native resource modules and Groth16 verification",
+  "target_ref": "c834b91ac13ac8ce72cee89c97deafc1c3083733",
+  "release_type": "core_protocol_and_control_plane",
+  "publication_ready": true,
+  "scope": {
+    "canonical_name": "Compliance Hybrid Licensing and Ownership Model",
+    "functions": [
+      "Rights",
+      "Rules",
+      "Roles",
+      "Revenue",
+      "Records",
+      "Remedies"
+    ],
+    "lex_role": "optional_consuming_application",
+    "preserved_historical_release": "application-v1.2.0",
+    "historical_application_release_is_core_completion": false
+  },
+  "components": {
+    "core_web": {
+      "implementation": "core_console_backend_adapter_sdk_cli",
+      "runtime": "Node.js 24",
+      "production_acceptance": "DEPLOYED_PUBLIC_READBACK_VERIFIED_AUTHENTICATED_USER_FLOW_NOT_EXERCISED",
+      "backend_requirement": "separately_provisioned_compatible_core_control_plane",
+      "user_authentication": "backend_user_identity_and_existing_operator_scopes",
+      "lex_database_bootstrap_installs_core": false
+    },
+    "native_frame": {
+      "state": "source_candidate",
+      "pallet_count": 10,
+      "pallets": [
+        "authority",
+        "identity",
+        "rights",
+        "licensing",
+        "settlement",
+        "tokenization",
+        "oracle",
+        "checkpoint",
+        "utility",
+        "policy"
+      ],
+      "utility": "nontransferable_allocation_reservation_consumption_release_accounting",
+      "policy": "approved_version_commitments_and_append_only_revocations",
+      "live_validator_network": false,
+      "production_wasm_accepted": false,
+      "production_runtime_acceptance": false,
+      "generated_production_weights": false,
+      "ratified_deployment_origins": false
+    },
+    "groth16": {
+      "implemented": true,
+      "scheme": "Groth16",
+      "curve": "BN254",
+      "runtime_dependency": "@noble/curves@2.4.0",
+      "dependency_license": "MIT",
+      "registry": "server_controlled_versioned_keys_public_signals_and_validity_intervals",
+      "verification_execution": "bounded_worker",
+      "proof_generation_service": false,
+      "production_circuit_activation_verified": false,
+      "independent_adapter_security_audit": false,
+      "test_interoperability": "original_real_proofs_compared_with_snarkjs"
+    },
+    "wallet": {
+      "connection": "injected_evm_eip6963_eip1193",
+      "signature_secret_configuration": "not_configured_production_readback",
+      "real_wallet_signature_acceptance": "pending",
+      "permanent_account_binding": false,
+      "account_authentication": false,
+      "spending_approval": false
+    }
+  },
+  "economic_activation": {
+    "transferable_utility_token_issued": false,
+    "governance_token_issued": false,
+    "economic_ticker_assigned": false,
+    "external_funds_movement": false,
+    "paid_fulfillment_acceptance": false,
+    "resource_units_are_nontransferable_accounting": true
+  },
+  "validation": {
+    "state": "local_and_github_ci_passed",
+    "actual_results": {
+      "node_tests_passed": 117,
+      "python_tests_passed": 77,
+      "rust_tests_passed": 29
+    },
+    "registry_validation": "passed",
+    "static_build": "passed",
+    "cargo_check_locked_workspace_all_targets": "passed",
+    "cargo_test_locked_workspace": "passed",
+    "evidence_source": "integrating_release_agent_report",
+    "source_sha": "c834b91ac13ac8ce72cee89c97deafc1c3083733",
+    "github_pull_request": "https://github.com/crownthrive1/chlom-protocol/pull/53",
+    "github_checks": {
+      "state": "passed",
+      "workflow_run_ids": [
+        35485242119,
+        35485242142,
+        35485242054,
+        35485242061,
+        35485242105
+      ]
+    }
+  },
+  "production_evidence": {
+    "url": "https://chlom-protocol.vercel.app/",
+    "deployment_id": "dpl_AQFwVRojkpDqJuEh3z1VcRSAhqaU",
+    "implementation_sha": "c834b91ac13ac8ce72cee89c97deafc1c3083733",
+    "source_sha": "a8b994eccfe767398a097d9c2ff24736f3863ebd",
+    "source_tree": "cc8080bbaf0fe81cacba954b801d942bd7132aaa",
+    "verified_at": "2026-09-20T02:59:38.397Z",
+    "state": "CORE_PRODUCTION_READBACK_VERIFIED",
+    "all_four_public_sources_available": true,
+    "anonymous_operator_submit_enabled": false,
+    "authenticated_operator_transaction_exercised": false,
+    "readback_file": "PRODUCTION_READBACK.json"
+  },
+  "artifact_digests": {
+    "state": "pinned_to_exact_git_commit",
+    "algorithm": "SHA-256",
+    "source_sha": "c834b91ac13ac8ce72cee89c97deafc1c3083733",
+    "artifacts": [
+      {
+        "path": "package.json",
+        "sha256": "d71a371dc88b58c2c1ffc04b0f6cd3256727ae2358ef57fb1347e142b216d020"
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "79f7e7f2312b75b0e2bde3b136fc3df283dc35c5a0e51e507441bea8541d8a70"
+      },
+      {
+        "path": "api/core.js",
+        "sha256": "a291507dab23613be60d90a8411b4f05ed13d3b3bdd8ff0fba2a6cb6deb281cc"
+      },
+      {
+        "path": "lib/core-status.js",
+        "sha256": "4c0e12a6063b5ef7534cef38ddd9126088e28236ebc16b3de16c044d90189e96"
+      },
+      {
+        "path": "sdk/core-client.mjs",
+        "sha256": "f17f83660f8727645407c936650713595051ef12e8f7d4df8c409f16184bf57c"
+      },
+      {
+        "path": "scripts/core-cli.mjs",
+        "sha256": "6d17f4dfe61a1ac2398db3ce47a9a13807694349b1805c4a42e8471d2b96c746"
+      },
+      {
+        "path": "api/protocol.js",
+        "sha256": "b677d0f09d7bfc49c32eb133f73c842104ddb6117648add35f1558a032a5e082"
+      },
+      {
+        "path": "lib/protocol/zk.js",
+        "sha256": "1c887f486e870708c71890b1a4a045faed1a3902ab77c769de41346691ddf930"
+      },
+      {
+        "path": "scripts/verify-zk.mjs",
+        "sha256": "07939a5e5d4d7cc6de7cfed8d348d8db159ac9efe4408207c8d8a51aa709f1ff"
+      },
+      {
+        "path": "docs/CHLOM_CORE_1_3.md",
+        "sha256": "4bf6533af17c5f7f3b4bb9fc20a964b23bc14ffa6f89883d20d72058e6f888d8"
+      },
+      {
+        "path": "docs/CHLOM_CORE_API.md",
+        "sha256": "7f47dcb70a6d3a8fb870607a4f6d2e9858b21f1454076b1a007d4f07f4d24e51"
+      },
+      {
+        "path": "docs/CHLOM_CORE_INTERFACE.md",
+        "sha256": "d2956307d60e38211fb0f51324684798c05d74268edc5b2900f4d28cd3d81c08"
+      },
+      {
+        "path": "docs/CHLOM_CORE_SDK.md",
+        "sha256": "97c7e7500771ccab208f0daa86ab58404428add0fe818a38b4d98cfa7c6b881d"
+      },
+      {
+        "path": "docs/CHLOM_ZK_VERIFIER.md",
+        "sha256": "1c1876ea9c90803d43462fa25882582f618cb9b4822ccd45513c664445693913"
+      },
+      {
+        "path": "docs/INSTALLATION.md",
+        "sha256": "3bfed79a807276d0a7e21d669522154cd4bda1f5edf6e7a9abb28c88d0452bc0"
+      },
+      {
+        "path": "substrate/chlom-l1/Cargo.toml",
+        "sha256": "f9a0da7f533c7a86544864693c5142980e998df4af65ea0db336983da919cfcf"
+      },
+      {
+        "path": "substrate/chlom-l1/Cargo.lock",
+        "sha256": "1c32b291b1cc3ef8bfdd70e437dafa114c2bb026dc11aa70fddd77d7b47b442a"
+      },
+      {
+        "path": "substrate/chlom-l1/rust-toolchain.toml",
+        "sha256": "d7dd7595f2932c2529cf23f3e5d220b7e5681d0fa05b6e4dbaa4d75aca250858"
+      },
+      {
+        "path": "substrate/chlom-l1/runtime-manifest.json",
+        "sha256": "6f5d637e982259718379961166f488886df139730f6f272917a9fc492020d19d"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/utility/src/lib.rs",
+        "sha256": "db3416b5f5a81416e11d1b7136eefffedf6c22c6bb6803a0ba45c393c716622e"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/policy/src/lib.rs",
+        "sha256": "d5f7490794f83a41267febdea6b230904741c4c26a3b8de09cd373ab0c9e5269"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/oracle/src/lib.rs",
+        "sha256": "3891f304dcd99500d11e787c682ae14a2b7f7059afb46892f57d35df80885791"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/checkpoint/src/lib.rs",
+        "sha256": "cb651c41062b8d3713c4c2eedd0c7922a876c18611e675f4b4035c1d224dc0ec"
+      },
+      {
+        "path": "Dockerfile",
+        "sha256": "8eb99b6e433e87ed93686fb90a3881e322e12133c7ffeb3b969f6c05980aa587"
+      },
+      {
+        "path": ".env.example",
+        "sha256": "2726acad75e2237ecc55059ac69f0a7f0218ca803145ee96ce8fe6a24b6bba68"
+      },
+      {
+        "path": "scripts/build-static.mjs",
+        "sha256": "14e52c7b97fc2ad5dd6b5296aa5e6d137a23e68a9b11108cd4d4dff7ab4fcf75"
+      },
+      {
+        "path": "scripts/serve-local.mjs",
+        "sha256": "c9b1536c1f7d4db41e86cdc0a49810007a0e8dae586e1cee6d09c907e193be29"
+      },
+      {
+        "path": "scripts/install-preflight.mjs",
+        "sha256": "e6cda45b43e9054c0a106df7885b3f045905809af33410c2de093c905b8887c2"
+      },
+      {
+        "path": "public/index.html",
+        "sha256": "8bbf8d5d032fcdc9bd3e7d45a7849b7ec6bacc5d7b221a845b993f0a9796149b"
+      },
+      {
+        "path": "public/core.js",
+        "sha256": "83817eed3929b7d0166ac51b45a9e4093ccf730e6bef9e7cd4500c91096aeeca"
+      },
+      {
+        "path": "public/core.css",
+        "sha256": "36079f543515b18537a5b66d6980b492e13b18d39dc6272c59962097d188ceab"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/authority/Cargo.toml",
+        "sha256": "62cc4db6c00c59bf878589b50ec76dee3950e83fe41671449759f37081dfcf7e"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/authority/src/lib.rs",
+        "sha256": "1157017f8cc3839dc74ed491777c403626df21780cf348858d96aa6d566bb573"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/identity/Cargo.toml",
+        "sha256": "5c77852e1a920960c2f8f0f960c4b97c6e8d269907c4e7443e2829ee6e099571"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/identity/src/lib.rs",
+        "sha256": "3ff7a2ba36c9f3937dfb112deb468553da83f3e39682bf74229d7634f1e5e90e"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/rights/Cargo.toml",
+        "sha256": "82dfd23fac68fd0ee34a4af3a6ae49ea3eb31190f9e20891f39f47e7a41a7524"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/rights/src/lib.rs",
+        "sha256": "1ae98adbcbc5c4daff6552ed51ac7b87dc5b0bb941d5ee85bde34b8cb4e9257e"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/licensing/Cargo.toml",
+        "sha256": "16cc44285d0faae60b9ac730bdab0a1d3c8026b3db1943dfe4884d1e8a78fe5a"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/licensing/src/lib.rs",
+        "sha256": "a63b4e82216ee14837989e64e182347fad22808958ad877d179c39c2c1a83c62"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/settlement/Cargo.toml",
+        "sha256": "4dd2826537176793cdc3e8e0d4356301f820f437c08aab6019204ae25d82da06"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/settlement/src/lib.rs",
+        "sha256": "a5e8bb431e7b22fe18ad1f0b0033e98fe41ba54a2f7abb6e8c25fb9f95ef75e9"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/tokenization/Cargo.toml",
+        "sha256": "1518bfd27c6c1ec1cd8a7dc8bb79fa015a950de10eec80abfe982b7cb9cf1f4d"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/tokenization/src/lib.rs",
+        "sha256": "5ce7769c0efec6e3bea4bfea97fa954cc447f46f449c382e184e95d942367477"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/oracle/Cargo.toml",
+        "sha256": "b72286a4e0cf770723ace830110f401ac185ac1769e2ddb223627caedcbce206"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/checkpoint/Cargo.toml",
+        "sha256": "07f76441c08aa534c3028b89532228b2f7d399373861a9340e55d5900da6166e"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/utility/Cargo.toml",
+        "sha256": "1410a70293313fc5783c87e84f6e0b1301b1a3e3b12a65864351eabaaa60c5f2"
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/policy/Cargo.toml",
+        "sha256": "1b078a14a1a4c0189464ec9ed7352579e3d5cdb83f1390dd61d6b34c27e77479"
+      },
+      {
+        "path": "lib/protocol/zk-worker.js",
+        "sha256": "68b5ace90bc95b5c0966e464dc2b1b273dbc2cbd87eca11b25243655ab8f525a"
+      },
+      {
+        "path": "public/core-operator.js",
+        "sha256": "0f4b4e57c8072a1be16128be8d939986d99d837ee827942277a05e4f08ce61ad"
+      },
+      {
+        "path": "tests/zk-verifier.test.mjs",
+        "sha256": "e234f35fcdd2a0f8232d3d120337555aef8b884a187adf45e52cc5b7f8b07ab9"
+      },
+      {
+        "path": "tests/fixtures/zk/README.md",
+        "sha256": "5221264b4a21d5b6424f45560ac206054edf26198e42d2d74b17f8383317837c"
+      }
+    ]
+  },
+  "license": "Proprietary repository terms; separately licensed dependencies retain their licenses",
+  "preservation": "Append scope corrections and preserve prior releases, DAIL history, private evidence and configuration custody."
+}

@@ -16,6 +16,7 @@ Use the assets on the [native-v1.4.0 release](https://github.com/crownthrive1/ch
 | `chlom-local.json`, `chlom-local-raw.json` | Two-authority local-testnet specifications |
 | `native-release.json` | Exact source commit, toolchain, node/lockfile/runtime hashes and declared scope |
 | `native-smoke.json` | Actual loopback RPC, metadata, Aura block advance and GRANDPA finality result |
+| `native-calibration-receipt.json`, `native-calibration.tar.gz` | Hardware-scoped measurements of all 28 dispatches from the exact published binary; raw samples and candidate weights retained without activation |
 | `native-benchmarks.json`, `native-benchmarks.csv` | Actual benchmark CLI readback for all ten CHLOM pallets, bound to the node hash; no calibration claim |
 | `native-signed-rpc.json` | Real signed and finalized local transactions exercising utility authority, owner boundaries, lifecycle and receipt-chain checks |
 | `dependency-licenses.json` | Resolved Cargo dependency/license inventory |
@@ -79,7 +80,7 @@ For a two-validator local test, select `--chain local --alice` and `--chain loca
 
 See the [runtime contract](https://github.com/crownthrive1/chlom-protocol/blob/native-v1.4.0/substrate/chlom-l1/runtime/README.md) for exact role labels, pallet indices and SCALE subject encoding. Metadata includes `ChlomAuthority`, `ChlomIdentity`, `ChlomRights`, `ChlomLicensing`, `ChlomSettlement`, `ChlomTokenization`, `ChlomOracle`, `ChlomCheckpoint`, `ChlomUtility` and `ChlomPolicy` at indices 20–29.
 
-The genesis Sudo account administers authority grants in these development chains. Privileged module calls require signed accounts with active, unexpired D3 grants for the specific module role. Revoked grants cannot authorize a call; one role does not grant every role. Utility reserve/consume/release operations additionally bind to the resource owner. Balances fee units and nontransferable utility resources are separate ledgers.
+The genesis Sudo account administers authority grants in these development chains. Privileged module calls accept Root administration or signed accounts with active, unexpired D3 grants for the specific module role. Revoked grants cannot authorize a call; one role does not grant every role. Utility reserve/consume/release operations additionally bind to the resource owner. Balances fee units and nontransferable utility resources are separate ledgers.
 
 Native licensing checks the referenced rights instrument in the actual runtime registry. Published LEX offers, production token approvals/mints and similar public activation paths are rejected by the supplied development call filter, including inside Sudo call wrappers. Development state cannot establish legal ownership or production entitlement.
 
@@ -98,11 +99,12 @@ For the corresponding-source archive, extract it into an empty directory and run
 
 ```sh
 cd substrate/chlom-l1
+export WASM_BUILD_RUSTFLAGS="-C link-arg=--allow-undefined-file=$PWD/runtime/sdk-host-imports.txt"
 CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 CARGO_PROFILE_RELEASE_DEBUG=0 \
   cargo build --frozen --release -p chlom-node --features runtime-benchmarks
 ```
 
-`--frozen` uses the bundled dependency sources and lockfile. Rust itself, native OS tools and their standard libraries must already be installed; they are not bundled. Do not set `SKIP_WASM_BUILD` for a release build. Runtime Wasm must be embedded in the node and exported from `target/release/wbuild/chlom-runtime/`.
+`--frozen` uses the bundled dependency sources and lockfile. The Wasm linker flag allows only the exact SDK host imports listed in `runtime/sdk-host-imports.txt`; unknown imports remain errors. Keep that flag when running full-workspace Cargo commands directly. Rust itself, native OS tools and their standard libraries must already be installed; they are not bundled. Do not set `SKIP_WASM_BUILD` for a release build. Runtime Wasm must be embedded in the node and exported from `target/release/wbuild/chlom-runtime/`.
 
 For a repository checkout pinned to the release commit, run `bash scripts/native/build.sh`. It tests the locked workspace in release mode with `runtime-benchmarks`, then builds the developer node with the same features. The distribution includes the pallet benchmark CLI; its presence does not constitute measured benchmark results. Then run:
 
@@ -123,6 +125,8 @@ npm run node --prefix scripts/native/e2e -- \
   --binary "$PWD/substrate/chlom-l1/target/release/chlom-node" \
   --output "$PWD/native-signed-rpc.json"
 ```
+
+Release CI also runs `scripts/native/calibrate.py` with 50 steps and 20 repeats against that same binary. Packaging requires complete measurements for all 28 CHLOM dispatches, exact binary/runtime/source hashes, clean unchanged native source and verified hashes for every calibration artifact. Raw results, hardware conditions and candidate Rust schedules are retained in `native-calibration.tar.gz`; the top-level receipt state remains `MEASURED_REVIEW_REQUIRED`. The original conservative weight schedules remain active.
 
 Both acceptance receipts must identify the packaged binary and the same runtime code. Packaging also compares the exported Wasm byte-for-byte with `:code` in both raw genesis specifications. This prevents a stale Wasm file from accompanying a newer node.
 

@@ -377,3 +377,19 @@ fn licensing_reads_actual_rights_registry_and_rejects_expired_source() {
         );
     });
 }
+
+#[test]
+fn linker_allowlist_exactly_matches_pinned_sdk_host_providers() {
+    use sp_wasm_interface::HostFunctions;
+    let mut names: Vec<&str> = <(
+        sp_io::SubstrateHostFunctions,
+        frame_benchmarking::benchmarking::HostFunctions,
+    )>::host_functions()
+    .into_iter()
+    .map(|function| function.name())
+    .collect();
+    names.sort_unstable();
+    names.dedup();
+    let expected = names.join("\n") + "\n";
+    assert_eq!(include_str!("../sdk-host-imports.txt"), expected);
+}

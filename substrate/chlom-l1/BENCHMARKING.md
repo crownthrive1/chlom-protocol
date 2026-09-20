@@ -35,3 +35,19 @@ cargo test --locked --features runtime-benchmarks --lib \
 For hardware measurements, build the node with `--features runtime-benchmarks`, list its supported benchmark command options, then run pallet benchmarking for all ten CHLOM pallets. Preserve command, source commit, SDK lockfile, chain specification, hardware/OS, execution mode, steps/repeats and output hashes alongside the generated weights. Check the generated method signatures against each `WeightInfo` trait before replacing estimates.
 
 The composed runtime's `try_successful_origin()` seeds a synthetic D3 authority grant and returns its signed account. Measurements on that runtime therefore include signer hashing and both authority storage reads. The authority administrator remains Root. Isolated pallet mocks use Root to test pallet behavior without importing every runtime dependency. Benchmarking does not certify ownership, policy legality, external provider truth, token economics, validator operations, cryptographic signer verification or public network activation.
+
+## Reproducible measurement bundle
+
+After building `chlom-node` with `--release --features runtime-benchmarks`, run the evidence runner from the repository root:
+
+```sh
+python scripts/native/calibrate.py \
+  --binary target/release/chlom-node \
+  --repo . \
+  --output artifacts/native-calibration-20260920 \
+  --steps 50 --repeat 20
+```
+
+Use the actual binary location when `CARGO_TARGET_DIR` differs. The output directory must be new. The runner invokes the pinned SDK flags, exports the development genesis runtime blob, verifies the 28-dispatch inventory, runs each pallet with compiled Wasm and verification/proof recording enabled, and hashes the raw samples, generated candidates, specification, runtime blob and logs. It records CPU, container quota, RAM, kernel, compiler, source-file hashes and start/end load; real hostnames and local absolute paths are omitted from the public receipt. It rejects missing samples, changed native sources or a changed binary.
+
+`measurement-receipt.json` reaches `MEASURED_REVIEW_REQUIRED` only after all 28 dispatches produce valid timing/database samples. Proof observations remain observations; calculated proof estimates retain the explicit map-size and trie-layer assumptions. `candidate-weights/*.rs` use the measured schedule with the existing fallback as a componentwise floor, so neither reference time nor proof allowance is lowered. Candidates remain outside active pallet source and require review before adoption. The source and binary hashes are independently recorded; this is not a reproducible-build attestation.

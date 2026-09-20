@@ -1334,6 +1334,7 @@ version = "1.4.0"
 dependencies = [
  "chlom-runtime",
  "clap",
+ "frame-benchmarking",
  "frame-benchmarking-cli",
  "futures",
  "jsonrpsee",
@@ -1421,6 +1422,7 @@ dependencies = [
  "sp-storage",
  "sp-transaction-pool",
  "sp-version",
+ "sp-wasm-interface",
  "substrate-wasm-builder",
 ]
 

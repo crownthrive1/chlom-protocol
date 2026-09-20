@@ -154,10 +154,92 @@ def corresponding_source(destination, sha, epoch, temporary):
     (source / "NATIVE_SOURCE_RECEIPT.json").write_text(json.dumps({
         "schema": "chlom.native.corresponding-source.v1", "sourceCommit": sha,
         "cargoLockSha256": digest(native_source / "Cargo.lock"),
-        "build": "cd substrate/chlom-l1 && cargo build --frozen --release -p chlom-node --features runtime-benchmarks",
+        "build": 'cd substrate/chlom-l1 && WASM_BUILD_RUSTFLAGS="-C link-arg=--allow-undefined-file=$PWD/runtime/sdk-host-imports.txt" cargo build --frozen --release -p chlom-node --features runtime-benchmarks',
         "scope": "Exact repository archive plus vendored Cargo dependency source; toolchain and OS build tools remain external.",
     }, indent=2) + "\n")
     archive(source, destination, epoch)
+
+
+def calibration_readback(directory, node, wasm, sha):
+    directory = directory.resolve(strict=True)
+    receipt_path = directory / "measurement-receipt.json"
+    receipt = json.loads(receipt_path.read_text())
+    if (receipt.get("schema") != "chlom.native.hardware-measurement.v1" or
+            receipt.get("state") != "MEASURED_REVIEW_REQUIRED" or
+            receipt.get("active_weight_files_changed") is not False or
+            receipt.get("binary", {}).get("sha256") != digest(node) or
+            receipt.get("runtime_blob", {}).get("sha256") != digest(wasm)):
+        raise RuntimeError("Complete, unactivated calibration must match this exact node and runtime")
+    before, after = receipt.get("source_before", {}), receipt.get("source_after", {})
+    if (before.get("git_commit") != sha or after.get("git_commit") != sha or
+            before.get("native_worktree_status") != "" or after.get("native_worktree_status") != "" or
+            not before.get("native_snapshot_sha256") or
+            before["native_snapshot_sha256"] != after.get("native_snapshot_sha256") or
+            before.get("native_files_sha256") != after.get("native_files_sha256")):
+        raise RuntimeError("Calibration source must be the unchanged, clean exact release commit")
+    native_files = before.get("native_files_sha256", {})
+    tracked = set(command("git", "ls-files", "-z", "substrate/chlom-l1").split("\0")) - {""}
+    tracked = {name for name in tracked if (ROOT / name).is_file()}
+    if set(native_files) != tracked:
+        raise RuntimeError("Calibration source inventory differs from the release native source")
+    for name, expected_hash in native_files.items():
+        if digest(ROOT / name) != expected_hash:
+            raise RuntimeError(f"Calibration source changed: {name}")
+    inventory = receipt.get("inventory_verified", {})
+    measurements = receipt.get("measurements", [])
+    expected = {
+        "authority": ["record_grant_version"],
+        "identity": ["record_identity_version", "record_credential_version"],
+        "rights": ["record_ownership_interest", "record_rights_instrument"],
+        "licensing": ["record_dla_version", "record_license_version", "record_lex_offer_version", "record_entitlement_version"],
+        "settlement": ["record_revenue_policy", "preview_settlement"],
+        "tokenization": ["record_token_class", "record_chain_adapter", "register_tokenized_object", "record_provider_event"],
+        "oracle": ["report_signal", "record_review_decision"],
+        "checkpoint": ["record_checkpoint", "record_anchor_intent", "record_anchor_receipt"],
+        "utility": ["approve_service", "revoke_service", "allocate", "reserve", "consume", "release"],
+        "policy": ["approve_version", "revoke_version"],
+    }
+    expected_dispatches = {("pallet_chlom_" + pallet, name) for pallet, names in expected.items() for name in names}
+    if (inventory != {"pallets": 10, "dispatches": 28} or
+            receipt.get("measured_dispatch_count") != 28 or len(measurements) != 28 or
+            {(item.get("pallet"), item.get("dispatch")) for item in measurements} != expected_dispatches):
+        raise RuntimeError("Calibration must measure all 28 CHLOM dispatches across ten pallets")
+    for item in measurements:
+        if (item.get("time_samples", 0) <= 0 or item.get("database_samples", 0) <= 0 or
+                item.get("sample_extrinsic_time_ns", {}).get("minimum", 0) <= 0):
+            raise RuntimeError("Calibration contains absent or nonpositive measurements")
+    settings = receipt.get("settings", {})
+    if (settings.get("steps", 0) < 50 or settings.get("repeat", 0) < 20 or
+            settings.get("external_repeat", 0) < 1 or
+            settings.get("verification_enabled") is not True or
+            settings.get("proof_recording_enabled") is not True):
+        raise RuntimeError("Calibration must use at least 50 steps, 20 repeats and full verification")
+    commands = receipt.get("commands", [])
+    if (not commands or any(item.get("return_code") != 0 for item in commands) or
+            not set(expected).issubset({item.get("label") for item in commands})):
+        raise RuntimeError("Calibration command completion evidence is incomplete")
+    artifacts = receipt.get("artifacts", {})
+    required_artifacts = {"benchmark-runtime.wasm", "development.raw.json", "measurement-floor.hbs"}
+    required_artifacts |= {f"raw/{name}.json" for name in expected}
+    required_artifacts |= {f"candidate-weights/{name}.rs" for name in expected}
+    if not required_artifacts.issubset(artifacts):
+        raise RuntimeError("Calibration raw results, candidate schedules or runtime source artifacts are missing")
+    actual_files = {str(path.relative_to(directory)) for path in directory.rglob("*")
+                    if path.is_file() and path != receipt_path}
+    if not artifacts or set(artifacts) != actual_files:
+        raise RuntimeError("Calibration artifact inventory is incomplete or contains unrecorded files")
+    for name, expected in artifacts.items():
+        relative = Path(name)
+        path = directory / relative
+        if relative.is_absolute() or ".." in relative.parts or not path.resolve().is_relative_to(directory):
+            raise RuntimeError("Calibration artifact path escapes its custody directory")
+        if digest(path) != expected.get("sha256") or path.stat().st_size != expected.get("bytes"):
+            raise RuntimeError(f"Calibration artifact checksum/size mismatch: {name}")
+    if digest(directory / "benchmark-runtime.wasm") != digest(wasm):
+        raise RuntimeError("Archived calibration Wasm differs from the release runtime")
+    if not receipt.get("hardware_before") or not receipt.get("hardware_after"):
+        raise RuntimeError("Calibration hardware scope is missing")
+    return receipt
 
 
 def main(args):
@@ -193,6 +275,7 @@ def main(args):
     benchmark_stdout = benchmarks.get("stdout", "")
     if hashlib.sha256(benchmark_stdout.encode()).hexdigest() != benchmarks.get("stdoutSha256"):
         raise RuntimeError("Benchmark output receipt checksum mismatch")
+    calibration = calibration_readback(args.calibration, node, wasm, sha)
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     if list(output.iterdir()):
@@ -223,6 +306,8 @@ def main(args):
         shutil.copy2(args.e2e, output / "native-signed-rpc.json")
         shutil.copy2(args.benchmarks, output / "native-benchmarks.json")
         (output / "native-benchmarks.csv").write_text(benchmark_stdout)
+        shutil.copy2(args.calibration / "measurement-receipt.json", output / "native-calibration-receipt.json")
+        archive(args.calibration.resolve(), output / "native-calibration.tar.gz", epoch)
         for chain in ("dev", "local"):
             for raw in (False, True):
                 filename = f"chlom-{chain}{'-raw' if raw else ''}.json"
@@ -257,6 +342,12 @@ def main(args):
                     "signedTransactionCount": signed_receipt["signedTransactionCount"],
                     "features": ["runtime-benchmarks"],
                     "availableBenchmarkCount": benchmarks["caseCount"],
+                    "calibration": {
+                        "receipt": "native-calibration-receipt.json", "archive": "native-calibration.tar.gz",
+                        "state": calibration["state"], "measuredDispatchCount": 28,
+                        "settings": calibration["settings"], "hardwareScope": calibration["hardware_before"],
+                        "activeWeights": "original_conservative_schedules", "candidateWeightsActivated": False,
+                    },
                     "productionNetworkActivated": False, "developmentKeysPublic": True}
         (output / "native-release.json").write_text(json.dumps(manifest, indent=2) + "\n")
         shutil.copy2(output / "native-release.json", package / "native-release.json")
@@ -275,6 +366,7 @@ if __name__ == "__main__":
     parser.add_argument("--smoke", required=True, type=Path)
     parser.add_argument("--e2e", required=True, type=Path)
     parser.add_argument("--benchmarks", required=True, type=Path)
+    parser.add_argument("--calibration", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--version", default="1.4.0")
     parser.add_argument("--commit")

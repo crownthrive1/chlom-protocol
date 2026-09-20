@@ -92,7 +92,7 @@ jobs:
     needs: source
     if: needs.source.outputs.build == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    timeout-minutes: 240
     env:
       CARGO_BUILD_JOBS: '2'
       CARGO_INCREMENTAL: '0'
@@ -137,6 +137,8 @@ jobs:
           npm ci --ignore-scripts --prefix scripts/native/e2e
           npm test --prefix scripts/native/e2e
           npm run node --prefix scripts/native/e2e -- --binary "$PWD/substrate/chlom-l1/target/release/chlom-node" --output "$PWD/native-signed-rpc.json"
+      - name: Measure all CHLOM dispatches using the exact release binary
+        run: python scripts/native/calibrate.py --binary "$PWD/substrate/chlom-l1/target/release/chlom-node" --repo "$PWD" --output "$PWD/native-calibration" --steps 50 --repeat 20
       - name: Package exact binaries, specifications, licenses and source
         env:
           SOURCE_SHA: ${{ needs.source.outputs.sha }}
@@ -156,7 +158,7 @@ jobs:
             SOURCE_ARGS=(--with-source)
             VERSION=${RELEASE_TAG#native-v}
           fi
-          python scripts/native/package.py --node substrate/chlom-l1/target/release/chlom-node --wasm "$WASM" --smoke native-smoke.json --e2e native-signed-rpc.json --benchmarks native-benchmarks.json --output native-artifacts --commit "$SOURCE_SHA" --version "$VERSION" "${SOURCE_ARGS[@]}"
+          python scripts/native/package.py --node substrate/chlom-l1/target/release/chlom-node --wasm "$WASM" --smoke native-smoke.json --e2e native-signed-rpc.json --benchmarks native-benchmarks.json --calibration native-calibration --output native-artifacts --commit "$SOURCE_SHA" --version "$VERSION" "${SOURCE_ARGS[@]}"
           cd native-artifacts
           sha256sum --check SHA256SUMS
       - name: Upload verified artifact custody
@@ -166,6 +168,18 @@ jobs:
           path: native-artifacts/*
           if-no-files-found: error
           retention-days: 30
+      - name: Preserve failed native verification diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chlom-native-diagnostics-${{ needs.source.outputs.sha }}
+          path: |
+            native-calibration/**
+            native-benchmarks.json
+            native-smoke.json
+            native-signed-rpc.json*
+          if-no-files-found: ignore
+          retention-days: 14
 
   publish:
     needs: [source, native]

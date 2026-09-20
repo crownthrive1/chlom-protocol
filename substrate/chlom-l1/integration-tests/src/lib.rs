@@ -202,3 +202,162 @@ fn rights_before_tokens_end_to_end() {
         ));
     });
 }
+
+fn record_checkpoint(
+    checkpoint: u8, start: u64, end: u64, count: u32, first: u8, last: u8,
+) -> frame_support::dispatch::DispatchResult {
+    ChlomCheckpoint::record_checkpoint(
+        RuntimeOrigin::root(), id(checkpoint), start, end, count, id(first), id(last),
+        None, id(103), id(104), true, false, id(105),
+    )
+}
+
+#[test]
+fn checkpoints_reject_impossible_cardinality_and_boundaries_without_residue() {
+    new_test_ext().execute_with(|| {
+        System::set_block_number(1);
+        for (start, end, count, first, last) in [
+            (1, 2, 3, 101, 102),
+            (1, 2, 1, 101, 101),
+            (1, 1, 1, 101, 102),
+            (1, 2, 2, 101, 101),
+            (0, 1, 1, 101, 101),
+        ] {
+            assert_noop!(
+                record_checkpoint(100, start, end, count, first, last),
+                pallet_chlom_checkpoint::Error::<Test>::InvalidRange
+            );
+        }
+        assert!(pallet_chlom_checkpoint::CheckpointHead::<Test>::get().is_none());
+        assert_eq!(System::events().len(), 0);
+    });
+}
+
+#[test]
+fn checkpoints_allow_allocated_sequence_gaps_and_u64_boundary() {
+    new_test_ext().execute_with(|| {
+        assert_ok!(record_checkpoint(100, 1, u64::MAX, 2, 101, 102));
+        let checkpoint = pallet_chlom_checkpoint::Checkpoints::<Test>::get(id(100)).unwrap();
+        assert_eq!(checkpoint.event_count, 2);
+        assert_eq!(checkpoint.end_sequence_id, u64::MAX);
+    });
+    new_test_ext().execute_with(|| {
+        assert_ok!(record_checkpoint(100, u64::MAX, u64::MAX, 1, 101, 101));
+    });
+}
+
+#[test]
+fn anchor_receipt_must_match_the_intended_network() {
+    new_test_ext().execute_with(|| {
+        assert_ok!(record_checkpoint(100, 1, 2, 2, 101, 102));
+        assert_ok!(ChlomCheckpoint::record_anchor_intent(
+            RuntimeOrigin::root(), id(106), id(100), id(107), id(108), true, false, id(109)
+        ));
+        assert_noop!(
+            ChlomCheckpoint::record_anchor_receipt(
+                RuntimeOrigin::root(), id(110), id(106), id(111), id(112),
+                id(113), id(114), id(115), true, id(116)
+            ),
+            pallet_chlom_checkpoint::Error::<Test>::NetworkMismatch
+        );
+        assert_ok!(ChlomCheckpoint::record_anchor_receipt(
+            RuntimeOrigin::root(), id(110), id(106), id(111), id(108),
+            id(113), id(114), id(115), true, id(116)
+        ));
+    });
+}
+
+fn report_signal(signal: u8, case: u8) -> frame_support::dispatch::DispatchResult {
+    ChlomOracle::report_signal(
+        RuntimeOrigin::root(), id(signal), id(91), id(92), id(83), id(93),
+        9_000, 10_000, SignalAction::Review, id(94), id(95),
+        Some((id(case), AuthorityClass::D3)),
+    )
+}
+
+#[test]
+fn oracle_decisions_append_history_and_keep_the_compatible_head() {
+    use pallet_chlom_oracle::{CaseState, ReviewCaseHeads, ReviewCaseVersions, ReviewCases};
+    new_test_ext().execute_with(|| {
+        System::set_block_number(1);
+        assert_ok!(report_signal(90, 96));
+        let opening = ReviewCaseVersions::<Test>::get(id(96), 1).unwrap();
+        System::set_block_number(2);
+        assert_ok!(ChlomOracle::record_review_decision(
+            RuntimeOrigin::root(), id(96), AuthorityClass::D3, CaseState::Review,
+            id(110), false, id(111)
+        ));
+        System::set_block_number(3);
+        assert_ok!(ChlomOracle::record_review_decision(
+            RuntimeOrigin::root(), id(96), AuthorityClass::D3, CaseState::Resolved,
+            id(112), false, id(113)
+        ));
+        assert_eq!(ReviewCaseVersions::<Test>::get(id(96), 1).unwrap(), opening);
+        let review = ReviewCaseVersions::<Test>::get(id(96), 2).unwrap();
+        let resolved = ReviewCaseVersions::<Test>::get(id(96), 3).unwrap();
+        assert_eq!(review.previous_record_hash, Some(id(95)));
+        assert_eq!(resolved.previous_record_hash, Some(id(111)));
+        assert_eq!(review.case.state, CaseState::Review);
+        assert_eq!(resolved.case.state, CaseState::Resolved);
+        assert_eq!(resolved.recorded_at, 3);
+        assert_eq!(ReviewCaseHeads::<Test>::get(id(96)), Some(3));
+        assert_eq!(ReviewCases::<Test>::get(id(96)).unwrap(), resolved.case);
+    });
+}
+
+#[test]
+fn rejected_oracle_case_does_not_leave_a_signal_or_event() {
+    new_test_ext().execute_with(|| {
+        System::set_block_number(1);
+        assert_ok!(report_signal(90, 96));
+        assert_noop!(report_signal(97, 96), pallet_chlom_oracle::Error::<Test>::RecordAlreadyExists);
+        assert_noop!(report_signal(98, 0), pallet_chlom_oracle::Error::<Test>::InvalidIdentifier);
+        assert!(!pallet_chlom_oracle::OracleSignals::<Test>::contains_key(id(97)));
+        assert!(!pallet_chlom_oracle::OracleSignals::<Test>::contains_key(id(98)));
+    });
+}
+
+#[test]
+fn rejected_oracle_decision_does_not_append_a_revision() {
+    use pallet_chlom_oracle::{CaseState, ReviewCaseHeads, ReviewCaseVersions};
+    new_test_ext().execute_with(|| {
+        assert_ok!(report_signal(90, 96));
+        assert_noop!(
+            ChlomOracle::record_review_decision(
+                RuntimeOrigin::root(), id(96), AuthorityClass::D2, CaseState::Resolved,
+                id(110), false, id(111)
+            ),
+            pallet_chlom_oracle::Error::<Test>::InsufficientReviewAuthority
+        );
+        assert_noop!(
+            ChlomOracle::record_review_decision(
+                RuntimeOrigin::root(), id(96), AuthorityClass::D3, CaseState::Resolved,
+                id(110), false, id(95)
+            ),
+            pallet_chlom_oracle::Error::<Test>::InvalidRevision
+        );
+        assert_eq!(ReviewCaseHeads::<Test>::get(id(96)), Some(1));
+        assert!(ReviewCaseVersions::<Test>::get(id(96), 2).is_none());
+    });
+}
+
+#[test]
+fn legacy_oracle_head_is_preserved_on_first_new_decision() {
+    use pallet_chlom_oracle::{CaseState, ReviewCaseHeads, ReviewCaseVersions, ReviewCases};
+    new_test_ext().execute_with(|| {
+        assert_ok!(report_signal(90, 96));
+        // Model the old storage layout: only the latest case was persisted.
+        ReviewCaseHeads::<Test>::remove(id(96));
+        ReviewCaseVersions::<Test>::remove(id(96), 1);
+        let legacy = ReviewCases::<Test>::get(id(96)).unwrap();
+        System::set_block_number(10);
+        assert_ok!(ChlomOracle::record_review_decision(
+            RuntimeOrigin::root(), id(96), AuthorityClass::D3, CaseState::Review,
+            id(110), false, id(111)
+        ));
+        let preserved = ReviewCaseVersions::<Test>::get(id(96), 1).unwrap();
+        assert_eq!(preserved.case, legacy);
+        assert_eq!(preserved.recorded_at, 10);
+        assert_eq!(ReviewCaseHeads::<Test>::get(id(96)), Some(2));
+    });
+}

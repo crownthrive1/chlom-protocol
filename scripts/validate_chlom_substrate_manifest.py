@@ -19,6 +19,8 @@ REQUIRED_PALLETS = {
     "tokenization",
     "oracle",
     "checkpoint",
+    "utility",
+    "policy",
 }
 
 

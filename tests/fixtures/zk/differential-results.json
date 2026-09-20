@@ -1,0 +1,41 @@
+{
+  "snarkjs": "0.7.6",
+  "nobleCurves": "2.4.0",
+  "results": [
+    {
+      "name": "valid",
+      "snarkjs": true,
+      "chlom": true
+    },
+    {
+      "name": "changed-statement",
+      "snarkjs": false,
+      "chlom": false
+    },
+    {
+      "name": "changed-context",
+      "snarkjs": false,
+      "chlom": false
+    },
+    {
+      "name": "swapped-A-C",
+      "snarkjs": false,
+      "chlom": false
+    },
+    {
+      "name": "off-curve",
+      "snarkjs": false,
+      "chlom": false
+    },
+    {
+      "name": "wrong-subgroup",
+      "snarkjs": false,
+      "chlom": false
+    },
+    {
+      "name": "valid-zero",
+      "snarkjs": true,
+      "chlom": true
+    }
+  ]
+}

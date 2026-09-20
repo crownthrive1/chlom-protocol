@@ -29,7 +29,7 @@ async function status(){
   const results=await Promise.allSettled(['/api/wallet','/api/protocol','/api/health'].map(async url=>{const r=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(12000)});if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();}));
   const [wallet,protocol,runtime]=results;
   grid.replaceChildren(
-    capability('Browser tools','File commitments and local workspace tools run on this device. Wallet connections require an installed compatible wallet.'),
+    capability('Browser tools','File commitments run on this device. Wallet connections require an installed compatible wallet. CHLOM core diagnostics and operator access are available at the main interface.'),
     capability('Wallet verification',wallet.status==='fulfilled'?(wallet.value.proof_verification ? 'Signature observation is configured. Connect a wallet to verify a short-lived message.' : 'Wallet connection is available. Signature observation needs server configuration.'):'Wallet service could not be verified. Connection features may still be available.'),
     capability('Protocol API',protocol.status==='fulfilled'?'Protocol service responded. Authenticated policy and utility evaluation require approved server configuration.':'Protocol service could not be verified.'),
     capability('Chain evidence',runtime.status==='fulfilled'?`Current readiness: ${runtime.value.readinessStatus||'UNKNOWN'}.`:'Runtime readback unavailable.'),

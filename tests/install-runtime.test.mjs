@@ -104,9 +104,12 @@ test('installation preflight distinguishes local tools from a configured product
   assert.equal(installationPreflight({}, { nodeVersion: '24.1.0' }).ok, true);
   assert.equal(installationPreflight({}, { nodeVersion: '22.1.0' }).ok, false);
   assert.equal(installationPreflight({}, { production: true, nodeVersion: '24.1.0' }).ok, false);
-  const config = { CHLOM_LEX_SUPABASE_URL: 'https://tenant.supabase.co', CHLOM_LEX_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_example_only_1234567890', CHLOM_API_TOKEN: 'a'.repeat(48), CHLOM_PUBLIC_ORIGIN: 'https://lex.example.test' };
+  const config = { CHLOM_CORE_SUPABASE_URL: 'https://tenant.supabase.co', CHLOM_CORE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_example_only_1234567890', CHLOM_PUBLIC_ORIGIN: 'https://core.example.test' };
   assert.equal(installationPreflight(config, { production: true, nodeVersion: '24.1.0' }).ok, true);
-  assert.equal(installationPreflight({ ...config, CHLOM_LEX_SUPABASE_PUBLISHABLE_KEY: 'sb_secret_private_key' }).ok, false);
-  assert.equal(installationPreflight({ ...config, CHLOM_LEX_SUPABASE_URL: 'https://user:secret@example.test' }).ok, false);
+  assert.equal(installationPreflight({ ...config, CHLOM_CORE_SUPABASE_PUBLISHABLE_KEY: 'sb_secret_private_key' }).ok, false);
+  assert.equal(installationPreflight({ ...config, CHLOM_CORE_SUPABASE_URL: 'https://user:secret@example.test' }).ok, false);
+  assert.equal(installationPreflight({ ...config, CHLOM_LEX_SUPABASE_URL: 'https://other.supabase.co' }).ok, false);
   assert.equal(installationPreflight({ ...config, CHLOM_CHAIN_WRITE_ENABLED: 'true' }).ok, false);
+  const onlyLex = { CHLOM_LEX_SUPABASE_URL: config.CHLOM_CORE_SUPABASE_URL, CHLOM_LEX_SUPABASE_PUBLISHABLE_KEY: config.CHLOM_CORE_SUPABASE_PUBLISHABLE_KEY, CHLOM_PUBLIC_ORIGIN: config.CHLOM_PUBLIC_ORIGIN };
+  assert.equal(installationPreflight(onlyLex, { production: true, nodeVersion: '24.1.0' }).ok, false);
 });

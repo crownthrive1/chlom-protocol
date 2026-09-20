@@ -5,12 +5,14 @@ on:
     paths:
       - "api/**"
       - "lib/**"
+      - "sdk/**"
       - "public/**"
       - "scripts/*.mjs"
       - "tests/*.test.mjs"
       - "contracts/chlom-api-registry.v1.json"
       - "contracts/openapi.chlom-chain-fabric.v1.yaml"
       - "package.json"
+      - "package-lock.json"
       - "vercel.json"
       - ".github/workflows/chlom-chain-evidence-fabric.yml"
   push:
@@ -18,12 +20,14 @@ on:
     paths:
       - "api/**"
       - "lib/**"
+      - "sdk/**"
       - "public/**"
       - "scripts/*.mjs"
       - "tests/*.test.mjs"
       - "contracts/chlom-api-registry.v1.json"
       - "contracts/openapi.chlom-chain-fabric.v1.yaml"
       - "package.json"
+      - "package-lock.json"
       - "vercel.json"
       - ".github/workflows/chlom-chain-evidence-fabric.yml"
   workflow_dispatch:

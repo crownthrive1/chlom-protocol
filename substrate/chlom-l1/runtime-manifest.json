@@ -21,7 +21,9 @@
     "settlement",
     "tokenization",
     "oracle",
-    "checkpoint"
+    "checkpoint",
+    "utility",
+    "policy"
   ],
   "production": {
     "thrivebase_control_plane": true,
@@ -45,5 +47,7 @@
     "governance and emergency authority ratification",
     "privacy, sanctions, tax, securities and consumer-protection review",
     "external anchor and token provider receipts"
-  ]
+  ],
+  "updated_at": "2026-09-20",
+  "release": "core-1.3.0"
 }

@@ -4,6 +4,7 @@ import { readJsonBody, sendJson, validateOrigin } from '../lib/runtime/http.js';
 import { evaluatePolicy, loadPolicyRegistry } from '../lib/protocol/policy.js';
 import { evaluateUtility, loadUtilityRegistry } from '../lib/protocol/utility.js';
 import { createDigestCommitment, verifyDigestCommitment } from '../lib/protocol/proofs.js';
+import { verifyZkProof, zkCapabilities } from '../lib/protocol/zk.js';
 import { invalid, MAX_PROTOCOL_BYTES, object } from '../lib/protocol/validation.js';
 
 function configurationState(loader) {
@@ -14,15 +15,17 @@ function configurationState(loader) {
 export function protocolCapabilities() {
   return {
     schema: 'ct.chlom.protocol.capabilities.v1', version: '1.0.0',
-    operations: ['policy.evaluate', 'utility.evaluate', 'proof.commit', 'proof.verify'],
+    operations: ['policy.evaluate', 'utility.evaluate', 'proof.commit', 'proof.verify', 'proof.zk.verify'],
     authentication: 'CHLOM bearer token required for POST',
     policyRegistry: configurationState(loadPolicyRegistry),
     utilityRegistry: configurationState(loadUtilityRegistry),
     policyMode: 'configured_rules_and_evidence_review',
     utilityMode: 'snapshot_eligibility_without_reservation',
-    proofMode: 'salted_digest_commitments',
+    proofMode: 'salted_digest_commitments_and_registered_groth16_verification',
+    zeroKnowledge: zkCapabilities(),
     boundaries: {
-      rawPrivateEvidenceAccepted: false, zeroKnowledgeImplemented: false,
+      rawPrivateEvidenceAccepted: false, zeroKnowledgeImplemented: true,
+      zeroKnowledgeProofGeneration: false,
       legalDeterminations: false, automatedPolicyAdoption: false,
       tokenIssuance: false, tokenTransfers: false, atomicDebits: false,
       accessGranting: false, publicChainAnchoring: false,
@@ -53,6 +56,7 @@ export default async function handler(request, response) {
       case 'utility.evaluate': result = evaluateUtility(body.input); break;
       case 'proof.commit': result = createDigestCommitment(body.input); break;
       case 'proof.verify': result = verifyDigestCommitment(body.input); break;
+      case 'proof.zk.verify': result = await verifyZkProof(body.input); break;
       default: invalid('The protocol operation is not supported.');
     }
     return sendJson(response, 200, { ok: true, result });

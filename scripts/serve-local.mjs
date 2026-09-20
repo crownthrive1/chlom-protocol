@@ -102,7 +102,7 @@ export async function createChlomServer({ root = ROOT, env = process.env } = {})
           throw fail(503, 'LEX cloud workspace is unconfigured. Configure CHLOM_LEX_SUPABASE_URL and CHLOM_LEX_SUPABASE_PUBLISHABLE_KEY for this installation.');
         }
         if (request.headers['content-encoding'] && request.headers['content-encoding'] !== 'identity') throw fail(415, 'Compressed request bodies are not supported.');
-        const limit = { '/api/lex': 80 * 1024, '/api/wallet': 4096, '/api/protocol': 64 * 1024 }[route] || MAX_REQUEST_BYTES;
+        const limit = { '/api/core': 64 * 1024, '/api/lex': 80 * 1024, '/api/wallet': 4096, '/api/protocol': 64 * 1024 }[route] || MAX_REQUEST_BYTES;
         request.body = await readBody(request, limit);
         if (request.body !== undefined && !/^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(request.headers['content-type'] || '')) throw fail(415, 'Use an application/json request.');
         return await handler(request, response);

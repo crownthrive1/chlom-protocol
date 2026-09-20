@@ -8,6 +8,7 @@ publish = false
 
 [dependencies]
 codec = { workspace = true, features = ["std"] }
+scale-info = { workspace = true, features = ["std"] }
 frame-support = { workspace = true, features = ["std"] }
 frame-system = { workspace = true, features = ["std"] }
 sp-runtime = { workspace = true, features = ["std"] }
@@ -21,3 +22,7 @@ pallet-chlom-settlement = { workspace = true, features = ["std"] }
 pallet-chlom-tokenization = { workspace = true, features = ["std"] }
 pallet-chlom-oracle = { workspace = true, features = ["std"] }
 pallet-chlom-checkpoint = { workspace = true, features = ["std"] }
+
+[features]
+default = ["std"]
+std = []

@@ -13,7 +13,18 @@ pub type Amount = u128;
 pub const FULL_BASIS_POINTS: u32 = 10_000;
 pub const ZERO_ID: Id32 = [0u8; 32];
 
-#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(
+    Clone,
+    Copy,
+    Decode,
+    DecodeWithMemTracking,
+    Encode,
+    Eq,
+    MaxEncodedLen,
+    PartialEq,
+    RuntimeDebug,
+    TypeInfo,
+)]
 pub enum AuthorityClass {
     D0,
     D1,
@@ -36,7 +47,18 @@ impl AuthorityClass {
     }
 }
 
-#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(
+    Clone,
+    Copy,
+    Decode,
+    DecodeWithMemTracking,
+    Encode,
+    Eq,
+    MaxEncodedLen,
+    PartialEq,
+    RuntimeDebug,
+    TypeInfo,
+)]
 pub enum RecordState {
     Draft,
     Asserted,
@@ -52,7 +74,18 @@ pub enum RecordState {
     Retired,
 }
 
-#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(
+    Clone,
+    Copy,
+    Decode,
+    DecodeWithMemTracking,
+    Encode,
+    Eq,
+    MaxEncodedLen,
+    PartialEq,
+    RuntimeDebug,
+    TypeInfo,
+)]
 pub enum DlaState {
     Hold,
     EligibleInternal,
@@ -61,7 +94,18 @@ pub enum DlaState {
     Retired,
 }
 
-#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(
+    Clone,
+    Copy,
+    Decode,
+    DecodeWithMemTracking,
+    Encode,
+    Eq,
+    MaxEncodedLen,
+    PartialEq,
+    RuntimeDebug,
+    TypeInfo,
+)]
 pub enum LicenseStatus {
     Pending,
     Active,
@@ -71,7 +115,18 @@ pub enum LicenseStatus {
     Superseded,
 }
 
-#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(
+    Clone,
+    Copy,
+    Decode,
+    DecodeWithMemTracking,
+    Encode,
+    Eq,
+    MaxEncodedLen,
+    PartialEq,
+    RuntimeDebug,
+    TypeInfo,
+)]
 pub enum OfferState {
     Draft,
     StagedInternal,
@@ -82,7 +137,18 @@ pub enum OfferState {
     Superseded,
 }
 
-#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(
+    Clone,
+    Copy,
+    Decode,
+    DecodeWithMemTracking,
+    Encode,
+    Eq,
+    MaxEncodedLen,
+    PartialEq,
+    RuntimeDebug,
+    TypeInfo,
+)]
 pub enum TokenClassKind {
     UniqueAsset,
     SmartLicense,
@@ -95,7 +161,18 @@ pub enum TokenClassKind {
     GovernanceCandidate,
 }
 
-#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(
+    Clone,
+    Copy,
+    Decode,
+    DecodeWithMemTracking,
+    Encode,
+    Eq,
+    MaxEncodedLen,
+    PartialEq,
+    RuntimeDebug,
+    TypeInfo,
+)]
 pub enum ExternalIssuanceState {
     ProductionGated,
     TestnetEligible,
@@ -104,7 +181,18 @@ pub enum ExternalIssuanceState {
     Retired,
 }
 
-#[derive(Clone, Copy, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+#[derive(
+    Clone,
+    Copy,
+    Decode,
+    DecodeWithMemTracking,
+    Encode,
+    Eq,
+    MaxEncodedLen,
+    PartialEq,
+    RuntimeDebug,
+    TypeInfo,
+)]
 pub enum SignalAction {
     Observe,
     Review,
@@ -117,7 +205,9 @@ pub fn split_by_basis_points(total: Amount, legs: &[BasisPoints]) -> Option<Vec<
     if legs.is_empty() {
         return None;
     }
-    let sum: u32 = legs.iter().map(|value| u32::from(*value)).sum();
+    let sum = legs
+        .iter()
+        .try_fold(0u32, |sum, value| sum.checked_add(u32::from(*value)))?;
     if sum != FULL_BASIS_POINTS {
         return None;
     }
@@ -128,9 +218,13 @@ pub fn split_by_basis_points(total: Amount, legs: &[BasisPoints]) -> Option<Vec<
         let amount = if index + 1 == legs.len() {
             remaining
         } else {
-            total
-                .checked_mul(u128::from(*basis_points))?
-                .checked_div(u128::from(FULL_BASIS_POINTS))?
+            // Divide first so a valid allocation near u128::MAX does not
+            // overflow the intermediate multiplication.
+            let denominator = u128::from(FULL_BASIS_POINTS);
+            let basis = u128::from(*basis_points);
+            (total / denominator)
+                .checked_mul(basis)?
+                .checked_add((total % denominator).checked_mul(basis)? / denominator)?
         };
         remaining = remaining.checked_sub(amount)?;
         allocations.push(amount);
@@ -147,6 +241,26 @@ mod tests {
         let result = split_by_basis_points(101, &[7_000, 2_000, 1_000]).expect("balanced");
         assert_eq!(result, vec![70, 20, 11]);
         assert_eq!(result.iter().sum::<u128>(), 101);
+    }
+
+    #[test]
+    fn split_supports_full_u128_range_without_intermediate_overflow() {
+        let result = split_by_basis_points(u128::MAX, &[7_000, 2_000, 1_000]).unwrap();
+        assert_eq!(
+            result
+                .iter()
+                .try_fold(0u128, |sum, amount| sum.checked_add(*amount)),
+            Some(u128::MAX)
+        );
+        assert_eq!(
+            result[0],
+            (u128::MAX / 10_000) * 7_000 + ((u128::MAX % 10_000) * 7_000) / 10_000
+        );
+    }
+
+    #[test]
+    fn split_rejects_overflowing_basis_sum_without_panicking() {
+        assert!(split_by_basis_points(100, &vec![u16::MAX; 65_538]).is_none());
     }
 
     #[test]

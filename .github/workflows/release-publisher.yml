@@ -8,9 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       request_file:
-        description: Release request JSON path
+        description: Committed release request with an exact target SHA
         required: true
-        default: .github/release-requests/chlom-v3.0.0.json
+        default: .github/release-requests/chlom-core-v1.3.0.json
 
 permissions:
   contents: write
@@ -21,61 +21,56 @@ concurrency:
 
 jobs:
   publish:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main
+      - name: Checkout exact triggering commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: main
-          fetch-depth: 2
+          ref: ${{ github.sha }}
+          fetch-depth: 0
 
-      - name: Resolve release request
+      - name: Validate committed release request and package
+        env:
+          EVENT: ${{ github.event_name }}
+          REQUEST_INPUT: ${{ inputs.request_file }}
         shell: bash
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            REQUEST='${{ inputs.request_file }}'
-          else
-            REQUEST=$(git diff --name-only HEAD^ HEAD | grep '^.github/release-requests/chlom-.*\.json$' | tail -1)
-          fi
-          test -n "$REQUEST"
-          python -m json.tool "$REQUEST" >/dev/null
-          TAG=$(jq -r '.tag' "$REQUEST")
-          TARGET=$(jq -r '.target' "$REQUEST")
-          TITLE=$(jq -r '.title' "$REQUEST")
-          PACKAGE=$(jq -r '.package' "$REQUEST")
-          for V in TAG TARGET TITLE PACKAGE; do test -n "${!V}" && test "${!V}" != "null"; done
-          echo "TAG=$TAG" >> "$GITHUB_ENV"
-          echo "TARGET=$TARGET" >> "$GITHUB_ENV"
-          echo "TITLE=$TITLE" >> "$GITHUB_ENV"
-          echo "PACKAGE=$PACKAGE" >> "$GITHUB_ENV"
+          python scripts/release_request.py --event "$EVENT" --request "$REQUEST_INPUT" --output "$GITHUB_ENV"
 
-      - name: Validate release package
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f "$PACKAGE/RELEASE_NOTES.md"
-          test -f "$PACKAGE/MANIFEST.json"
-          python -m json.tool "$PACKAGE/MANIFEST.json" >/dev/null
-          test "$(jq -r '.tag' "$PACKAGE/MANIFEST.json")" = "$TAG"
-          test "$(jq -r '.target_ref' "$PACKAGE/MANIFEST.json")" = "$TARGET"
-
-      - name: Publish or reconcile GitHub release
+      - name: Publish or reconcile exact GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release edit "$TAG" --title "$TITLE" --notes-file "$PACKAGE/RELEASE_NOTES.md" --target "$TARGET"
+          TAG_REF="refs/tags/$TAG"
+          REMOTE_TAG=$(git ls-remote --tags origin "$TAG_REF" "$TAG_REF^{}")
+          if [ -z "$REMOTE_TAG" ]; then
+            jq -n --arg ref "$TAG_REF" --arg sha "$TARGET" '{ref: $ref, sha: $sha}' > tag-request.json
+            gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" --input tag-request.json >/dev/null
+          fi
+          git fetch --no-tags origin "$TAG_REF:$TAG_REF"
+          test "$(git rev-parse "$TAG_REF^{commit}")" = "$TARGET"
+          if gh release view "$TAG" --json tagName >/dev/null 2>&1; then
+            # Existing tags are never silently moved or reconciled to another source.
+            gh release edit "$TAG" --title "$TITLE" --notes-file "$PACKAGE/RELEASE_NOTES.md" --draft="$DRAFT" --prerelease="$PRERELEASE"
           else
-            gh release create "$TAG" --target "$TARGET" --title "$TITLE" --notes-file "$PACKAGE/RELEASE_NOTES.md"
+            gh release create "$TAG" --target "$TARGET" --title "$TITLE" --notes-file "$PACKAGE/RELEASE_NOTES.md" --draft="$DRAFT" --prerelease="$PRERELEASE"
           fi
 
-      - name: Verify release readback
+      - name: Verify exact published source and release readback
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          gh release view "$TAG" --json tagName,name,url,isDraft,isPrerelease,targetCommitish
+          TAG_REF="refs/tags/$TAG"
+          git fetch --no-tags origin "$TAG_REF:$TAG_REF"
+          test "$(git rev-parse "$TAG_REF^{commit}")" = "$TARGET"
+          gh release view "$TAG" --json tagName,name,url,isDraft,isPrerelease,targetCommitish > release-readback.json
+          jq -e --arg tag "$TAG" --arg title "$TITLE" --argjson draft "$DRAFT" --argjson prerelease "$PRERELEASE" \
+            '.tagName == $tag and .name == $title and .isDraft == $draft and .isPrerelease == $prerelease' release-readback.json
+          cat release-readback.json
+          echo "Exact source commit: $TARGET"

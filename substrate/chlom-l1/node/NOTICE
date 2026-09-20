@@ -1,0 +1,9 @@
+CHLOM Native Node
+
+The node service, RPC, CLI and build scaffolding derive from the Polkadot SDK
+solochain node template at tag polkadot-stable2506-7, commit
+d173a5f32494b0b281a92b370f67fe803fc0ce47 in https://github.com/paritytech/polkadot-sdk.
+Upstream template source: templates/solochain/node.
+The upstream template is released under The Unlicense; the complete notice is
+in UPSTREAM-LICENSE. CHLOM modifications are subject to the repository LICENSE.
+Dependency licenses are independent and remain applicable.

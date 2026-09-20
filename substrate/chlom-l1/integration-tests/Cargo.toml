@@ -26,3 +26,17 @@ pallet-chlom-checkpoint = { workspace = true, features = ["std"] }
 [features]
 default = ["std"]
 std = []
+
+runtime-benchmarks = [
+    "frame-support/runtime-benchmarks",
+    "frame-system/runtime-benchmarks",
+    "sp-runtime/runtime-benchmarks",
+    "pallet-chlom-authority/runtime-benchmarks",
+    "pallet-chlom-identity/runtime-benchmarks",
+    "pallet-chlom-rights/runtime-benchmarks",
+    "pallet-chlom-licensing/runtime-benchmarks",
+    "pallet-chlom-settlement/runtime-benchmarks",
+    "pallet-chlom-tokenization/runtime-benchmarks",
+    "pallet-chlom-oracle/runtime-benchmarks",
+    "pallet-chlom-checkpoint/runtime-benchmarks",
+]

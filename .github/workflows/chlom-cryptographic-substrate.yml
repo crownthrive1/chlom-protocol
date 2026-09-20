@@ -56,7 +56,8 @@ jobs:
           rustup target add wasm32-unknown-unknown --toolchain 1.98.1
       - name: Check all FRAME crates and integration runtime
         working-directory: substrate/chlom-l1
-        run: cargo check --locked --workspace --all-targets
-      - name: Execute primitives and composed runtime tests
+        run: cargo check --locked --workspace --exclude chlom-node --exclude chlom-runtime --all-targets
+      # The native release workflow builds/tests the executable runtime and node.
+      - name: Execute primitives and composed pallet tests
         working-directory: substrate/chlom-l1
-        run: cargo test --locked --workspace
+        run: cargo test --locked --workspace --exclude chlom-node --exclude chlom-runtime

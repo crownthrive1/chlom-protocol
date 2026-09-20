@@ -151,3 +151,7 @@ python -m unittest discover -s tests -v
 ```
 
 Verify HTTPS in a real browser, run a designated CHLOM operator session and scope test (plus a LEX workspace test if installed), and check actual configured provider calls. Health responses or local tests alone do not prove cloud persistence, public-chain activity, or paid fulfillment. Back up the configured database and retain private evidence independently. Roll back the application by deploying the prior reviewed source/image; preserve cloud records and append their corrections.
+
+## Native Substrate node
+
+The native runtime is installed separately from this Node.js web adapter. Follow the [native installation guide](CHLOM_NATIVE_INSTALLATION.md) for the executable node, Wasm runtime, development/local chain specifications, signed module roles, storage recovery and RPC boundaries. The core web gateway continues to use its provisioned cloud backend; installing a native node does not automatically migrate or synchronize those records.

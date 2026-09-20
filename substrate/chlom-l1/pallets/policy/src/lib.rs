@@ -2,9 +2,15 @@
 
 //! Approved policy commitments. This registry does not interpret law or execute policy DSL.
 pub use pallet::*;
+pub mod weights;
+pub use weights::WeightInfo;
+
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
+    use crate::weights::WeightInfo;
     use chlom_primitives::{Id32, ZERO_ID};
     use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
     use frame_support::{pallet_prelude::*, traits::EnsureOrigin, BoundedVec};
@@ -70,6 +76,8 @@ pub mod pallet {
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
+        /// Runtime-specific dispatch costs; defaults are unmeasured conservative estimates.
+        type WeightInfo: WeightInfo;
         #[allow(deprecated)]
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
         type PolicyOrigin: EnsureOrigin<Self::RuntimeOrigin>;
@@ -135,7 +143,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         #[pallet::call_index(0)]
-        #[pallet::weight(Weight::from_parts(80_000_000, 16_384))]
+        #[pallet::weight(T::WeightInfo::approve_version(T::MaxVersionsPerScope::get()))]
         #[frame_support::transactional]
         pub fn approve_version(
             origin: OriginFor<T>,
@@ -218,7 +226,7 @@ pub mod pallet {
         }
 
         #[pallet::call_index(1)]
-        #[pallet::weight(Weight::from_parts(55_000_000, 8_192))]
+        #[pallet::weight(T::WeightInfo::revoke_version())]
         pub fn revoke_version(
             origin: OriginFor<T>,
             scope_id: Id32,

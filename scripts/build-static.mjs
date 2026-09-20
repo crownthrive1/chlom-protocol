@@ -35,7 +35,7 @@ await writeFile(
     {
       schema: 'ct.chlom.static-build.v1',
       service: 'chlom-core',
-      version: '1.3.0',
+      version: '1.4.0',
       buildSha: process.env.VERCEL_GIT_COMMIT_SHA || null,
       environment: process.env.VERCEL_ENV || 'local',
     },
@@ -55,6 +55,8 @@ const documentation = [
  ['docs/CHLOM-CHAIN-EVIDENCE-FABRIC.md','architecture.md'],
  ['docs/CHLOM_RELEASE_1_2.md','release-notes.md'],
  ['docs/CHLOM_CORE_1_3.md','core-release-notes.md'],
+ ['docs/CHLOM_NATIVE_INSTALLATION.md','native-installation.md'],
+ ['docs/CHLOM_NATIVE_RELEASE_1_4.md','native-release-notes.md'],
  ['docs/CHLOM_CORE_API.md','core-api.md'],
  ['docs/CHLOM_CORE_INTERFACE.md','core-interface.md'],
  ['docs/CHLOM_CORE_SDK.md','core-sdk.md'],

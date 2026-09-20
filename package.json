@@ -1,6 +1,6 @@
 {
   "name": "@crownthrive/chlom-chain-evidence-fabric",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "private": true,
   "type": "module",
   "description": "CHLOM core control plane, governed operator console, protocol verification and chain evidence runtime.",

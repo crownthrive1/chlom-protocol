@@ -2,7 +2,7 @@
   "contract": "ct.chlom.substrate-runtime-candidate.v1",
   "generated_at": "2026-09-04T04:05:00Z",
   "repository": "crownthrive1/chlom-protocol",
-  "branch": "feat/chlom-cryptographic-substrate-20260903",
+  "branch": "release/chlom-native-1-4-20260920",
   "polkadot_sdk": {
     "repository": "paritytech/polkadot-sdk",
     "tag": "polkadot-stable2506-7"
@@ -49,5 +49,24 @@
     "external anchor and token provider receipts"
   ],
   "updated_at": "2026-09-20",
-  "release": "core-1.3.0"
+  "release": "native-1.4.0",
+  "native_delivery": {
+    "runtime_crate": "chlom-runtime",
+    "node_binary": "chlom-node",
+    "consensus": [
+      "Aura",
+      "GRANDPA"
+    ],
+    "chain_presets": [
+      "development",
+      "local_testnet"
+    ],
+    "module_origins": "root_or_current_account_bound_D3_role",
+    "signed_utility_owner_actions": true,
+    "public_development_keys": true,
+    "mainnet_preset": false,
+    "weights": "conservative_estimates_with_benchmark_definitions",
+    "build_and_execution_evidence": "release_manifest",
+    "runtime_benchmarks_enabled": true
+  }
 }

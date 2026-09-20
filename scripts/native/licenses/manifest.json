@@ -1,0 +1,108 @@
+{
+  "source": "https://github.com/spdx/license-list-data",
+  "revision": "8a04f0303d95c4f932210b118588c662665bd383",
+  "tag": "v3.26.0",
+  "purpose": "Unmodified official SPDX license and exception text references; dependency-specific notices retain their original attribution.",
+  "files": [
+    {
+      "id": "0BSD",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/0BSD.txt",
+      "sha256": "e3f18c71e10d673590eb9856c1d79dd3b4b0d65404efb5e8584dbede7edd608b"
+    },
+    {
+      "id": "Apache-2.0",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/Apache-2.0.txt",
+      "sha256": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff"
+    },
+    {
+      "id": "BSD-1-Clause",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/BSD-1-Clause.txt",
+      "sha256": "244e17b6f02493de568a8ddfd7f4349996a6c332c0585d304ceaf5394becea52"
+    },
+    {
+      "id": "BSD-2-Clause",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/BSD-2-Clause.txt",
+      "sha256": "f32fb3b417a194167cfad068223fc975ba96c5960513a10f66a3c28720aec1df"
+    },
+    {
+      "id": "BSD-3-Clause",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/BSD-3-Clause.txt",
+      "sha256": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d"
+    },
+    {
+      "id": "CC0-1.0",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/CC0-1.0.txt",
+      "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499"
+    },
+    {
+      "id": "CDLA-Permissive-2.0",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/CDLA-Permissive-2.0.txt",
+      "sha256": "4531a67d443284d93ffed0803df5b10634aff21c3d77e381f2d48af01d875868"
+    },
+    {
+      "id": "Classpath-exception-2.0",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/Classpath-exception-2.0.txt",
+      "sha256": "f36ecd7d28dc3c49854d3908a3824696972aed34f5ffe426174f35fb03c5f194"
+    },
+    {
+      "id": "GPL-3.0",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/deprecated_GPL-3.0.txt",
+      "sha256": "fb981668c18a279e285fc4d83fba1e836cc84dd4daa73c9697d3cfd2d8aca6e0"
+    },
+    {
+      "id": "GPL-3.0-only",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/GPL-3.0-only.txt",
+      "sha256": "fb981668c18a279e285fc4d83fba1e836cc84dd4daa73c9697d3cfd2d8aca6e0"
+    },
+    {
+      "id": "GPL-3.0-or-later",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/GPL-3.0-or-later.txt",
+      "sha256": "fb981668c18a279e285fc4d83fba1e836cc84dd4daa73c9697d3cfd2d8aca6e0"
+    },
+    {
+      "id": "ISC",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/ISC.txt",
+      "sha256": "f2ec607f67bb0dd3053b49835b02110d5cd0f8eb6da3aac4dc0b142a6b299be9"
+    },
+    {
+      "id": "LGPL-2.1-or-later",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/LGPL-2.1-or-later.txt",
+      "sha256": "5749785c8bdefafcb5d798270ed0a967036fe2ca63dcedade1627565dfef81d2"
+    },
+    {
+      "id": "LLVM-exception",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/LLVM-exception.txt",
+      "sha256": "e34c58338bd89d43e709e226610d8f32b3e3c47f4ad9a99a8dc1d4ac7842488e"
+    },
+    {
+      "id": "MIT",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/MIT.txt",
+      "sha256": "6d7c9e9d7d12c8d3753bdb24417b84819ba4d6c2f025c37948113d86dc81eef9"
+    },
+    {
+      "id": "MIT-0",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/MIT-0.txt",
+      "sha256": "59746d6285ffa44bfc7ecada352aa5d6a20dc8eab418a60ce091cc739012c135"
+    },
+    {
+      "id": "MPL-2.0",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/MPL-2.0.txt",
+      "sha256": "66a3107d5ad6a058aab753eaac2047ccb2ed0e39465dd0fe5844da3e300d5172"
+    },
+    {
+      "id": "Unicode-3.0",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/Unicode-3.0.txt",
+      "sha256": "f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1"
+    },
+    {
+      "id": "Unlicense",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/Unlicense.txt",
+      "sha256": "0bdebfeda07d45dada625ae1317c6f833186e798b171d0db640bcf32e92a8240"
+    },
+    {
+      "id": "Zlib",
+      "url": "https://github.com/spdx/license-list-data/blob/8a04f0303d95c4f932210b118588c662665bd383/text/Zlib.txt",
+      "sha256": "bfb1112d49db5b1daecdfef24bd7e2f3ea0bafb33aa67aa0ab51e2bf8407c03d"
+    }
+  ]
+}

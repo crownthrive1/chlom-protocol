@@ -4,10 +4,10 @@ on:
   pull_request:
     paths:
       - "api/**"
-      - "lib/runtime/**"
+      - "lib/**"
       - "public/**"
-      - "scripts/build-static.mjs"
-      - "tests/runtime.test.mjs"
+      - "scripts/*.mjs"
+      - "tests/*.test.mjs"
       - "contracts/chlom-api-registry.v1.json"
       - "contracts/openapi.chlom-chain-fabric.v1.yaml"
       - "package.json"
@@ -17,10 +17,10 @@ on:
     branches: [main]
     paths:
       - "api/**"
-      - "lib/runtime/**"
+      - "lib/**"
       - "public/**"
-      - "scripts/build-static.mjs"
-      - "tests/runtime.test.mjs"
+      - "scripts/*.mjs"
+      - "tests/*.test.mjs"
       - "contracts/chlom-api-registry.v1.json"
       - "contracts/openapi.chlom-chain-fabric.v1.yaml"
       - "package.json"
@@ -48,7 +48,7 @@ jobs:
           node-version: 24
           package-manager-cache: false
       - name: Install exact runtime dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - name: Test and build
         run: npm run certify
       - name: Verify authority and deployment boundaries

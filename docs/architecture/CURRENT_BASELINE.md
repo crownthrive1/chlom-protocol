@@ -1,7 +1,9 @@
-# CHLOM Current Baseline — Phase 2
+# CHLOM Current Baseline — Phase 3 Execute
 
 ## Current decision
-CHLOM is rebuilt first as a practical rights, licensing, evidence, governance, settlement and remedies platform. Phase 2 creates the governed source and machine-readable contract needed for Phase 3 implementation.
+CHLOM is a practical rights, licensing, evidence, governance, settlement and remedies platform operating within CrownThrive's **Phase 3 — Execute** institutional generation. Component maturity and deployment remain evidence-specific.
+
+Historical note: the original Phase 2 baseline established the governed source and machine-readable contracts for Phase 3 implementation. That origin remains preserved in Git history; it is not the current institutional phase. See [README](../../README.md), [cryptographic substrate](CHLOM_CRYPTOGRAPHIC_SUBSTRATE_V1.md), and [September 20 source reconciliation](CHLOM_RELEASE_SOURCE_RECONCILIATION_20260920.md).
 
 ## What is current
 - Six-function model: Rights, Rules, Roles, Revenue, Records, Remedies.

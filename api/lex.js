@@ -1,7 +1,15 @@
 /** CHLOM LEX web adapter. Existing CHLOM authority stays in the canonical dispatcher. */
-const BASE = 'https://tzajnzshmtzjenqulehq.supabase.co';
-// Publishable key, not an administrative credential. All private calls retain the caller JWT.
-const KEY = 'sb_publishable_gMCE_lzPrynYgAEDs_xxyw_vWqR9irE';
+// Only the existing first-party project may use its established public backend.
+// Forks and standalone installations must bind their own compatible backend.
+export function lexBackend(env=process.env) {
+  const firstParty=env.VERCEL_PROJECT_ID==='prj_HewLgMjUiVBNCl0FADFbSggSp2QN';
+  const explicit=Boolean(env.CHLOM_LEX_SUPABASE_URL || env.CHLOM_LEX_SUPABASE_PUBLISHABLE_KEY);
+  const base=explicit ? env.CHLOM_LEX_SUPABASE_URL : firstParty ? 'https://tzajnzshmtzjenqulehq.supabase.co' : '';
+  const key=explicit ? env.CHLOM_LEX_SUPABASE_PUBLISHABLE_KEY : firstParty ? 'sb_publishable_gMCE_lzPrynYgAEDs_xxyw_vWqR9irE' : '';
+  if (!base || !key) return null;
+  try { const url=new URL(base); if(url.protocol!=='https:' || url.origin!==base || url.username || url.password) return null; } catch {return null;}
+  return {base,key};
+}
 const ACCESS = '__Host-chlomlex-access';
 const REFRESH = '__Host-chlomlex-refresh';
 const LIMIT = 80 * 1024;
@@ -63,7 +71,9 @@ async function bodyOf(req) {
   return data;
 }
 async function upstream(path, {method='GET',token,body}={}) {
-  const response=await fetch(`${BASE}${path}`,{method,headers:{apikey:KEY,...(token?{Authorization:`Bearer ${token}`} : {}),'Content-Type':'application/json'},...(body!==undefined?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(18000)});
+  const backend=lexBackend();
+  if(!backend) throw Object.assign(new Error('Cloud workspace backend is not configured for this installation.'),{status:503});
+  const response=await fetch(`${backend.base}${path}`,{method,headers:{apikey:backend.key,...(token?{Authorization:`Bearer ${token}`} : {}),'Content-Type':'application/json'},...(body!==undefined?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(18000)});
   const text=await response.text();
   if (text.length>2200000) throw Object.assign(new Error('Provider response exceeded the safe limit.'),{status:502});
   let data; try {data=text?JSON.parse(text):{};} catch {throw Object.assign(new Error('The connected service returned an unreadable response.'),{status:502});}
@@ -73,7 +83,8 @@ function errorFor(result) {
   const value=String(result.data?.message || result.data?.msg || result.data?.error_description || result.data?.error || '');
   let message='The connected service could not complete this request.';
   let status=result.status;
-  if (/invalid login|invalid_credentials/i.test(value)) message='The email or password was not accepted.';
+  if (/CAPABILITY_NOT_INSTALLED/i.test(value)) {message='This capability is not installed on this workspace. See the installation guide.';status=501;}
+  else if (/invalid login|invalid_credentials/i.test(value)) message='The email or password was not accepted.';
   else if (/Email not confirmed/i.test(value)) message='Confirm your email before signing in.';
   else if (/signup.*disabled|signups not allowed/i.test(value)) message='New account registration is not enabled. Existing accounts can still sign in; local tools remain available.';
   else if (/email.*rate|rate.limit|over_email_send_rate_limit/i.test(value)) {message='The email service has reached its sending limit. Please retry later or use an existing account.'; status=429;}
@@ -85,7 +96,7 @@ function errorFor(result) {
   else if (/invalid.*email|Email address.*invalid/i.test(value)) message='Enter a valid email address.';
   else if (/password.*(short|characters|weak)/i.test(value)) message='Use a stronger password with at least 12 characters.';
   else if (/INVALID_DRAFT|INVALID_NEW_DRAFT|MESSAGE_TOO_LONG/i.test(value)) {message='Check the required draft fields and text limits.';status=400;}
-  return Object.assign(new Error(message),{status:status>=400&&status<500?status:502});
+  return Object.assign(new Error(message),{status:status===501?501:status>=400&&status<500?status:502});
 }
 async function session(req,res,required=true) {
   const jar=cookies(req);
@@ -115,7 +126,7 @@ export default async function handler(req,res) {
     if (!['GET','POST'].includes(req.method)) {res.setHeader('Allow','GET, POST');return send(res,405,{ok:false,error:'Method not allowed.'});}
     if (req.method==='POST' && !allowedOrigin(req)) return send(res,403,{ok:false,error:'Same-origin request required.'});
     rateLimit(req,route);
-    if (req.method==='GET' && route==='health') return send(res,200,{ok:true,brand:'CHLOM LEX',version:'1.0.0',mode:'public_tools_and_authenticated_workspace',canonical_protocol:'chlom-protocol',review_registry:'chlom_protocol.review_cases_v1',payment_execution:false,legal_title_adjudication:false,checked_at:new Date().toISOString()});
+    if (req.method==='GET' && route==='health') return send(res,200,{ok:true,brand:'CHLOM LEX',version:'1.2.0',backend_configured:Boolean(lexBackend()),mode:'public_tools_and_authenticated_workspace',canonical_protocol:'chlom-protocol',review_registry:'chlom_protocol.review_cases_v1',payment_execution:false,legal_title_adjudication:false,checked_at:new Date().toISOString()});
     if (req.method==='GET' && route==='resolve') {
       const id=new URL(req.url,'https://chlomlex.invalid').searchParams.get('id')||'';
       if (!/^ctid_[0-9a-f]{32}$/.test(id)) return send(res,400,{ok:false,error:'Use a public CHLOM identity beginning ctid_ followed by 32 hexadecimal characters.'});

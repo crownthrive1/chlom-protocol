@@ -1,0 +1,16 @@
+.git
+.env
+.env.*
+!.env.example
+.vercel
+node_modules
+coverage
+out
+cache
+*.log
+*.pem
+*.key
+credentials*.json
+service-account*.json
+artifacts
+receipts

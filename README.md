@@ -8,6 +8,10 @@ CHLOM no longer uses the repository's former **“Phase 2 foundation / pre-alpha
 
 CHLOM remains the governance function that CrownThrive established during the broader Phase 2 generation, but it is now actively exercised inside Phase 3 execution. It authorizes, constrains, records, certifies, reconciles, and preserves the institutional conditions under which autonomous software may act.
 
+## Release 1.2: wallet and installation
+
+Open `/release` for local commitment tools, wallet connection, and installation documentation. See [installation](docs/INSTALLATION.md), [wallet integration](docs/WALLET_INTEGRATION.md), [protocol API](docs/PROTOCOL_API_1_2.md), and [release scope](docs/CHLOM_RELEASE_1_2.md). Paid fulfillment, native L1, ZK, token issuance, and settlement retain their separate implementation and acceptance requirements.
+
 ## Start here
 
 - **PENTA Doctrine:** `docs/architecture/PENTA_DOCTRINE_V3.md`

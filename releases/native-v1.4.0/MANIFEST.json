@@ -1,0 +1,821 @@
+{
+  "schema": "ct.chlom.native-release.v1",
+  "release_id": "ct.chlom.native.v1.4.0",
+  "version": "1.4.0",
+  "tag": "native-v1.4.0",
+  "title": "CHLOM Native 1.4.0 \u2014 Substrate node, ten-pallet runtime and local-chain integration",
+  "target_ref": "f45be42eaf8aad80d01c5a65e0b447260b1591a1",
+  "release_type": "native_development_and_local_testnet_distribution",
+  "publication_ready": true,
+  "scope": {
+    "canonical_name": "Compliance Hybrid Licensing and Ownership Model",
+    "functions": [
+      "Rights",
+      "Rules",
+      "Roles",
+      "Revenue",
+      "Records",
+      "Remedies"
+    ],
+    "lex_role": "optional_consuming_application",
+    "preserved_releases": [
+      "core-v1.3.0",
+      "application-v1.2.0"
+    ]
+  },
+  "native": {
+    "pallets": [
+      "authority",
+      "identity",
+      "rights",
+      "licensing",
+      "settlement",
+      "tokenization",
+      "oracle",
+      "checkpoint",
+      "utility",
+      "policy"
+    ],
+    "sdk": "polkadot-stable2506-7",
+    "rust": "1.98.1",
+    "runtime_spec_version": 1,
+    "transaction_version": 1,
+    "consensus": [
+      "Aura",
+      "GRANDPA"
+    ],
+    "presets": [
+      "development",
+      "local_testnet"
+    ],
+    "module_authority": "Root or latest active unexpired signed D3 grant for exact module",
+    "utility_owner_operations": "signed owner",
+    "active_weights": "conservative_manual",
+    "candidate_weights": "MEASURED_REVIEW_REQUIRED_UNACTIVATED"
+  },
+  "validation": {
+    "local": {
+      "source_snapshot": "77ed7f5080a64e569480e59961de44c44dd9d129",
+      "node_version": "1.4.0-77ed7f5080a",
+      "node_sha256": "17d324c2c851eb8271bb5fd54c8805f4698452902c1041ad033827313735b559",
+      "runtime_wasm_sha256": "8d17e2b352716e5b1665970df6527822cbaafeeaf97e0e65f3284d1ec443cb48",
+      "tests": {
+        "rust": 107,
+        "python": 97,
+        "javascript": 117
+      },
+      "smoke": {
+        "observed_block": 3,
+        "finalized_block": 1,
+        "CHLOM_pallets": 10
+      },
+      "calibration": {
+        "dispatches": 28,
+        "steps": 50,
+        "repeat": 20,
+        "time_samples": 5460,
+        "database_samples": 5460,
+        "candidate_weights_activated": false
+      },
+      "receipts": {
+        "native-smoke.json": {
+          "sha256": "2d54db8a548bbedfdf063be4a8a5a36e00851a8a9cc9d0c431fdae8a4d54839e",
+          "state": "PASS"
+        },
+        "native-loader.json": {
+          "sha256": "6e68b16cad11a0d8a2f0fbbf52ba3e3288fcd8a80fcd53196061c20f0be42253",
+          "state": "PASS"
+        },
+        "native-benchmarks.json": {
+          "sha256": "33d188976cbb07b96c7092110b2afffaf40c1474287438bb002093ecdb85ea80",
+          "state": "PASS"
+        },
+        "native-calibration-receipt.json": {
+          "sha256": "af7698f232d3f3363169123d03240b658bb6ad5644f1e0b8cca990ff8c2da80d",
+          "state": "MEASURED_REVIEW_REQUIRED"
+        },
+        "native-signed-rpc.json": {
+          "sha256": "76d3576d9869a8b17d96384db148f3a6f0b02c58d8593e381d2f60963ac834cd",
+          "state": "PASS",
+          "transactions": 13,
+          "receipts": 5
+        }
+      },
+      "package_review": {
+        "state": "PASS",
+        "assets": 18,
+        "repository_files": 436,
+        "vendor_files": 44860,
+        "vendor_packages": 1133,
+        "extracted_binary_executable": true
+      }
+    },
+    "prior_native_ci": {
+      "run_id": 35489193558,
+      "state": "SUCCESS",
+      "scope": "previous_candidate"
+    },
+    "candidate": {
+      "pull_request": 55,
+      "head": "ba5d7a7747c82a9ebe63ed4330d08c8d610e1616",
+      "tree": "a00e04eb835868c329c8f0a9670eac2bc2148200",
+      "native_run_id": 35490378088,
+      "native_ci_state": "SUCCESS",
+      "merged_source": "f45be42eaf8aad80d01c5a65e0b447260b1591a1",
+      "workflow_runs": [
+        35490378088,
+        35490378092,
+        35490378081,
+        35490378111,
+        35490378108,
+        35490378119,
+        35490378229
+      ]
+    }
+  },
+  "source_package": {
+    "state": "LOCAL_EXTRACTED_SOURCE_ARCHIVE_VERIFIED_HOSTED_PUBLICATION_PENDING",
+    "expected_remote_packages": 1133,
+    "expected_all_features_graph_packages": 1147,
+    "source_identities_separated": true,
+    "source_manifests_and_lockfile_unchanged": true,
+    "verification": "extracted archive; empty Cargo cache; frozen all-features graph; vendor path/checksum verification",
+    "receipt": "native-source-verification.json",
+    "local_archive_sha256": "21979fceb5b2815017dc0d14c9bb65c1877bffb3e167aa0a48f6870c40addf55",
+    "local_source_commit": "77ed7f5080a64e569480e59961de44c44dd9d129",
+    "local_verification": {
+      "schema": "chlom.native.source-archive-verification.v1",
+      "sourceCommit": "77ed7f5080a64e569480e59961de44c44dd9d129",
+      "archiveSha256": "21979fceb5b2815017dc0d14c9bb65c1877bffb3e167aa0a48f6870c40addf55",
+      "afterArchiveExtraction": true,
+      "emptyCargoHome": true,
+      "frozenAllFeaturesMetadata": true,
+      "deliveredVendorPathsVerified": true,
+      "graphSha256": "a7bf0c82015a687a76c01f03e0050333a4b6a93aeb8f67a780cb9ce8a9293cd9",
+      "metadataPackages": 1147,
+      "verifiedVendorPackages": 1133
+    }
+  },
+  "publication": {
+    "state": "DRAFT_PREPARATION_ASSET_PUBLICATION_PENDING",
+    "required_asset_count": 18,
+    "required_assets": [
+      "chlom-node-linux-x86_64.tar.gz",
+      "chlom-runtime.wasm",
+      "chlom-dev.json",
+      "chlom-dev-raw.json",
+      "chlom-local.json",
+      "chlom-local-raw.json",
+      "native-release.json",
+      "native-smoke.json",
+      "native-signed-rpc.json",
+      "native-loader.json",
+      "native-benchmarks.json",
+      "native-benchmarks.csv",
+      "native-calibration-receipt.json",
+      "native-calibration.tar.gz",
+      "dependency-licenses.json",
+      "chlom-native-corresponding-source.tar.gz",
+      "native-source-verification.json",
+      "SHA256SUMS"
+    ],
+    "asset_manifest": "native-release.json",
+    "public_readback_record": "PUBLICATION_READBACK.json",
+    "public_release_verified": false
+  },
+  "artifact_digests": {
+    "algorithm": "SHA-256",
+    "source_sha": "f45be42eaf8aad80d01c5a65e0b447260b1591a1",
+    "artifacts": [
+      {
+        "path": ".github/workflows/chlom-native-release.yml",
+        "sha256": "41dcf6344f2bb47254dffd52c44d0d6b5591d7c03bbe2ec3cc1131934043b73c",
+        "bytes": 8784
+      },
+      {
+        "path": ".github/workflows/release-publisher.yml",
+        "sha256": "4a6a85a2d7c16b9f6c8fe1838b7c7a7eaa7764bace4e0ba904d91c181813be94",
+        "bytes": 3602
+      },
+      {
+        "path": "LICENSE",
+        "sha256": "008874058769e840194fe8fa655fe7aebe814b8224549f7e67cd5473dba9f06d",
+        "bytes": 7732
+      },
+      {
+        "path": "docs/CHLOM_NATIVE_INSTALLATION.md",
+        "sha256": "62ca6995ab946c1790e72b42e0d879a968316c7d07256b9de493e9cae6a3976e",
+        "bytes": 13222
+      },
+      {
+        "path": "docs/CHLOM_NATIVE_RELEASE_1_4.md",
+        "sha256": "270e7fa1ea226635263aedc3c3df15141033972070736c62560f1b48371f92b5",
+        "bytes": 6006
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "362eb8428c17b1ce5bfdbf518dd0f44da97cf6e558f8e62ab806e3482f23fc5b",
+        "bytes": 25246
+      },
+      {
+        "path": "package.json",
+        "sha256": "ec76dd5d326248deb6ffc140fecf238456bb24f6a043196d48595e92cfdcfcf0",
+        "bytes": 814
+      },
+      {
+        "path": "scripts/native/benchmark-readback.py",
+        "sha256": "616748c28623073333845076087fd33a8adee0994d37ec2163fca8f654a3d93d",
+        "bytes": 2665
+      },
+      {
+        "path": "scripts/native/build.sh",
+        "sha256": "35f7e603f7f016a39029cce8b099c583d0bc67393386f9e5ccf3846c6f751e47",
+        "bytes": 669
+      },
+      {
+        "path": "scripts/native/calibrate.py",
+        "sha256": "07a543c27c3d5988bf0af96c98f09a21adcd077b8b9d4d9838821473635d1b02",
+        "bytes": 16229
+      },
+      {
+        "path": "scripts/native/e2e/README.md",
+        "sha256": "86f4f99f76e2ad1e309332bca0e1bb703db5c9c81203343d571dc52839ee6852",
+        "bytes": 3094
+      },
+      {
+        "path": "scripts/native/e2e/acceptance.mjs",
+        "sha256": "6ef5e8551141c52690f3ad7ad2c7cf907f20db2cc6355ab48a1ed7a4c0987625",
+        "bytes": 12413
+      },
+      {
+        "path": "scripts/native/e2e/guard.mjs",
+        "sha256": "7cf525ed6cb52366b1bd980b83180c6dbc58f4234655a85ed9a25084067eee4b",
+        "bytes": 1080
+      },
+      {
+        "path": "scripts/native/e2e/guard.test.mjs",
+        "sha256": "39e14cb12e3eb8f2ed8d0a8f4a47e8897d082f109a7e10c53656a9a22f35ee2a",
+        "bytes": 785
+      },
+      {
+        "path": "scripts/native/e2e/package-lock.json",
+        "sha256": "476a2e03b83c202e46142abdb0c00d089bf433b5a8886b4def65831e6069cbe1",
+        "bytes": 34992
+      },
+      {
+        "path": "scripts/native/e2e/package.json",
+        "sha256": "567960280ff83d77bb63406944b783fa154b4ec064cd557161f99b4908de5db0",
+        "bytes": 425
+      },
+      {
+        "path": "scripts/native/e2e/run-node.mjs",
+        "sha256": "75901fc4c47e34c0d5383e75e86a6d666c0ccab143e3f992d84a502d1ccc0da0",
+        "bytes": 4189
+      },
+      {
+        "path": "scripts/native/licenses/0BSD.txt",
+        "sha256": "e3f18c71e10d673590eb9856c1d79dd3b4b0d65404efb5e8584dbede7edd608b",
+        "bytes": 643
+      },
+      {
+        "path": "scripts/native/licenses/Apache-2.0.txt",
+        "sha256": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff",
+        "bytes": 10280
+      },
+      {
+        "path": "scripts/native/licenses/BSD-1-Clause.txt",
+        "sha256": "244e17b6f02493de568a8ddfd7f4349996a6c332c0585d304ceaf5394becea52",
+        "bytes": 1086
+      },
+      {
+        "path": "scripts/native/licenses/BSD-2-Clause.txt",
+        "sha256": "f32fb3b417a194167cfad068223fc975ba96c5960513a10f66a3c28720aec1df",
+        "bytes": 1267
+      },
+      {
+        "path": "scripts/native/licenses/BSD-3-Clause.txt",
+        "sha256": "5a93d5831e1297ab10fe643e1a631e83be392896da14ee2951285a79012df69d",
+        "bytes": 1460
+      },
+      {
+        "path": "scripts/native/licenses/CC0-1.0.txt",
+        "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+        "bytes": 7048
+      },
+      {
+        "path": "scripts/native/licenses/CDLA-Permissive-2.0.txt",
+        "sha256": "4531a67d443284d93ffed0803df5b10634aff21c3d77e381f2d48af01d875868",
+        "bytes": 2354
+      },
+      {
+        "path": "scripts/native/licenses/Classpath-exception-2.0.txt",
+        "sha256": "f36ecd7d28dc3c49854d3908a3824696972aed34f5ffe426174f35fb03c5f194",
+        "bytes": 919
+      },
+      {
+        "path": "scripts/native/licenses/GPL-3.0-only.txt",
+        "sha256": "fb981668c18a279e285fc4d83fba1e836cc84dd4daa73c9697d3cfd2d8aca6e0",
+        "bytes": 34674
+      },
+      {
+        "path": "scripts/native/licenses/GPL-3.0-or-later.txt",
+        "sha256": "fb981668c18a279e285fc4d83fba1e836cc84dd4daa73c9697d3cfd2d8aca6e0",
+        "bytes": 34674
+      },
+      {
+        "path": "scripts/native/licenses/GPL-3.0.txt",
+        "sha256": "fb981668c18a279e285fc4d83fba1e836cc84dd4daa73c9697d3cfd2d8aca6e0",
+        "bytes": 34674
+      },
+      {
+        "path": "scripts/native/licenses/ISC.txt",
+        "sha256": "f2ec607f67bb0dd3053b49835b02110d5cd0f8eb6da3aac4dc0b142a6b299be9",
+        "bytes": 823
+      },
+      {
+        "path": "scripts/native/licenses/LGPL-2.1-or-later.txt",
+        "sha256": "5749785c8bdefafcb5d798270ed0a967036fe2ca63dcedade1627565dfef81d2",
+        "bytes": 26001
+      },
+      {
+        "path": "scripts/native/licenses/LLVM-exception.txt",
+        "sha256": "e34c58338bd89d43e709e226610d8f32b3e3c47f4ad9a99a8dc1d4ac7842488e",
+        "bytes": 919
+      },
+      {
+        "path": "scripts/native/licenses/MIT-0.txt",
+        "sha256": "59746d6285ffa44bfc7ecada352aa5d6a20dc8eab418a60ce091cc739012c135",
+        "bytes": 915
+      },
+      {
+        "path": "scripts/native/licenses/MIT.txt",
+        "sha256": "6d7c9e9d7d12c8d3753bdb24417b84819ba4d6c2f025c37948113d86dc81eef9",
+        "bytes": 1087
+      },
+      {
+        "path": "scripts/native/licenses/MPL-2.0.txt",
+        "sha256": "66a3107d5ad6a058aab753eaac2047ccb2ed0e39465dd0fe5844da3e300d5172",
+        "bytes": 16727
+      },
+      {
+        "path": "scripts/native/licenses/README.md",
+        "sha256": "9f5889d6722d0e4ab05fc9f7fae474d867fa69d32bfb61b7568ac3f538e33053",
+        "bytes": 939
+      },
+      {
+        "path": "scripts/native/licenses/Unicode-3.0.txt",
+        "sha256": "f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1",
+        "bytes": 1995
+      },
+      {
+        "path": "scripts/native/licenses/Unlicense.txt",
+        "sha256": "0bdebfeda07d45dada625ae1317c6f833186e798b171d0db640bcf32e92a8240",
+        "bytes": 1211
+      },
+      {
+        "path": "scripts/native/licenses/Zlib.txt",
+        "sha256": "bfb1112d49db5b1daecdfef24bd7e2f3ea0bafb33aa67aa0ab51e2bf8407c03d",
+        "bytes": 838
+      },
+      {
+        "path": "scripts/native/licenses/manifest.json",
+        "sha256": "b10c42274826cfbf58692759dd1486bc1944f6d4ff3a9442b61c830e3ace594c",
+        "bytes": 5243
+      },
+      {
+        "path": "scripts/native/loader-readback.py",
+        "sha256": "9e60e075e295d0e68dff140b4086f1bfa45e5bd57c7f78642a257d72c22cd862",
+        "bytes": 6699
+      },
+      {
+        "path": "scripts/native/measurement-floor.hbs",
+        "sha256": "5314a6683533f18d6f84466f1ef01560338c7a6cbf763dd09cf1228c2743657f",
+        "bytes": 2544
+      },
+      {
+        "path": "scripts/native/package.py",
+        "sha256": "0db33963a87fd0e481a9e262d731a2c0600dd9375e89c3674d13fc0ef0bb3573",
+        "bytes": 25078
+      },
+      {
+        "path": "scripts/native/publish-assets.py",
+        "sha256": "b667899c83dbfa279bfd69929387884879138aef5f15c792d384199acdedc8f6",
+        "bytes": 6665
+      },
+      {
+        "path": "scripts/native/smoke.py",
+        "sha256": "73f7505732ae6fbbd9fc6b57a105795a3f7566c6610ba0839533fee2cd1b7ccf",
+        "bytes": 6821
+      },
+      {
+        "path": "scripts/native/vendor_sources.py",
+        "sha256": "633c4458b5969dae886b420363654043d0aee5341e9d93c9886c8eaf79b77cd7",
+        "bytes": 14761
+      },
+      {
+        "path": "scripts/release_request.py",
+        "sha256": "0e4dc433b5bc1a8cbdae18193517a1ba4b1dc64de39d5e6233c93cb778820e2f",
+        "bytes": 5141
+      },
+      {
+        "path": "substrate/chlom-l1/BENCHMARKING.md",
+        "sha256": "b3d2a0e07eebe65f247f2d6eac49211733b5918e7d73661b3ad7b3a19a1f321a",
+        "bytes": 5031
+      },
+      {
+        "path": "substrate/chlom-l1/Cargo.lock",
+        "sha256": "18ca77f69a7d3c1952028a072561196d03cea28a1ca40ede8d601ea7721b422f",
+        "bytes": 327521
+      },
+      {
+        "path": "substrate/chlom-l1/Cargo.toml",
+        "sha256": "a646d4973c90a8329fbdd9344e6c0b0498f3d586a839e5ff3922d567cf92fd08",
+        "bytes": 6096
+      },
+      {
+        "path": "substrate/chlom-l1/README.md",
+        "sha256": "574c2b1769af0e87a342968c87c10b91fa5f8202c225e360acde75ca8812ec25",
+        "bytes": 2420
+      },
+      {
+        "path": "substrate/chlom-l1/integration-tests/Cargo.toml",
+        "sha256": "9476d8536679ea90a06f7da387f6b4a88b1c750bb2cefe1904a052a0f4eb4c87",
+        "bytes": 1662
+      },
+      {
+        "path": "substrate/chlom-l1/integration-tests/src/lib.rs",
+        "sha256": "b9944beeaf161256ce8c8ace4510756445082c21e9baa008ed6700cebd330a7e",
+        "bytes": 21286
+      },
+      {
+        "path": "substrate/chlom-l1/integration-tests/src/reference_invariants.rs",
+        "sha256": "90941b0ef541ee460c1074c704303c30f3570fdd2c214fb5a85c9cf6c367106f",
+        "bytes": 17373
+      },
+      {
+        "path": "substrate/chlom-l1/node/Cargo.toml",
+        "sha256": "8081a0c60408107eed6269f62e522429f61377c9ee1e4d172873fd598b059e93",
+        "bytes": 3881
+      },
+      {
+        "path": "substrate/chlom-l1/node/NOTICE",
+        "sha256": "95ae7153f2cfa284c21a859a030d201c37dae40c4bc0ce4c2d5e6d443477ca9e",
+        "bytes": 515
+      },
+      {
+        "path": "substrate/chlom-l1/node/README.md",
+        "sha256": "4afe7614a69251d3194992d82af47b395f93cd5d9a77389ecd10ee2da0f0b412",
+        "bytes": 4199
+      },
+      {
+        "path": "substrate/chlom-l1/node/UPSTREAM-LICENSE",
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "bytes": 1210
+      },
+      {
+        "path": "substrate/chlom-l1/node/build.rs",
+        "sha256": "7524e4188c7fff02100caf0261ce806b814ae69c11e7fa569a50dd6d7279f48c",
+        "bytes": 160
+      },
+      {
+        "path": "substrate/chlom-l1/node/src/chain_spec.rs",
+        "sha256": "a6a91449795ab693e4dd8b8d411f984115b8f0f5f7e742f6174d142518de5cbc",
+        "bytes": 3714
+      },
+      {
+        "path": "substrate/chlom-l1/node/src/cli.rs",
+        "sha256": "d9c069db35718a04d0df5d8d21c3e1977aa72c7a9e384693a194955adf43b1d7",
+        "bytes": 1439
+      },
+      {
+        "path": "substrate/chlom-l1/node/src/command.rs",
+        "sha256": "fe113a6c3111bcdd915c9b0fe68b41585d88e47b7163b0b7b3d9c282453d4d2b",
+        "bytes": 9055
+      },
+      {
+        "path": "substrate/chlom-l1/node/src/main.rs",
+        "sha256": "b2603b4026579ec12b2cb93304b56a7fff162c7ff9eafd270c6b62eb8e18ef93",
+        "bytes": 200
+      },
+      {
+        "path": "substrate/chlom-l1/node/src/rpc.rs",
+        "sha256": "0eafc087fc597874649da125bdd4aea3daee0dbc324b6b03bf292e1001301b59",
+        "bytes": 1723
+      },
+      {
+        "path": "substrate/chlom-l1/node/src/service.rs",
+        "sha256": "1e2b3650f14f5408317bb676c7fd845fe0c6bf5076636f0692ef03f84fa2c4b9",
+        "bytes": 13532
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/authority/Cargo.toml",
+        "sha256": "366eac8639c36a596a56013d15ef9c545a402e2eac4ed8690dee8b81bbd69f9e",
+        "bytes": 924
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/authority/src/benchmarking.rs",
+        "sha256": "2964f5eea63a4bd096ed2fbd132aab58b9067176598db1aba4f626ed7d3efaa4",
+        "bytes": 2511
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/authority/src/lib.rs",
+        "sha256": "c196ed0d899ce4c371b51eb4f0cb99f108b55075a809d6d655de3be60e540375",
+        "bytes": 5446
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/authority/src/weights.rs",
+        "sha256": "7c93e75e6cea1a7be13960ac5a1288aefd433d40f71bef7f380d3289d50f6b9b",
+        "bytes": 1474
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/checkpoint/Cargo.toml",
+        "sha256": "e2eb8673ccfd92c19f8e53a4f8913ae7e24ed3700789a5ff10186a8d663d9285",
+        "bytes": 925
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/checkpoint/src/benchmarking.rs",
+        "sha256": "f189d37a3a665e307ca7a961755558e7d617fc0c3894f4c2c6f7c78701547b2d",
+        "bytes": 4409
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/checkpoint/src/lib.rs",
+        "sha256": "618acf4a5d5d09923f86ba1f371005383103af938ac65263b5d6b90343519488",
+        "bytes": 12171
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/checkpoint/src/weights.rs",
+        "sha256": "da352e7caafff775ff4ea306ff17c499e0373ff1ec346227ed5c677e4db5316d",
+        "bytes": 2399
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/identity/Cargo.toml",
+        "sha256": "4cce44c13970af6004e7bae6fe8fb7e0388c19c871d83c4c020a699e0e6f5fbe",
+        "bytes": 923
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/identity/src/benchmarking.rs",
+        "sha256": "519150948019825ade1c239c74aba5102c3563632c089d181c4937cb0d9100c4",
+        "bytes": 3386
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/identity/src/lib.rs",
+        "sha256": "8c6479838a5d111ef224adae7ab2a9e4e5a9f29e4b9fe74f93ec207340d4e327",
+        "bytes": 9817
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/identity/src/weights.rs",
+        "sha256": "08edbdb3c8465a7940c56b83be5dee215e05fe217226e13a43c4243198d53cb8",
+        "bytes": 1962
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/licensing/Cargo.toml",
+        "sha256": "00537f4bc82794e5d909bf004a8e3e5cadadd8fff2667a6a7da69274dad1bed5",
+        "bytes": 924
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/licensing/src/benchmarking.rs",
+        "sha256": "7e874e97fcbdca9f9f6c669b5979a02bf6e9788e270653d7d7204dc5322c6a47",
+        "bytes": 7770
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/licensing/src/lib.rs",
+        "sha256": "dace7977ba1191b5cf02922589101b5255a1921e2238c6214496c4757bae3d5e",
+        "bytes": 27291
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/licensing/src/weights.rs",
+        "sha256": "897838cdf1f8a68407391fffab178ef66d195d01c75a7da2fb53ba4ca8989e7a",
+        "bytes": 2921
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/oracle/Cargo.toml",
+        "sha256": "7033276bd04854416e8fe43c9a9ab6d997b390117f3a62960efaf4975a077389",
+        "bytes": 921
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/oracle/src/benchmarking.rs",
+        "sha256": "fe795a5c676c7dfcd2a0b2a9d0b1dca3bf9947bc23878028e91850be776775d3",
+        "bytes": 3350
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/oracle/src/lib.rs",
+        "sha256": "aaaa7a18d10c79d5bfb4b13c0092d928ec5e40d3487160b5d46144baa059d448",
+        "bytes": 12945
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/oracle/src/weights.rs",
+        "sha256": "479f2453fd5c12272425afe5c1b86554d679907823fb3a2c4b9eced5eb4d7dca",
+        "bytes": 1935
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/policy/Cargo.toml",
+        "sha256": "5eab72c2824d2521ed1a15cb93c3c7ff59e495cb57d9bcdc33381c1618958493",
+        "bytes": 1007
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/policy/src/benchmarking.rs",
+        "sha256": "06d087502fe28b1d70febce34dba35704d6a8dcdb6a7e2b9ecf5b62f337a89d0",
+        "bytes": 3529
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/policy/src/lib.rs",
+        "sha256": "4c0218d7d5cefebe8a6bc22985a939e9fcbd54dc15ba0c628a9ad9930bc6eb03",
+        "bytes": 9579
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/policy/src/weights.rs",
+        "sha256": "a6234b9b0ae238cf9f9e444692057de5103aa755e3674713acdaf1741c79ae5d",
+        "bytes": 2132
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/rights/Cargo.toml",
+        "sha256": "8d339237e373312ea0c4306078f471c8bd8c065be52fde598b998fa636b5c7c9",
+        "bytes": 921
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/rights/src/benchmarking.rs",
+        "sha256": "d5bdcf5b8bd059897cc2b26974157edeff5781ea9ab3ab3a01c6670264c47297",
+        "bytes": 4145
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/rights/src/lib.rs",
+        "sha256": "866492214f04a2114f7ea28c26b358d75bc881ad59d6924e570e99969bc8e193",
+        "bytes": 12048
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/rights/src/weights.rs",
+        "sha256": "2a167cdda797c915ea50a53d855e94e227f2394c32321c150c2453e7aeaece8f",
+        "bytes": 1965
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/settlement/Cargo.toml",
+        "sha256": "d114d657de9e81dbaef850fe05eb6aa4a51f2fd6e42fd8836b8cb11b35c86ca7",
+        "bytes": 999
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/settlement/src/benchmarking.rs",
+        "sha256": "cae4b85e5e7c6f862fdbc495292d91ded738740c4a13821a0dea2d1f6a76c75c",
+        "bytes": 3449
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/settlement/src/lib.rs",
+        "sha256": "9f5bc61f93ece508e299c15863e16abc1258b583fa9298406ed1061586235b05",
+        "bytes": 8518
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/settlement/src/weights.rs",
+        "sha256": "59991a8c78fb6d61dc8ddf4bf7b8f69b88903414d7d51646c4eccf6a25f0f5f8",
+        "bytes": 2363
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/tokenization/Cargo.toml",
+        "sha256": "77b5705ea50d1f5678ad8ecf6ab2666b3988e3409f7cd0caf1a449a449ecf552",
+        "bytes": 927
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/tokenization/src/benchmarking.rs",
+        "sha256": "274db23592c8f844f5466be56906e268ce029d941ce20176de1cf240d5ab4cd9",
+        "bytes": 5291
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/tokenization/src/lib.rs",
+        "sha256": "a9fb79d3c99464be9563a5feab7432ab641a69cbe933f0f1cc208d2e566a358e",
+        "bytes": 22291
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/tokenization/src/weights.rs",
+        "sha256": "5c98900c6de663f65f4e33bff3da9992324611f413a294b2825273ffc337075c",
+        "bytes": 2888
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/utility/Cargo.toml",
+        "sha256": "97f557f3b7d6bfec2475a87c3bc8493c8e5e9f5b438b32ec72acd05c4c8c6776",
+        "bytes": 1008
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/utility/src/benchmarking.rs",
+        "sha256": "b6d02a2bc541b246883ff9eb70da92332065cb9bd75070101b24b950228a1058",
+        "bytes": 5836
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/utility/src/lib.rs",
+        "sha256": "4c52d62f7290dd6c28ae1b600349509e0262ef048d59aaabb4ffc07071db0693",
+        "bytes": 23130
+      },
+      {
+        "path": "substrate/chlom-l1/pallets/utility/src/weights.rs",
+        "sha256": "c4a29424301d8c5ee80ee766e9a191873b47a832d639f0372edaea86e91d8a76",
+        "bytes": 4307
+      },
+      {
+        "path": "substrate/chlom-l1/primitives/Cargo.toml",
+        "sha256": "d3f7d90981a0e1dab24b50add5c0a2647bfac1a92478dcf78ad05a6a18465568",
+        "bytes": 336
+      },
+      {
+        "path": "substrate/chlom-l1/primitives/src/lib.rs",
+        "sha256": "8014f978a759be163c3fd83b528d4419985eeca5af5d11044a1b96274dca135e",
+        "bytes": 5234
+      },
+      {
+        "path": "substrate/chlom-l1/runtime-manifest.json",
+        "sha256": "24db8f32c211d4f6fbe172f0dde438ff136dd351a6432121ab5331c44238c165",
+        "bytes": 2359
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/Cargo.toml",
+        "sha256": "5737ce6a990a853857922314ada1da2e702486c84f852989acf662715fe2afbd",
+        "bytes": 5925
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/README.md",
+        "sha256": "a83ce50ea4b2a3ebd17b1d0cc1ff30a7df7fc5a336b06ff52a464a467212a32d",
+        "bytes": 6336
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/UPSTREAM-LICENSES.md",
+        "sha256": "21e2c7ac17b0414fcfd1a7c6d850632410f536d3a6ab93bca1ed1a29f650e476",
+        "bytes": 955
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/build.rs",
+        "sha256": "23173c056e0bf29339756247a959175f45319fe7d3d3381b519658b5432c5cea",
+        "bytes": 1558
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/examples/export_host_imports.rs",
+        "sha256": "1605daf74746ea728d30c437944d8c652813406280136d4a0ec56100d38d2ddb",
+        "bytes": 542
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/sdk-host-imports.txt",
+        "sha256": "c32d8d46cefb5b63d0e5c4c6c0b6996fd1e88ea149e3bedc8cfcce9d59eb7563",
+        "bytes": 4679
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/src/apis.rs",
+        "sha256": "05dbad0316e5da4b81806cab94fa53beaca53f757bd6827eef4c4263fb4efe52",
+        "bytes": 11548
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/src/benchmarks.rs",
+        "sha256": "45737c60ec99a5713cc1a6c18535ddcba0fd9cd3ea3b996eb735a3fbe9882b68",
+        "bytes": 1970
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/src/configs/mod.rs",
+        "sha256": "318b8610624cb685c175769b4b8ef4b8aaea4cb683b3dcb6f72a31dc4f5b36c6",
+        "bytes": 9566
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/src/genesis_config_presets.rs",
+        "sha256": "1759b7cecc33ae10b9e4c220534f0dec2f7b055a48d077ce4953e35b4553f389",
+        "bytes": 3987
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/src/lib.rs",
+        "sha256": "4cdce35e8edfa5474c1d6e9c49a2d0c9c7611a3fb8fe692e782fd280a5fcc76e",
+        "bytes": 8313
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/src/origins.rs",
+        "sha256": "8a812e770aca663e6372655f6261a3fb00e2b277e280e9415339ae58551ee130",
+        "bytes": 8230
+      },
+      {
+        "path": "substrate/chlom-l1/runtime/src/tests.rs",
+        "sha256": "787260bd16c9af051df11255e06f846398a9a320fc43b3a70d9d671d5815ec0a",
+        "bytes": 14422
+      },
+      {
+        "path": "substrate/chlom-l1/rust-toolchain.toml",
+        "sha256": "a2a5f2cab12ec962f51a0a07878963c1063b39a52c779f4d14ee45cc0a963389",
+        "bytes": 152
+      },
+      {
+        "path": "substrate/chlom-l1/utility-policy-tests/Cargo.toml",
+        "sha256": "5f74b5f45ec8c000d0872f8f1c5983426d70827476ab20b3c83c60e8a157a83e",
+        "bytes": 970
+      },
+      {
+        "path": "substrate/chlom-l1/utility-policy-tests/src/lib.rs",
+        "sha256": "ff2e33f7cf3c0c0c30d5bd89498e36148ffe098b02434b21cc94dea25411fd83",
+        "bytes": 22506
+      }
+    ]
+  },
+  "boundaries": {
+    "production_validator_network": false,
+    "economic_token_or_sale": false,
+    "external_money_movement": false,
+    "wallet_signature_acceptance": false,
+    "durable_wallet_account_binding": false,
+    "paid_fulfillment_acceptance": false,
+    "production_zk_circuit_activation": false,
+    "independent_security_audit": false,
+    "cloud_native_auto_synchronization": false,
+    "fleet_recovery_acceptance": false
+  },
+  "license": "CrownThrive-authored material and third-party components retain their respective licenses; see bundled notices and exact corresponding source.",
+  "preservation": "Retain historical releases, local receipts, ledger history and private evidence. Append final publication readback after verified asset publication."
+}

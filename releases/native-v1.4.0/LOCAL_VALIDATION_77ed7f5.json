@@ -1,0 +1,49 @@
+{
+  "schema": "ct.chlom.native.local-validation.v1",
+  "source_snapshot": "77ed7f5080a64e569480e59961de44c44dd9d129",
+  "node_version": "1.4.0-77ed7f5080a",
+  "node_sha256": "17d324c2c851eb8271bb5fd54c8805f4698452902c1041ad033827313735b559",
+  "runtime_wasm_sha256": "8d17e2b352716e5b1665970df6527822cbaafeeaf97e0e65f3284d1ec443cb48",
+  "tests": {
+    "rust": 107,
+    "python": 97,
+    "javascript": 117
+  },
+  "smoke": {
+    "observed_block": 3,
+    "finalized_block": 1,
+    "CHLOM_pallets": 10
+  },
+  "calibration": {
+    "dispatches": 28,
+    "steps": 50,
+    "repeat": 20,
+    "time_samples": 5460,
+    "database_samples": 5460,
+    "candidate_weights_activated": false
+  },
+  "receipts": {
+    "native-smoke.json": {
+      "sha256": "2d54db8a548bbedfdf063be4a8a5a36e00851a8a9cc9d0c431fdae8a4d54839e",
+      "state": "PASS"
+    },
+    "native-loader.json": {
+      "sha256": "6e68b16cad11a0d8a2f0fbbf52ba3e3288fcd8a80fcd53196061c20f0be42253",
+      "state": "PASS"
+    },
+    "native-benchmarks.json": {
+      "sha256": "33d188976cbb07b96c7092110b2afffaf40c1474287438bb002093ecdb85ea80",
+      "state": "PASS"
+    },
+    "native-calibration-receipt.json": {
+      "sha256": "af7698f232d3f3363169123d03240b658bb6ad5644f1e0b8cca990ff8c2da80d",
+      "state": "MEASURED_REVIEW_REQUIRED"
+    },
+    "native-signed-rpc.json": {
+      "sha256": "76d3576d9869a8b17d96384db148f3a6f0b02c58d8593e381d2f60963ac834cd",
+      "state": "PASS",
+      "transactions": 13,
+      "receipts": 5
+    }
+  }
+}

@@ -15,6 +15,7 @@ REQUIRED_ASSETS = {
     "SHA256SUMS", "native-release.json", "chlom-node-linux-x86_64.tar.gz",
     "chlom-runtime.wasm", "chlom-native-corresponding-source.tar.gz",
     "native-smoke.json", "native-signed-rpc.json", "native-benchmarks.json",
+    "native-benchmarks.csv", "native-loader.json",
     "native-calibration-receipt.json", "native-calibration.tar.gz", "dependency-licenses.json",
     "chlom-dev.json", "chlom-dev-raw.json", "chlom-local.json", "chlom-local-raw.json",
 }

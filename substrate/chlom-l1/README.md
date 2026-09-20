@@ -1,6 +1,8 @@
-# CHLOM L1 Runtime Candidate
+# CHLOM Native Runtime and Node
 
-This workspace materializes the native FRAME pallet layer described by the CHLOM whitepapers and reconciled current doctrine.
+This workspace composes the native FRAME pallets described by the CHLOM whitepapers and current doctrine into an executable Aura/GRANDPA runtime and node.
+
+See [native installation](../../docs/CHLOM_NATIVE_INSTALLATION.md), [runtime authority and APIs](runtime/README.md), [node commands](node/README.md), and [native release scope](../../docs/CHLOM_NATIVE_RELEASE_1_4.md). Source/runtime execution and production-network acceptance are reported separately.
 
 Pinned SDK: `paritytech/polkadot-sdk@polkadot-stable2506-7`.
 

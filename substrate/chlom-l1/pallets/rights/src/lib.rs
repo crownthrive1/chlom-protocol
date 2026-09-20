@@ -1,10 +1,18 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub use pallet::*;
+pub mod weights;
+pub use weights::WeightInfo;
+
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
-    use chlom_primitives::{AuthorityClass, BasisPoints, Id32, RecordState, FULL_BASIS_POINTS, ZERO_ID};
+    use crate::weights::WeightInfo;
+    use chlom_primitives::{
+        AuthorityClass, BasisPoints, Id32, RecordState, FULL_BASIS_POINTS, ZERO_ID,
+    };
     use codec::{Decode, Encode, MaxEncodedLen};
     use frame_support::{pallet_prelude::*, traits::EnsureOrigin};
     use frame_system::pallet_prelude::*;
@@ -55,6 +63,8 @@ pub mod pallet {
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
+        /// Runtime-specific dispatch costs; defaults are unmeasured conservative estimates.
+        type WeightInfo: WeightInfo;
         #[allow(deprecated)]
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
         type RightsOrigin: EnsureOrigin<Self::RuntimeOrigin>;
@@ -72,9 +82,8 @@ pub mod pallet {
         StorageMap<_, Blake2_128Concat, Id32, Id32, OptionQuery>;
 
     #[pallet::storage]
-    pub type RightsInstruments<T: Config> = StorageMap<
-        _, Blake2_128Concat, Id32, RightsInstrument<BlockNumberFor<T>>, OptionQuery
-    >;
+    pub type RightsInstruments<T: Config> =
+        StorageMap<_, Blake2_128Concat, Id32, RightsInstrument<BlockNumberFor<T>>, OptionQuery>;
 
     #[pallet::storage]
     pub type RightsSupersededBy<T: Config> =
@@ -83,8 +92,21 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        OwnershipInterestRecorded { interest_id: Id32, asset_id: Id32, holder_subject_id: Id32, state: RecordState, record_hash: Id32 },
-        RightsInstrumentRecorded { instrument_id: Id32, asset_id: Id32, grantor_subject_id: Id32, grantee_subject_id: Id32, state: RecordState, record_hash: Id32 },
+        OwnershipInterestRecorded {
+            interest_id: Id32,
+            asset_id: Id32,
+            holder_subject_id: Id32,
+            state: RecordState,
+            record_hash: Id32,
+        },
+        RightsInstrumentRecorded {
+            instrument_id: Id32,
+            asset_id: Id32,
+            grantor_subject_id: Id32,
+            grantee_subject_id: Id32,
+            state: RecordState,
+            record_hash: Id32,
+        },
     }
 
     #[pallet::error]
@@ -103,7 +125,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         #[pallet::call_index(0)]
-        #[pallet::weight(Weight::from_parts(45_000_000, 0))]
+        #[pallet::weight(T::WeightInfo::record_ownership_interest())]
         pub fn record_ownership_interest(
             origin: OriginFor<T>,
             interest_id: Id32,
@@ -120,17 +142,48 @@ pub mod pallet {
             record_hash: Id32,
         ) -> DispatchResult {
             T::RightsOrigin::ensure_origin(origin)?;
-            ensure!(interest_id != ZERO_ID && asset_id != ZERO_ID && asset_version_hash != ZERO_ID && holder_subject_id != ZERO_ID && interest_type != ZERO_ID && evidence_hash != ZERO_ID && record_hash != ZERO_ID, Error::<T>::InvalidIdentifier);
-            ensure!(share_basis_points > 0 && u32::from(share_basis_points) <= FULL_BASIS_POINTS, Error::<T>::InvalidShare);
-            ensure!(!OwnershipInterests::<T>::contains_key(interest_id), Error::<T>::RecordAlreadyExists);
-            if matches!(state, RecordState::ContractuallyRecorded | RecordState::Operative) {
-                ensure!(authority_class.permits(AuthorityClass::D3), Error::<T>::ContractualStateRequiresD3);
-                ensure!(basis_instrument_hash.is_some_and(|value| value != ZERO_ID), Error::<T>::ContractualStateRequiresGoverningInstrument);
+            ensure!(
+                interest_id != ZERO_ID
+                    && asset_id != ZERO_ID
+                    && asset_version_hash != ZERO_ID
+                    && holder_subject_id != ZERO_ID
+                    && interest_type != ZERO_ID
+                    && evidence_hash != ZERO_ID
+                    && record_hash != ZERO_ID,
+                Error::<T>::InvalidIdentifier
+            );
+            ensure!(
+                share_basis_points > 0 && u32::from(share_basis_points) <= FULL_BASIS_POINTS,
+                Error::<T>::InvalidShare
+            );
+            ensure!(
+                !OwnershipInterests::<T>::contains_key(interest_id),
+                Error::<T>::RecordAlreadyExists
+            );
+            if matches!(
+                state,
+                RecordState::ContractuallyRecorded | RecordState::Operative
+            ) {
+                ensure!(
+                    authority_class.permits(AuthorityClass::D3),
+                    Error::<T>::ContractualStateRequiresD3
+                );
+                ensure!(
+                    basis_instrument_hash.is_some_and(|value| value != ZERO_ID),
+                    Error::<T>::ContractualStateRequiresGoverningInstrument
+                );
             }
             if let Some(prior_id) = supersedes_interest_id {
-                let prior = OwnershipInterests::<T>::get(prior_id).ok_or(Error::<T>::SupersededRecordMissing)?;
-                ensure!(prior.asset_id == asset_id, Error::<T>::SupersededRecordMismatch);
-                ensure!(!OwnershipSupersededBy::<T>::contains_key(prior_id), Error::<T>::RecordAlreadySuperseded);
+                let prior = OwnershipInterests::<T>::get(prior_id)
+                    .ok_or(Error::<T>::SupersededRecordMissing)?;
+                ensure!(
+                    prior.asset_id == asset_id,
+                    Error::<T>::SupersededRecordMismatch
+                );
+                ensure!(
+                    !OwnershipSupersededBy::<T>::contains_key(prior_id),
+                    Error::<T>::RecordAlreadySuperseded
+                );
                 OwnershipSupersededBy::<T>::insert(prior_id, interest_id);
             }
             let value = OwnershipInterest {
@@ -147,12 +200,18 @@ pub mod pallet {
                 record_hash,
             };
             OwnershipInterests::<T>::insert(interest_id, value);
-            Self::deposit_event(Event::OwnershipInterestRecorded { interest_id, asset_id, holder_subject_id, state, record_hash });
+            Self::deposit_event(Event::OwnershipInterestRecorded {
+                interest_id,
+                asset_id,
+                holder_subject_id,
+                state,
+                record_hash,
+            });
             Ok(())
         }
 
         #[pallet::call_index(1)]
-        #[pallet::weight(Weight::from_parts(55_000_000, 0))]
+        #[pallet::weight(T::WeightInfo::record_rights_instrument())]
         pub fn record_rights_instrument(
             origin: OriginFor<T>,
             instrument_id: Id32,
@@ -181,17 +240,51 @@ pub mod pallet {
             record_hash: Id32,
         ) -> DispatchResult {
             T::RightsOrigin::ensure_origin(origin)?;
-            ensure!(instrument_id != ZERO_ID && asset_id != ZERO_ID && asset_version_hash != ZERO_ID && grantor_subject_id != ZERO_ID && grantee_subject_id != ZERO_ID && instrument_type != ZERO_ID && rights_scope_hash != ZERO_ID && evidence_hash != ZERO_ID && terms_hash != ZERO_ID && record_hash != ZERO_ID, Error::<T>::InvalidIdentifier);
-            ensure!(!RightsInstruments::<T>::contains_key(instrument_id), Error::<T>::RecordAlreadyExists);
-            ensure!(!matches!((valid_from, valid_until), (Some(start), Some(end)) if end < start), Error::<T>::InvalidTerm);
-            if matches!(state, RecordState::ContractuallyRecorded | RecordState::Operative) {
-                ensure!(authority_class.permits(AuthorityClass::D3), Error::<T>::ContractualStateRequiresD3);
-                ensure!(governing_instrument_hash.is_some_and(|value| value != ZERO_ID), Error::<T>::ContractualStateRequiresGoverningInstrument);
+            ensure!(
+                instrument_id != ZERO_ID
+                    && asset_id != ZERO_ID
+                    && asset_version_hash != ZERO_ID
+                    && grantor_subject_id != ZERO_ID
+                    && grantee_subject_id != ZERO_ID
+                    && instrument_type != ZERO_ID
+                    && rights_scope_hash != ZERO_ID
+                    && evidence_hash != ZERO_ID
+                    && terms_hash != ZERO_ID
+                    && record_hash != ZERO_ID,
+                Error::<T>::InvalidIdentifier
+            );
+            ensure!(
+                !RightsInstruments::<T>::contains_key(instrument_id),
+                Error::<T>::RecordAlreadyExists
+            );
+            ensure!(
+                !matches!((valid_from, valid_until), (Some(start), Some(end)) if end < start),
+                Error::<T>::InvalidTerm
+            );
+            if matches!(
+                state,
+                RecordState::ContractuallyRecorded | RecordState::Operative
+            ) {
+                ensure!(
+                    authority_class.permits(AuthorityClass::D3),
+                    Error::<T>::ContractualStateRequiresD3
+                );
+                ensure!(
+                    governing_instrument_hash.is_some_and(|value| value != ZERO_ID),
+                    Error::<T>::ContractualStateRequiresGoverningInstrument
+                );
             }
             if let Some(prior_id) = supersedes_instrument_id {
-                let prior = RightsInstruments::<T>::get(prior_id).ok_or(Error::<T>::SupersededRecordMissing)?;
-                ensure!(prior.asset_id == asset_id, Error::<T>::SupersededRecordMismatch);
-                ensure!(!RightsSupersededBy::<T>::contains_key(prior_id), Error::<T>::RecordAlreadySuperseded);
+                let prior = RightsInstruments::<T>::get(prior_id)
+                    .ok_or(Error::<T>::SupersededRecordMissing)?;
+                ensure!(
+                    prior.asset_id == asset_id,
+                    Error::<T>::SupersededRecordMismatch
+                );
+                ensure!(
+                    !RightsSupersededBy::<T>::contains_key(prior_id),
+                    Error::<T>::RecordAlreadySuperseded
+                );
                 RightsSupersededBy::<T>::insert(prior_id, instrument_id);
             }
             let value = RightsInstrument {
@@ -220,7 +313,14 @@ pub mod pallet {
                 record_hash,
             };
             RightsInstruments::<T>::insert(instrument_id, value);
-            Self::deposit_event(Event::RightsInstrumentRecorded { instrument_id, asset_id, grantor_subject_id, grantee_subject_id, state, record_hash });
+            Self::deposit_event(Event::RightsInstrumentRecorded {
+                instrument_id,
+                asset_id,
+                grantor_subject_id,
+                grantee_subject_id,
+                state,
+                record_hash,
+            });
             Ok(())
         }
     }

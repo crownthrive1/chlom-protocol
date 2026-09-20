@@ -8,11 +8,13 @@ CHLOM no longer uses the repository's former **“Phase 2 foundation / pre-alpha
 
 CHLOM remains the governance function that CrownThrive established during the broader Phase 2 generation, but it is now actively exercised inside Phase 3 execution. It authorizes, constrains, records, certifies, reconciles, and preserves the institutional conditions under which autonomous software may act.
 
-## CHLOM core 1.3
+## CHLOM native and core 1.4
 
 CHLOM is the core protocol and governance system. **LEX is a consuming application, not the definition of CHLOM.** The root console serves CHLOM's control plane, ledger and operator functions; `/lex` preserves the optional LEX application.
 
-See [core release scope](docs/CHLOM_CORE_1_3.md), [core API](docs/CHLOM_CORE_API.md), [operator interface](docs/CHLOM_CORE_INTERFACE.md), [SDK and CLI](docs/CHLOM_CORE_SDK.md), and [installation](docs/INSTALLATION.md). Native runtime, utility, policy and cryptographic modules retain component-specific implementation and acceptance evidence.
+The native package composes all ten CHLOM pallets into an Aura/GRANDPA runtime and executable node, with account-bound module roles, development/local chain specifications, operational CLI and benchmark infrastructure. See [native installation](docs/CHLOM_NATIVE_INSTALLATION.md), [native release scope](docs/CHLOM_NATIVE_RELEASE_1_4.md) and [runtime architecture](substrate/chlom-l1/runtime/README.md). The shipped chain configuration uses public development keys; production network and economics are separately configured.
+
+See [historical core 1.3 scope](docs/CHLOM_CORE_1_3.md), [core API](docs/CHLOM_CORE_API.md), [operator interface](docs/CHLOM_CORE_INTERFACE.md), [SDK and CLI](docs/CHLOM_CORE_SDK.md), and [installation](docs/INSTALLATION.md). Native runtime, utility, policy and cryptographic modules retain component-specific implementation and acceptance evidence.
 
 ## Historical application 1.2: wallet and installation
 

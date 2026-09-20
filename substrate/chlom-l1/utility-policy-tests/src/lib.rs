@@ -38,11 +38,13 @@ impl frame_system::Config for Test {
 }
 parameter_types! { pub const MaxVersions: u32 = 3; }
 impl pallet_chlom_utility::Config for Test {
+    type WeightInfo = pallet_chlom_utility::weights::SubstrateWeight<Test>;
     type RuntimeEvent = RuntimeEvent;
     type UtilityOrigin = frame_system::EnsureRoot<u64>;
     type MaxServiceVersions = MaxVersions;
 }
 impl pallet_chlom_policy::Config for Test {
+    type WeightInfo = pallet_chlom_policy::weights::SubstrateWeight<Test>;
     type RuntimeEvent = RuntimeEvent;
     type PolicyOrigin = frame_system::EnsureRoot<u64>;
     type MaxVersionsPerScope = MaxVersions;

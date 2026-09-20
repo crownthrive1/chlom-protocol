@@ -1,9 +1,15 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub use pallet::*;
+pub mod weights;
+pub use weights::WeightInfo;
+
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
+    use crate::weights::WeightInfo;
     use chlom_primitives::{AuthorityClass, Id32, ZERO_ID};
     use codec::{Decode, Encode, MaxEncodedLen};
     use frame_support::{pallet_prelude::*, traits::EnsureOrigin};
@@ -29,6 +35,8 @@ pub mod pallet {
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
+        /// Runtime-specific dispatch costs; defaults are unmeasured conservative estimates.
+        type WeightInfo: WeightInfo;
         #[allow(deprecated)]
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
         type AdminOrigin: EnsureOrigin<Self::RuntimeOrigin>;
@@ -38,8 +46,7 @@ pub mod pallet {
     pub struct Pallet<T>(_);
 
     #[pallet::storage]
-    pub type GrantHeads<T: Config> =
-        StorageMap<_, Blake2_128Concat, GrantKey, u32, OptionQuery>;
+    pub type GrantHeads<T: Config> = StorageMap<_, Blake2_128Concat, GrantKey, u32, OptionQuery>;
 
     #[pallet::storage]
     pub type GrantVersions<T: Config> = StorageDoubleMap<
@@ -76,7 +83,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         #[pallet::call_index(0)]
-        #[pallet::weight(Weight::from_parts(25_000_000, 0))]
+        #[pallet::weight(T::WeightInfo::record_grant_version())]
         pub fn record_grant_version(
             origin: OriginFor<T>,
             subject_id: Id32,
@@ -89,18 +96,37 @@ pub mod pallet {
             record_hash: Id32,
         ) -> DispatchResult {
             T::AdminOrigin::ensure_origin(origin)?;
-            ensure!(subject_id != ZERO_ID && role_id != ZERO_ID && record_hash != ZERO_ID, Error::<T>::InvalidIdentifier);
-            let key = GrantKey { subject_id, role_id };
-            ensure!(!GrantVersions::<T>::contains_key(&key, version), Error::<T>::VersionAlreadyExists);
+            ensure!(
+                subject_id != ZERO_ID && role_id != ZERO_ID && record_hash != ZERO_ID,
+                Error::<T>::InvalidIdentifier
+            );
+            let key = GrantKey {
+                subject_id,
+                role_id,
+            };
+            ensure!(
+                !GrantVersions::<T>::contains_key(&key, version),
+                Error::<T>::VersionAlreadyExists
+            );
             match GrantHeads::<T>::get(&key) {
                 None => {
-                    ensure!(version == 1 && previous_record_hash.is_none(), Error::<T>::InvalidVersion);
-                },
+                    ensure!(
+                        version == 1 && previous_record_hash.is_none(),
+                        Error::<T>::InvalidVersion
+                    );
+                }
                 Some(head) => {
-                    ensure!(version == head.saturating_add(1), Error::<T>::InvalidVersion);
-                    let prior = GrantVersions::<T>::get(&key, head).ok_or(Error::<T>::InvalidVersion)?;
-                    ensure!(previous_record_hash == Some(prior.record_hash), Error::<T>::PreviousHashMismatch);
-                },
+                    ensure!(
+                        version == head.saturating_add(1),
+                        Error::<T>::InvalidVersion
+                    );
+                    let prior =
+                        GrantVersions::<T>::get(&key, head).ok_or(Error::<T>::InvalidVersion)?;
+                    ensure!(
+                        previous_record_hash == Some(prior.record_hash),
+                        Error::<T>::PreviousHashMismatch
+                    );
+                }
             }
             let grant = AuthorityGrant {
                 version,
@@ -126,13 +152,19 @@ pub mod pallet {
 
     impl<T: Config> Pallet<T> {
         pub fn active_class(subject_id: Id32, role_id: Id32) -> Option<AuthorityClass> {
-            let key = GrantKey { subject_id, role_id };
+            let key = GrantKey {
+                subject_id,
+                role_id,
+            };
             let head = GrantHeads::<T>::get(&key)?;
             let grant = GrantVersions::<T>::get(&key, head)?;
             if !grant.active {
                 return None;
             }
-            if grant.valid_until.is_some_and(|until| frame_system::Pallet::<T>::block_number() > until) {
+            if grant
+                .valid_until
+                .is_some_and(|until| frame_system::Pallet::<T>::block_number() > until)
+            {
                 return None;
             }
             Some(grant.class)

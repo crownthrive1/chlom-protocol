@@ -1,9 +1,15 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub use pallet::*;
+pub mod weights;
+pub use weights::WeightInfo;
+
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
+    use crate::weights::WeightInfo;
     use chlom_primitives::{split_by_basis_points, BasisPoints, Id32, FULL_BASIS_POINTS, ZERO_ID};
     use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
     use frame_support::{pallet_prelude::*, traits::EnsureOrigin, BoundedVec};
@@ -12,7 +18,17 @@ pub mod pallet {
     use sp_runtime::RuntimeDebug;
     use sp_std::vec::Vec;
 
-    #[derive(Clone, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(
+        Clone,
+        Decode,
+        DecodeWithMemTracking,
+        Encode,
+        Eq,
+        MaxEncodedLen,
+        PartialEq,
+        RuntimeDebug,
+        TypeInfo,
+    )]
     pub struct SplitLeg {
         pub leg_id: Id32,
         pub beneficiary_subject_id: Id32,
@@ -21,7 +37,17 @@ pub mod pallet {
         pub conditions_hash: Id32,
     }
 
-    #[derive(Clone, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(
+        Clone,
+        Decode,
+        DecodeWithMemTracking,
+        Encode,
+        Eq,
+        MaxEncodedLen,
+        PartialEq,
+        RuntimeDebug,
+        TypeInfo,
+    )]
     #[scale_info(skip_type_params(MaxLegs))]
     pub struct RevenuePolicy<MaxLegs: Get<u32>> {
         pub calculation_basis: Id32,
@@ -32,7 +58,17 @@ pub mod pallet {
         pub record_hash: Id32,
     }
 
-    #[derive(Clone, Decode, DecodeWithMemTracking, Encode, Eq, MaxEncodedLen, PartialEq, RuntimeDebug, TypeInfo)]
+    #[derive(
+        Clone,
+        Decode,
+        DecodeWithMemTracking,
+        Encode,
+        Eq,
+        MaxEncodedLen,
+        PartialEq,
+        RuntimeDebug,
+        TypeInfo,
+    )]
     pub struct SettlementPreview {
         pub policy_id: Id32,
         pub source_object_id: Id32,
@@ -45,6 +81,8 @@ pub mod pallet {
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
+        /// Runtime-specific dispatch costs; defaults are unmeasured conservative estimates.
+        type WeightInfo: WeightInfo;
         #[allow(deprecated)]
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
         type SettlementOrigin: EnsureOrigin<Self::RuntimeOrigin>;
@@ -66,8 +104,19 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        RevenuePolicyRecorded { policy_id: Id32, leg_count: u32, record_hash: Id32 },
-        SettlementPreviewCalculated { preview_id: Id32, policy_id: Id32, gross_amount: u128, currency_id: Id32, allocation_root: Id32, money_moved: bool },
+        RevenuePolicyRecorded {
+            policy_id: Id32,
+            leg_count: u32,
+            record_hash: Id32,
+        },
+        SettlementPreviewCalculated {
+            preview_id: Id32,
+            policy_id: Id32,
+            gross_amount: u128,
+            currency_id: Id32,
+            allocation_root: Id32,
+            money_moved: bool,
+        },
     }
 
     #[pallet::error]
@@ -86,7 +135,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         #[pallet::call_index(0)]
-        #[pallet::weight(Weight::from_parts(55_000_000, 0))]
+        #[pallet::weight(T::WeightInfo::record_revenue_policy(legs.len() as u32))]
         pub fn record_revenue_policy(
             origin: OriginFor<T>,
             policy_id: Id32,
@@ -98,31 +147,56 @@ pub mod pallet {
             record_hash: Id32,
         ) -> DispatchResult {
             T::SettlementOrigin::ensure_origin(origin)?;
-            ensure!(policy_id != ZERO_ID && calculation_basis != ZERO_ID && currency_id != ZERO_ID && legal_tax_review_hash != ZERO_ID && record_hash != ZERO_ID, Error::<T>::InvalidIdentifier);
-            ensure!(!RevenuePolicies::<T>::contains_key(policy_id), Error::<T>::PolicyAlreadyExists);
+            ensure!(
+                policy_id != ZERO_ID
+                    && calculation_basis != ZERO_ID
+                    && currency_id != ZERO_ID
+                    && legal_tax_review_hash != ZERO_ID
+                    && record_hash != ZERO_ID,
+                Error::<T>::InvalidIdentifier
+            );
+            ensure!(
+                !RevenuePolicies::<T>::contains_key(policy_id),
+                Error::<T>::PolicyAlreadyExists
+            );
             ensure!(!legs.is_empty(), Error::<T>::EmptyPolicy);
-            ensure!(!money_movement_authorized, Error::<T>::MoneyMovementForbidden);
+            ensure!(
+                !money_movement_authorized,
+                Error::<T>::MoneyMovementForbidden
+            );
             let mut total: u32 = 0;
             for leg in legs.iter() {
-                ensure!(leg.leg_id != ZERO_ID && leg.beneficiary_subject_id != ZERO_ID && leg.allocation_role != ZERO_ID, Error::<T>::InvalidIdentifier);
+                ensure!(
+                    leg.leg_id != ZERO_ID
+                        && leg.beneficiary_subject_id != ZERO_ID
+                        && leg.allocation_role != ZERO_ID,
+                    Error::<T>::InvalidIdentifier
+                );
                 total = total.saturating_add(u32::from(leg.basis_points));
             }
             ensure!(total == FULL_BASIS_POINTS, Error::<T>::UnbalancedPolicy);
             let leg_count = legs.len() as u32;
-            RevenuePolicies::<T>::insert(policy_id, RevenuePolicy {
-                calculation_basis,
-                currency_id,
-                legal_tax_review_hash,
-                money_movement_authorized,
-                legs,
+            RevenuePolicies::<T>::insert(
+                policy_id,
+                RevenuePolicy {
+                    calculation_basis,
+                    currency_id,
+                    legal_tax_review_hash,
+                    money_movement_authorized,
+                    legs,
+                    record_hash,
+                },
+            );
+            Self::deposit_event(Event::RevenuePolicyRecorded {
+                policy_id,
+                leg_count,
                 record_hash,
             });
-            Self::deposit_event(Event::RevenuePolicyRecorded { policy_id, leg_count, record_hash });
             Ok(())
         }
 
         #[pallet::call_index(1)]
-        #[pallet::weight(Weight::from_parts(60_000_000, 0))]
+        #[pallet::weight(T::WeightInfo::preview_settlement(T::MaxLegs::get()))]
         pub fn preview_settlement(
             origin: OriginFor<T>,
             preview_id: Id32,
@@ -133,23 +207,53 @@ pub mod pallet {
             record_hash: Id32,
         ) -> DispatchResult {
             T::SettlementOrigin::ensure_origin(origin)?;
-            ensure!(preview_id != ZERO_ID && policy_id != ZERO_ID && source_object_id != ZERO_ID && currency_id != ZERO_ID && record_hash != ZERO_ID, Error::<T>::InvalidIdentifier);
-            ensure!(!SettlementPreviews::<T>::contains_key(preview_id), Error::<T>::PreviewAlreadyExists);
+            ensure!(
+                preview_id != ZERO_ID
+                    && policy_id != ZERO_ID
+                    && source_object_id != ZERO_ID
+                    && currency_id != ZERO_ID
+                    && record_hash != ZERO_ID,
+                Error::<T>::InvalidIdentifier
+            );
+            ensure!(
+                !SettlementPreviews::<T>::contains_key(preview_id),
+                Error::<T>::PreviewAlreadyExists
+            );
             let policy = RevenuePolicies::<T>::get(policy_id).ok_or(Error::<T>::PolicyMissing)?;
-            ensure!(policy.currency_id == currency_id, Error::<T>::CurrencyMismatch);
-            ensure!(!policy.money_movement_authorized, Error::<T>::MoneyMovementForbidden);
-            let basis_points: Vec<BasisPoints> = policy.legs.iter().map(|leg| leg.basis_points).collect();
-            let allocations = split_by_basis_points(gross_amount, &basis_points).ok_or(Error::<T>::ArithmeticFailure)?;
-            let allocation_root = sp_io::hashing::blake2_256(&(policy_id, source_object_id, gross_amount, currency_id, allocations).encode());
-            SettlementPreviews::<T>::insert(preview_id, SettlementPreview {
-                policy_id,
-                source_object_id,
-                gross_amount,
-                currency_id,
-                allocation_root,
-                money_moved: false,
-                record_hash,
-            });
+            ensure!(
+                policy.currency_id == currency_id,
+                Error::<T>::CurrencyMismatch
+            );
+            ensure!(
+                !policy.money_movement_authorized,
+                Error::<T>::MoneyMovementForbidden
+            );
+            let basis_points: Vec<BasisPoints> =
+                policy.legs.iter().map(|leg| leg.basis_points).collect();
+            let allocations = split_by_basis_points(gross_amount, &basis_points)
+                .ok_or(Error::<T>::ArithmeticFailure)?;
+            let allocation_root = sp_io::hashing::blake2_256(
+                &(
+                    policy_id,
+                    source_object_id,
+                    gross_amount,
+                    currency_id,
+                    allocations,
+                )
+                    .encode(),
+            );
+            SettlementPreviews::<T>::insert(
+                preview_id,
+                SettlementPreview {
+                    policy_id,
+                    source_object_id,
+                    gross_amount,
+                    currency_id,
+                    allocation_root,
+                    money_moved: false,
+                    record_hash,
+                },
+            );
             Self::deposit_event(Event::SettlementPreviewCalculated {
                 preview_id,
                 policy_id,

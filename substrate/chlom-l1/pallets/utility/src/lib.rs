@@ -2,9 +2,15 @@
 
 //! Nontransferable service-resource accounting; no currency, ownership grant or payment rail.
 pub use pallet::*;
+pub mod weights;
+pub use weights::WeightInfo;
+
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
+    use crate::weights::WeightInfo;
     use chlom_primitives::{Id32, ZERO_ID};
     use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
     use frame_support::{pallet_prelude::*, traits::EnsureOrigin, BoundedVec};
@@ -135,6 +141,8 @@ pub mod pallet {
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
+        /// Runtime-specific dispatch costs; defaults are unmeasured conservative estimates.
+        type WeightInfo: WeightInfo;
         #[allow(deprecated)]
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
         type UtilityOrigin: EnsureOrigin<Self::RuntimeOrigin>;
@@ -263,7 +271,7 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         #[pallet::call_index(0)]
-        #[pallet::weight(Weight::from_parts(80_000_000, 16_384))]
+        #[pallet::weight(T::WeightInfo::approve_service(T::MaxServiceVersions::get()))]
         #[frame_support::transactional]
         pub fn approve_service(
             origin: OriginFor<T>,
@@ -337,7 +345,7 @@ pub mod pallet {
         }
 
         #[pallet::call_index(1)]
-        #[pallet::weight(Weight::from_parts(55_000_000, 8_192))]
+        #[pallet::weight(T::WeightInfo::revoke_service())]
         pub fn revoke_service(
             origin: OriginFor<T>,
             service_id: Id32,
@@ -379,7 +387,7 @@ pub mod pallet {
         }
 
         #[pallet::call_index(2)]
-        #[pallet::weight(Weight::from_parts(100_000_000, 16_384))]
+        #[pallet::weight(T::WeightInfo::allocate())]
         #[frame_support::transactional]
         pub fn allocate(
             origin: OriginFor<T>,
@@ -430,7 +438,7 @@ pub mod pallet {
         }
 
         #[pallet::call_index(3)]
-        #[pallet::weight(Weight::from_parts(100_000_000, 16_384).saturating_add(Weight::from_parts(15_000_000, 4_096).saturating_mul(T::MaxServiceVersions::get() as u64)))]
+        #[pallet::weight(T::WeightInfo::reserve(T::MaxServiceVersions::get()))]
         #[frame_support::transactional]
         pub fn reserve(
             origin: OriginFor<T>,
@@ -500,7 +508,7 @@ pub mod pallet {
         }
 
         #[pallet::call_index(4)]
-        #[pallet::weight(Weight::from_parts(120_000_000, 24_576))]
+        #[pallet::weight(T::WeightInfo::consume())]
         #[frame_support::transactional]
         pub fn consume(
             origin: OriginFor<T>,
@@ -517,7 +525,7 @@ pub mod pallet {
         }
 
         #[pallet::call_index(5)]
-        #[pallet::weight(Weight::from_parts(110_000_000, 20_480))]
+        #[pallet::weight(T::WeightInfo::release())]
         #[frame_support::transactional]
         pub fn release(
             origin: OriginFor<T>,

@@ -1,0 +1,210 @@
+name: CHLOM Native Build and Release
+
+on:
+  pull_request:
+    paths:
+      - 'substrate/chlom-l1/**'
+      - 'scripts/native/**'
+      - 'docs/CHLOM_NATIVE_*.md'
+      - '.github/workflows/chlom-native-release.yml'
+  push:
+    tags: ['native-v*']
+  workflow_run:
+    workflows: ['CHLOM Release Publisher']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing native release tag, for example native-v1.4.0
+        required: true
+        type: string
+      source_sha:
+        description: Exact 40-character source commit already referenced by the tag
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chlom-native-${{ github.event.pull_request.number || 'publication' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  source:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    outputs:
+      build: ${{ steps.resolve.outputs.build }}
+      sha: ${{ steps.resolve.outputs.sha }}
+      tag: ${{ steps.resolve.outputs.tag }}
+      publish: ${{ steps.resolve.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 0
+      - name: Resolve exact source and release tag
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          INPUT_SHA: ${{ inputs.source_sha }}
+          REF_TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG=''
+          SHA=$(git rev-parse HEAD)
+          PUBLISH=false
+          if [ "$EVENT" = workflow_run ]; then
+            REQUEST=$(git diff --name-only HEAD^1 HEAD | python -c 'import re,sys; p=[s.strip() for s in sys.stdin if re.fullmatch(r"\.github/release-requests/chlom-native-[A-Za-z0-9._-]+\.json\n?",s)]; print(p[-1] if p else "")')
+            if [ -z "$REQUEST" ]; then
+              echo 'build=false' >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            TAG=$(jq -er '.tag' "$REQUEST")
+            SHA=$(jq -er '.target' "$REQUEST")
+            PUBLISH=true
+          elif [ "$EVENT" = workflow_dispatch ]; then
+            TAG=$INPUT_TAG
+            SHA=$INPUT_SHA
+            PUBLISH=true
+          elif [ "$EVENT" = push ]; then
+            TAG=$REF_TAG
+            PUBLISH=true
+          fi
+          [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]
+          if [ "$PUBLISH" = true ]; then
+            [[ "$TAG" =~ ^native-v[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9.-]+)?$ ]]
+            git fetch --no-tags origin "refs/tags/$TAG:refs/tags/$TAG"
+            test "$(git rev-parse "$TAG^{commit}")" = "$SHA"
+            # Draft metadata is read by the final contents-write job. The read-only
+            # source job binds the build to the existing exact tag without publishing.
+          fi
+          echo 'build=true' >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "publish=$PUBLISH" >> "$GITHUB_OUTPUT"
+
+  native:
+    needs: source
+    if: needs.source.outputs.build == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_RELEASE_DEBUG: '0'
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 1
+      - name: Free unused hosted-runner SDK disk space
+        if: runner.environment == 'github-hosted'
+        run: |
+          sudo rm -rf -- /usr/local/lib/android /usr/share/dotnet /opt/ghc
+          df -h .
+      - name: Install native build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends binutils clang libclang-dev llvm-dev libssl-dev pkg-config protobuf-compiler
+          rustup toolchain install 1.98.1 --profile minimal --component rust-src
+          rustup target add wasm32v1-none wasm32-unknown-unknown --toolchain 1.98.1
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: substrate/chlom-l1 -> target
+          shared-key: chlom-native-rust-1.98.1
+          cache-on-failure: true
+      - name: Test locked workspace and build node with embedded Wasm
+        run: bash scripts/native/build.sh
+      - name: Verify actual runtime libraries and relocation
+        run: python scripts/native/loader-readback.py --node substrate/chlom-l1/target/release/chlom-node --output native-loader.json
+      - name: Read benchmark capabilities from the actual developer binary
+        run: python scripts/native/benchmark-readback.py --node substrate/chlom-l1/target/release/chlom-node --output native-benchmarks.json
+      - name: Verify local Aura blocks, GRANDPA finality, RPC and ten pallets
+        run: python scripts/native/smoke.py --node substrate/chlom-l1/target/release/chlom-node --output native-smoke.json --timeout 180
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: scripts/native/e2e/package-lock.json
+      - name: Verify real signed utility lifecycle over isolated local RPC
+        run: |
+          npm ci --ignore-scripts --prefix scripts/native/e2e
+          npm test --prefix scripts/native/e2e
+          npm run node --prefix scripts/native/e2e -- --binary "$PWD/substrate/chlom-l1/target/release/chlom-node" --output "$PWD/native-signed-rpc.json"
+      - name: Measure all CHLOM dispatches using the exact release binary
+        run: python scripts/native/calibrate.py --binary "$PWD/substrate/chlom-l1/target/release/chlom-node" --repo "$PWD" --output "$PWD/native-calibration" --steps 50 --repeat 20
+      - name: Package exact binaries, specifications, licenses and source
+        env:
+          SOURCE_SHA: ${{ needs.source.outputs.sha }}
+          PUBLISH: ${{ needs.source.outputs.publish }}
+          RELEASE_TAG: ${{ needs.source.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          WASM=substrate/chlom-l1/target/release/wbuild/chlom-runtime/chlom_runtime.compact.compressed.wasm
+          if [ ! -f "$WASM" ]; then
+            WASM=substrate/chlom-l1/target/release/wbuild/chlom-runtime/chlom_runtime.compact.wasm
+          fi
+          test -s "$WASM"
+          SOURCE_ARGS=(--with-source)
+          VERSION=1.4.0
+          if [ "$PUBLISH" = true ]; then
+            VERSION=${RELEASE_TAG#native-v}
+          fi
+          python scripts/native/package.py --node substrate/chlom-l1/target/release/chlom-node --wasm "$WASM" --smoke native-smoke.json --e2e native-signed-rpc.json --benchmarks native-benchmarks.json --calibration native-calibration --loader native-loader.json --output native-artifacts --commit "$SOURCE_SHA" --version "$VERSION" "${SOURCE_ARGS[@]}"
+          cd native-artifacts
+          sha256sum --check SHA256SUMS
+      - name: Upload verified artifact custody
+        uses: actions/upload-artifact@v4
+        with:
+          name: chlom-native-${{ needs.source.outputs.sha }}
+          path: native-artifacts/*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Preserve failed native verification diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chlom-native-diagnostics-${{ needs.source.outputs.sha }}
+          path: |
+            native-calibration/**
+            native-loader.json
+            native-benchmarks.json
+            native-smoke.json
+            native-signed-rpc.json*
+          if-no-files-found: ignore
+          retention-days: 14
+
+  publish:
+    needs: [source, native]
+    if: github.event_name != 'pull_request' && needs.source.outputs.publish == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 1
+      - uses: actions/download-artifact@v4
+        with:
+          name: chlom-native-${{ needs.source.outputs.sha }}
+          path: native-artifacts
+      - name: Verify complete asset readback, then publish native draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.source.outputs.tag }}
+          SOURCE_SHA: ${{ needs.source.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/native/publish-assets.py --tag "$RELEASE_TAG" --source "$SOURCE_SHA" --artifacts native-artifacts

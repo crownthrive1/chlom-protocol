@@ -179,7 +179,7 @@ export function createCoreHandler({env=process.env,fetchImpl=(...args)=>fetch(..
         if(!(route==='operator'&&!req.headers.origin&&bearer(req)))throw failure('SAME_ORIGIN_REQUIRED','Same-origin request required.',403);
       }
       rateLimit(req,route);
-      if(route==='health')return send(200,{ok:true,brand:'CHLOM',version:'1.3.0',backend_configured:Boolean(coreBackend(env)),
+      if(route==='health')return send(200,{ok:true,brand:'CHLOM',version:'1.4.0',backend_configured:Boolean(coreBackend(env)),
         dispatcher:'chlom_api_dispatch_v3',mode:'core_control_plane',payment_execution:false,token_issuance:false});
       if(route==='status'){const data=await publicStatus();return send(Object.values(data.availability).some(value=>value==='available')?200:503,data);}
       if(route==='resolve'){

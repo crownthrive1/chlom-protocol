@@ -1,0 +1,10 @@
+{
+  "release_id": "ct.chlom.application.v1.2.0",
+  "tag": "application-v1.2.0",
+  "target": "6dc789ee334a46f4982e8fdd449494182fc8c22c",
+  "title": "CHLOM Application 1.2.0 — Wallet, private commitments and installation",
+  "package": "releases/application-v1.2.0",
+  "release_state": "requested",
+  "draft": false,
+  "prerelease": false
+}

@@ -1,0 +1,111 @@
+{
+  "schema": "ct.chlom.application-release.v1",
+  "release_id": "ct.chlom.application.v1.2.0",
+  "version": "1.2.0",
+  "tag": "application-v1.2.0",
+  "title": "CHLOM Application 1.2.0 \u2014 Wallet, private commitments and installation",
+  "target_ref": "6dc789ee334a46f4982e8fdd449494182fc8c22c",
+  "release_type": "application_component",
+  "protocol_generation_independent": true,
+  "publication_metadata_note": "Release request and manifest are added by a later documentation-only commit; the implementation tag remains fixed to target_ref.",
+  "license": "Proprietary; see LICENSE",
+  "artifacts": [
+    {
+      "path": "package.json",
+      "sha256": "2c591c69559f59abc59848c1b93e59f3d1212c421cf478d3a499112bb590b0a4"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "3f11c4dd15ddbe630bc5cbe56427870d39cd6171efa8ea87d22ba4593c1e662a"
+    },
+    {
+      "path": "Dockerfile",
+      "sha256": "8eb99b6e433e87ed93686fb90a3881e322e12133c7ffeb3b969f6c05980aa587"
+    },
+    {
+      "path": "scripts/serve-local.mjs",
+      "sha256": "5d9992c979026bfcc83148c023bdacfa1109e7a23b294270267cbf3488111473"
+    },
+    {
+      "path": "scripts/install-preflight.mjs",
+      "sha256": "151c7a07e89d4a53a6cf0a592bb88d35ed30af71daee8e1e895d5d4a5f45a5b0"
+    },
+    {
+      "path": "api/wallet.js",
+      "sha256": "37db1493ee7f5de8f6afe87a8a6c94f358dbaf91a3c5be9960907b7703ad9a5e"
+    },
+    {
+      "path": "api/protocol.js",
+      "sha256": "f47ab16b0ab1ffeea074ca64b8855bc4d2f9fba8e784beb3c6055b085986d4ea"
+    },
+    {
+      "path": "lib/wallet-proof.js",
+      "sha256": "c89656a6d38068e9bbd945c30e6a2d0086d925bd8391ad59b91dd49f82c5cee1"
+    },
+    {
+      "path": "lib/protocol/policy.js",
+      "sha256": "626b8cba0dbe6dac97fd6aed3d243978f1e31c1992af3118a38231e1f698e675"
+    },
+    {
+      "path": "lib/protocol/utility.js",
+      "sha256": "f3609d6f4ff81e4a5ae864b0a7384f6f4684378165cd52660651642badf3444e"
+    },
+    {
+      "path": "lib/protocol/proofs.js",
+      "sha256": "0552bbe24db781c0d602fcb7f825db9a931c98d24aa3a3cfec571473ced3ce93"
+    },
+    {
+      "path": "public/proof-core.js",
+      "sha256": "1a4c013dae63510dc8235e5312355719766018678d179a80338879f2a24dfe1f"
+    },
+    {
+      "path": "installation/database/workspace-bootstrap-v1.sql",
+      "sha256": "b4d14471813cc8b4a12bc8b48c23ef38eef9dfe83c2962cff7997f269b704584"
+    },
+    {
+      "path": "installation/database/workspace-verification-v1.sql",
+      "sha256": "e2d176d5a2c2b113d62842cdd0dfe539dbe4f662cd5fef5083f8040640204789"
+    }
+  ],
+  "production_url": "https://chlom-protocol.vercel.app",
+  "required_installation_configuration": [
+    "Node.js 24",
+    "HTTPS for cloud sessions and wallet verification",
+    "explicit compatible backend for private cloud workspace",
+    "server-only API token for authenticated protocol POST operations",
+    "server-only wallet challenge secret for signature observations"
+  ],
+  "boundaries": {
+    "token_issuance": false,
+    "public_chain_anchoring": false,
+    "zero_knowledge_proofs": false,
+    "account_wallet_binding": false,
+    "atomic_utility_debits": false,
+    "paid_fulfillment_acceptance": false
+  },
+  "requested_at": "2026-09-20T02:21:23.684315+00:00",
+  "production_evidence": {
+    "deployment_id": "dpl_FsNBhcpZqfbSdxiwpfMD1ijLhPkG",
+    "state": "READY",
+    "verified_at": "2026-09-20T02:17:25Z",
+    "source_sha": "6dc789ee334a46f4982e8fdd449494182fc8c22c",
+    "readbacks": [
+      "/build.json",
+      "/api/health",
+      "/api/lex?route=health",
+      "/api/wallet?route=status",
+      "/api/protocol",
+      "/release"
+    ],
+    "browser_checked": [
+      "release",
+      "wallet"
+    ],
+    "verification_scope": "Readback verifies deployed source, HTTP surfaces and browser presentation; it does not prove paid fulfillment or a private-account acceptance journey."
+  },
+  "implementation_validation": {
+    "node_tests_passed": 76,
+    "python_tests_passed": 77,
+    "database_fixture_checks_passed": 12
+  }
+}

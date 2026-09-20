@@ -155,10 +155,9 @@ jobs:
             WASM=substrate/chlom-l1/target/release/wbuild/chlom-runtime/chlom_runtime.compact.wasm
           fi
           test -s "$WASM"
-          SOURCE_ARGS=()
+          SOURCE_ARGS=(--with-source)
           VERSION=1.4.0
           if [ "$PUBLISH" = true ]; then
-            SOURCE_ARGS=(--with-source)
             VERSION=${RELEASE_TAG#native-v}
           fi
           python scripts/native/package.py --node substrate/chlom-l1/target/release/chlom-node --wasm "$WASM" --smoke native-smoke.json --e2e native-signed-rpc.json --benchmarks native-benchmarks.json --calibration native-calibration --loader native-loader.json --output native-artifacts --commit "$SOURCE_SHA" --version "$VERSION" "${SOURCE_ARGS[@]}"

@@ -25,6 +25,8 @@ The `CHLOM Native Build and Release` workflow builds the exact tagged source, ru
 
 The workflow also runs on native-code pull requests and preserves review artifacts. It accepts an exact existing native tag/commit through manual dispatch and a validated handoff from the release publisher. The latter handles tags created with GitHub's workflow token, which do not independently trigger downstream tag-push workflows.
 
+Pull requests also build and verify the complete corresponding-source archive. Source-specific vendor directories preserve distinct registry and SDK identities even when names and versions coincide. The original manifests and lockfile are restored exactly; an extracted-archive check uses an empty Cargo cache and frozen all-features resolution to confirm the complete dependency graph and every vendored source checksum. `native-source-verification.json` records that final archive readback.
+
 Consult the actual `native-release.json`, `native-loader.json`, `native-smoke.json`, `native-benchmarks.json`/`.csv`, `native-calibration-receipt.json`, checksums and Actions run attached to the release for acceptance evidence. This document defines the release contract; it is not a substitute for those results. Host-only tests with `SKIP_WASM_BUILD=1` are insufficient to claim a release binary or executable chain.
 
 ## Operating boundaries

@@ -60,6 +60,19 @@ class NativePublicationTests(unittest.TestCase):
         for name in PUBLISH.REQUIRED_ASSETS - {"SHA256SUMS", "native-release.json"}:
             (self.root / name).write_bytes((name + "\n").encode())
         (self.root / "native-release.json").write_text(json.dumps({"sourceCommit": SHA}))
+        self.source_proof = {
+            "schema": "chlom.native.source-archive-verification.v1",
+            "sourceCommit": SHA,
+            "archiveSha256": PUBLISH.digest(self.root / "chlom-native-corresponding-source.tar.gz"),
+            "afterArchiveExtraction": True,
+            "emptyCargoHome": True,
+            "frozenAllFeaturesMetadata": True,
+            "deliveredVendorPathsVerified": True,
+            "graphSha256": "c" * 64,
+            "metadataPackages": 3,
+            "verifiedVendorPackages": 2,
+        }
+        (self.root / "native-source-verification.json").write_text(json.dumps(self.source_proof))
         self.checksums()
 
     def checksums(self):
@@ -125,6 +138,31 @@ class NativePublicationTests(unittest.TestCase):
             PUBLISH.publish(TAG, SHA, self.root, run=fake)
         self.assertTrue(fake.draft)
         self.assertFalse(any(args[:3] == ("gh", "release", "edit") for args in fake.operations))
+
+    def test_source_proof_must_bind_exact_archive_and_successful_extracted_verification(self):
+        for field, value in (
+            ("schema", "unknown"), ("sourceCommit", "b" * 40), ("archiveSha256", "d" * 64),
+            ("afterArchiveExtraction", False), ("emptyCargoHome", False),
+            ("frozenAllFeaturesMetadata", False), ("deliveredVendorPathsVerified", False),
+            ("deliveredVendorPathsVerified", "true"), ("graphSha256", "invalid"),
+            ("metadataPackages", 0), ("verifiedVendorPackages", True),
+        ):
+            with self.subTest(field=field, value=value):
+                proof = dict(self.source_proof, **{field: value})
+                (self.root / "native-source-verification.json").write_text(json.dumps(proof))
+                self.checksums()
+                fake = FakeGitHub()
+                with self.assertRaisesRegex(ValueError, "archive verification"):
+                    PUBLISH.publish(TAG, SHA, self.root, run=fake)
+                self.assertEqual(fake.operations, [])
+
+    def test_missing_source_proof_fails_before_remote_access(self):
+        (self.root / "native-source-verification.json").unlink()
+        self.checksums()
+        fake = FakeGitHub()
+        with self.assertRaisesRegex(ValueError, "Complete native"):
+            PUBLISH.publish(TAG, SHA, self.root, run=fake)
+        self.assertEqual(fake.operations, [])
 
     def test_verified_partial_draft_can_resume_without_replacing_existing_assets(self):
         existing = {"chlom-runtime.wasm": self.assets()["chlom-runtime.wasm"]}

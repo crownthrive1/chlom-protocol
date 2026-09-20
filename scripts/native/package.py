@@ -7,6 +7,7 @@ their own licenses. This script does not relicense any linked component.
 import argparse
 import gzip
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -55,7 +56,7 @@ def archive(source, destination, epoch):
 
 
 def licenses(destination):
-    metadata = json.loads(command("cargo", "metadata", "--locked", "--format-version", "1", cwd=WORKSPACE))
+    metadata = json.loads(command("cargo", "metadata", "--locked", "--all-features", "--format-version", "1", cwd=WORKSPACE))
     destination.mkdir(parents=True)
     catalog = Path(__file__).resolve().parent / "licenses"
     catalog_manifest = json.loads((catalog / "manifest.json").read_text())
@@ -126,7 +127,7 @@ def licenses(destination):
                         "standardLicenseTexts": standard_texts,
                         "packageLicenseFilePresent": bool(copied)})
     manifest = {"schema": "chlom.native.dependency-licenses.v1", "packages": records,
-                "scope": "Cargo.lock workspace dependency closure, including target-specific dependencies",
+                "scope": "Locked workspace dependency graph with all features and target-specific dependencies; exact locked source closure is separately recorded in VENDOR_SOURCE_RECEIPT.json",
                 "notice": "Each dependency retains its own license. Original license/notice files are copied when supplied. Standard SPDX texts include all declared alternatives/exceptions and explicitly supplement crates published without license files. Package authors and exact source are retained; source-file notices remain in corresponding source. This inventory does not relicense the binary."}
     (destination / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 
@@ -140,24 +141,30 @@ def corresponding_source(destination, sha, epoch, temporary):
     with tarfile.open(archive_path) as source_tar:
         source_tar.extractall(source, filter="data")
     native_source = source / "substrate/chlom-l1"
-    # Cargo vendors registry and pinned git source at the exact locked revisions.
-    config = command("cargo", "vendor", "--locked", "--versioned-dirs", "vendor", cwd=native_source)
-    cargo_config = native_source / ".cargo/config.toml"
-    cargo_config.parent.mkdir(exist_ok=True)
-    if cargo_config.exists():
-        existing = cargo_config.read_text()
-        if "[source." in existing:
-            raise RuntimeError("Existing Cargo source configuration requires an explicit merge")
-        cargo_config.write_text(existing + "\n" + config + "\n")
-    else:
-        cargo_config.write_text(config + "\n")
+    helper_spec = importlib.util.spec_from_file_location("chlom_vendor_sources", Path(__file__).with_name("vendor_sources.py"))
+    helper = importlib.util.module_from_spec(helper_spec)
+    helper_spec.loader.exec_module(helper)
+    source_receipt = helper.build_source_vendor(native_source)
     (source / "NATIVE_SOURCE_RECEIPT.json").write_text(json.dumps({
         "schema": "chlom.native.corresponding-source.v1", "sourceCommit": sha,
         "cargoLockSha256": digest(native_source / "Cargo.lock"),
         "build": 'cd substrate/chlom-l1 && WASM_BUILD_WORKSPACE_HINT="$PWD" WASM_BUILD_RUSTFLAGS="-C link-arg=--allow-undefined-file=$PWD/runtime/sdk-host-imports.txt" cargo build --frozen --release -p chlom-node --features runtime-benchmarks',
         "scope": "Exact repository archive plus vendored Cargo dependency source; toolchain and OS build tools remain external.",
+        "sourceVendorReceipt": "substrate/chlom-l1/VENDOR_SOURCE_RECEIPT.json",
+        "dependencyGraphSha256": source_receipt["originalGraphSha256"],
+        "sourceVerification": source_receipt["verification"],
     }, indent=2) + "\n")
     archive(source, destination, epoch)
+    # Verify the delivered bytes after extraction, including legitimate src/target paths.
+    extracted = temporary / "source-archive-readback"
+    extracted.mkdir()
+    with tarfile.open(destination) as bundle:
+        bundle.extractall(extracted, filter="data")
+    verification = helper.verify_source_vendor(extracted / "substrate/chlom-l1", source_receipt)
+    (destination.parent / "native-source-verification.json").write_text(json.dumps({
+        "schema": "chlom.native.source-archive-verification.v1", "sourceCommit": sha,
+        "archiveSha256": digest(destination), "afterArchiveExtraction": True, **verification,
+    }, indent=2) + "\n")
 
 
 def calibration_readback(directory, node, wasm, sha):

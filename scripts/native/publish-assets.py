@@ -13,7 +13,7 @@ from pathlib import Path
 
 REQUIRED_ASSETS = {
     "SHA256SUMS", "native-release.json", "chlom-node-linux-x86_64.tar.gz",
-    "chlom-runtime.wasm", "chlom-native-corresponding-source.tar.gz",
+    "chlom-runtime.wasm", "chlom-native-corresponding-source.tar.gz", "native-source-verification.json",
     "native-smoke.json", "native-signed-rpc.json", "native-benchmarks.json",
     "native-benchmarks.csv", "native-loader.json",
     "native-calibration-receipt.json", "native-calibration.tar.gz", "dependency-licenses.json",
@@ -50,6 +50,19 @@ def validate_assets(directory, source):
     manifest = json.loads(files["native-release.json"].read_text())
     if manifest.get("sourceCommit") != source:
         raise ValueError("Native manifest source does not match exact release target")
+    proof = json.loads(files["native-source-verification.json"].read_text())
+    if (not isinstance(proof, dict)
+            or proof.get("schema") != "chlom.native.source-archive-verification.v1"
+            or proof.get("sourceCommit") != source
+            or proof.get("archiveSha256") != digest(files["chlom-native-corresponding-source.tar.gz"])
+            or any(proof.get(field) is not True for field in (
+                "afterArchiveExtraction", "emptyCargoHome", "frozenAllFeaturesMetadata",
+                "deliveredVendorPathsVerified"))
+            or not isinstance(proof.get("graphSha256"), str)
+            or not re.fullmatch(r"[0-9a-f]{64}", proof["graphSha256"])
+            or any(type(proof.get(field)) is not int or proof[field] <= 0
+                   for field in ("metadataPackages", "verifiedVendorPackages"))):
+        raise ValueError("Native corresponding-source archive verification is missing or inconsistent")
     return files
 
 

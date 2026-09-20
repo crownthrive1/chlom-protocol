@@ -22,6 +22,7 @@ Use the assets on the [native-v1.4.0 release](https://github.com/crownthrive1/ch
 | `native-signed-rpc.json` | Real signed and finalized local transactions exercising utility authority, owner boundaries, lifecycle and receipt-chain checks |
 | `dependency-licenses.json` | Resolved Cargo dependency/license inventory |
 | `chlom-native-corresponding-source.tar.gz` | Exact repository source plus vendored locked Cargo dependencies and offline Cargo configuration |
+| `native-source-verification.json` | Verification of the delivered source archive after extraction, using frozen all-features metadata and an empty Cargo cache |
 | `SHA256SUMS` | SHA-256 checksums for every other top-level release asset |
 
 The Linux artifact is built on Ubuntu 24.04 for `x86_64-unknown-linux-gnu`. The completed native build's loader inspection resolved `ld-linux-x86-64.so.2`, `libc.so.6`, `libm.so.6`, `libgcc_s.so.1` and `libstdc++.so.6`, with no missing libraries or undefined symbols. Their verified Ubuntu package owners are `libc6`, `libgcc-s1` and `libstdc++6`. Install those runtime packages before starting the downloaded executable:
@@ -114,6 +115,8 @@ CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 CARGO_PROFILE_RELEASE_DEBUG=0 \
 ```
 
 `--frozen` uses the bundled dependency sources and lockfile. The Wasm linker flag allows only the exact SDK host imports listed in `runtime/sdk-host-imports.txt`; unknown imports remain errors. Keep that flag when running full-workspace Cargo commands directly. Rust itself, native OS tools and their standard libraries must already be installed; they are not bundled. Do not set `SKIP_WASM_BUILD` for a release build. Runtime Wasm must be embedded in the node and exported from `target/release/wbuild/chlom-runtime/`.
+
+Vendored registry and SDK sources occupy separate directories so equal crate names/versions from different sources retain their original identities. `Cargo.toml` and `Cargo.lock` remain byte-for-byte copies of the release source. Cargo generates the standalone dependency manifests; the source receipt records the full locked package inventory, checksums and dependency graph. The archive is extracted and checked with `cargo metadata --frozen --all-features` under an empty Cargo cache before publication. `VENDOR_SOURCE_RECEIPT.json` describes that custody and graph equivalence.
 
 For a repository checkout pinned to the release commit, run `bash scripts/native/build.sh`. It tests the locked workspace in release mode with `runtime-benchmarks`, then builds the developer node with the same features. The distribution includes the pallet benchmark CLI; its presence does not constitute measured benchmark results. Then run:
 

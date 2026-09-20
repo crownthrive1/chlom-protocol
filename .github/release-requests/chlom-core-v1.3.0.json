@@ -1,0 +1,11 @@
+{
+  "release_id": "ct.chlom.core.v1.3.0",
+  "tag": "core-v1.3.0",
+  "target": "c834b91ac13ac8ce72cee89c97deafc1c3083733",
+  "title": "CHLOM Core 1.3.0 \u2014 Control plane, native resource modules and Groth16 verification",
+  "package": "releases/core-v1.3.0",
+  "release_state": "draft_pending_ci_merge_and_production_readback",
+  "publication_ready": false,
+  "draft": false,
+  "prerelease": false
+}

@@ -10,14 +10,17 @@ export function installationPreflight(env = process.env, { production = false, n
     if (env[flag] && !['true', 'false'].includes(env[flag])) errors.push(`${flag} must be true or false.`);
   }
 
-  const base = env.CHLOM_LEX_SUPABASE_URL;
-  const key = env.CHLOM_LEX_SUPABASE_PUBLISHABLE_KEY;
-  if (Boolean(base) !== Boolean(key)) errors.push('Configure both CHLOM_LEX_SUPABASE_URL and CHLOM_LEX_SUPABASE_PUBLISHABLE_KEY.');
+  for (const component of ['CORE', 'LEX']) {
+  const baseName = `CHLOM_${component}_SUPABASE_URL`;
+  const keyName = `CHLOM_${component}_SUPABASE_PUBLISHABLE_KEY`;
+  const base = env[baseName];
+  const key = env[keyName];
+  if (Boolean(base) !== Boolean(key)) errors.push(`Configure both ${baseName} and ${keyName}.`);
   if (base) {
     try {
       const url = new URL(base);
       if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash || !['', '/'].includes(url.pathname)) throw new Error();
-    } catch { errors.push('CHLOM_LEX_SUPABASE_URL must be an HTTPS origin without credentials, a path, or a query.'); }
+    } catch { errors.push(`${baseName} must be an HTTPS origin without credentials, a path, or a query.`); }
   }
   if (key) {
     let publishable = /^sb_publishable_[A-Za-z0-9_-]{16,}$/.test(key);
@@ -28,10 +31,12 @@ export function installationPreflight(env = process.env, { production = false, n
         publishable = parts.length === 3 && claims.role === 'anon';
       } catch { /* The following error does not expose the supplied key. */ }
     }
-    if (!publishable) errors.push('CHLOM_LEX_SUPABASE_PUBLISHABLE_KEY must be a publishable key or legacy anon JWT, never a service-role/secret key.');
+    if (!publishable) errors.push(`${keyName} must be a publishable key or legacy anon JWT, never a service-role/secret key.`);
   }
   if (!base && !key) {
-    (production ? errors : warnings).push('LEX cloud workspace is unconfigured. The local server only exposes its health route until an explicit backend is configured.');
+    if (component === 'CORE') (production ? errors : warnings).push('CHLOM core backend is unconfigured. Set CHLOM_CORE_SUPABASE_URL and CHLOM_CORE_SUPABASE_PUBLISHABLE_KEY to a provisioned core control plane.');
+    else warnings.push('Optional LEX workspace is unconfigured; this does not prevent a CHLOM core installation.');
+  }
   }
   if (env.CHLOM_PUBLIC_ORIGIN) {
     try {
@@ -41,7 +46,7 @@ export function installationPreflight(env = process.env, { production = false, n
   } else if (production) errors.push('Set CHLOM_PUBLIC_ORIGIN to the public HTTPS origin.');
   if (env.CHLOM_TRUST_PROXY === 'true') warnings.push('Proxy headers are trusted: restrict the application port to your reverse proxy and preserve the original Host header.');
   if (env.CHLOM_API_TOKEN && env.CHLOM_API_TOKEN.length < 32) errors.push('CHLOM_API_TOKEN must contain at least 32 characters.');
-  else if (!env.CHLOM_API_TOKEN) (production ? errors : warnings).push('CHLOM_API_TOKEN is unset; protected protocol APIs remain unavailable.');
+  else if (!env.CHLOM_API_TOKEN) warnings.push('CHLOM_API_TOKEN is unset; optional chain and stateless protocol APIs remain unavailable. Core operator authentication uses the configured backend account.');
   if (env.CHLOM_WALLET_CHALLENGE_SECRET && Buffer.byteLength(env.CHLOM_WALLET_CHALLENGE_SECRET) < 32) errors.push('CHLOM_WALLET_CHALLENGE_SECRET must contain at least 32 bytes.');
   else if (!env.CHLOM_WALLET_CHALLENGE_SECRET) warnings.push('Wallet message proof is unconfigured; wallet discovery and connection remain available.');
   if (env.CHLOM_CHAIN_WRITE_ENABLED === 'true' && (env.CHLOM_GOVERNANCE_STATE !== 'promoted' || !env.CHLOM_ECAC_DIGEST)) {
@@ -50,7 +55,7 @@ export function installationPreflight(env = process.env, { production = false, n
   const rpcConfigured = Object.keys(env).some(name => /^(CHLOM|QUICKNODE|ALCHEMY|INFURA|GOOGLE_BLOCKCHAIN)_RPC_/.test(name) && env[name]);
   if (!rpcConfigured) warnings.push('No chain RPC endpoint is configured; provider-backed chain calls remain unavailable.');
   if (env.GCP_PROJECT_ID && !env.VERCEL) warnings.push('Self-hosted BigQuery uses Google Application Default Credentials; a project ID alone does not configure identity.');
-  return { schema: 'ct.chlom.installation-preflight.v1', ok: errors.length === 0, mode: production ? 'production' : 'local', errors, warnings };
+  return { schema: 'ct.chlom.installation-preflight.v2', scope: 'chlom_core', ok: errors.length === 0, mode: production ? 'production' : 'local', errors, warnings };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

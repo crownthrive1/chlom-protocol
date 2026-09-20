@@ -14,6 +14,10 @@ Pallets:
 - `tokenization`: rights-aware token classes, candidates, chain adapters, and provider receipts.
 - `oracle`: off-chain signal intake and governed review cases; no autonomous legal effect.
 - `checkpoint`: compact DAIL checkpoint roots and external anchor receipts without private payloads.
+- `utility`: nontransferable resource allocations, reservations, consumption, release and chained receipts.
+- `policy`: immutable approved versions, provenance commitments, exact scope/effective intervals and append-only revocation.
+
+Rust is pinned in `rust-toolchain.toml`; `Cargo.lock` locks the dependency graph. Run `cargo check --locked --workspace --all-targets` and `cargo test --locked --workspace`.
 
 ## Production boundary
 

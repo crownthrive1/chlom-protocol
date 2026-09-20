@@ -1,6 +1,8 @@
-# CHLOM LEX wallet integration
+# CHLOM wallet integration
 
-This release adds `/#wallet` to the existing LEX workspace and `/api/wallet` to its same-origin API. Browser-injected EVM wallets are discovered using EIP-6963, with an EIP-1193 legacy fallback. Connection requires an explicit user action. The interface reads the selected account, chain and native balance, supports an explicit Base network-switch request, and clears observations on account changes, network changes and disconnect.
+Wallet connection is a CHLOM core capability exposed from the core console. The optional LEX application may consume the same adapter; the wallet is not defined by the marketplace. Core operator authentication and a wallet-control observation are independent identities and do not implicitly bind one another.
+
+The core console exposes `/#wallet` and uses the same-origin `/api/wallet` adapter. The optional LEX view lives at `/lex#wallet`. Browser-injected EVM wallets are discovered using EIP-6963, with an EIP-1193 legacy fallback. Connection requires an explicit user action. The interface reads the selected account, chain and native balance, supports an explicit Base network-switch request, and clears observations on account changes, network changes and disconnect.
 
 ## Installation
 
@@ -19,7 +21,7 @@ Only ordinary EVM externally owned account signatures are verified by this imple
 
 ## Precise security boundary
 
-The response is an observation of signature control. It does not authenticate a cloud account, persist a wallet-account association, grant rights, create an entitlement, authorize payment, issue CHM, or enable token settlement. Neither a signature nor the wallet address is stored by this application in localStorage or in a database. Operational hosting logs remain subject to the hosting configuration.
+The response is an observation of signature control. It does not authenticate a cloud account, persist a wallet-account association, grant rights, create an entitlement, authorize payment, issue tokens, or enable token settlement. Neither a signature nor the wallet address is stored by this application in localStorage or in a database. Operational hosting logs remain subject to the hosting configuration.
 
 The cookie is stateless. Copying a valid cookie and signature can reproduce the same observation until expiry; clearing the browser cookie does not constitute distributed one-time nonce consumption. The API therefore declares `one_time_nonce: false` and `account_authenticated: false`. Any future use for sign-in, account binding or access control must first add a durable atomic nonce-consumption store and the corresponding account/authority checks.
 

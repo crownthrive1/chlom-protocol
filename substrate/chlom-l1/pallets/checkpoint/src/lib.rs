@@ -91,6 +91,7 @@ pub mod pallet {
         PrivateEvidenceForbidden,
         SignatureRequired,
         ProviderReadbackRequired,
+        NetworkMismatch,
     }
 
     #[pallet::call]
@@ -115,6 +116,20 @@ pub mod pallet {
             T::CheckpointOrigin::ensure_origin(origin)?;
             ensure!(checkpoint_id != ZERO_ID && first_event_hash != ZERO_ID && last_event_hash != ZERO_ID && merkle_root != ZERO_ID && signature_hash != ZERO_ID && record_hash != ZERO_ID, Error::<T>::InvalidIdentifier);
             ensure!(start_sequence_id > 0 && end_sequence_id >= start_sequence_id && event_count > 0, Error::<T>::InvalidRange);
+            // Sequence allocations may have gaps, but an event count can never
+            // exceed its inclusive span. A one-event checkpoint has one boundary.
+            let span = end_sequence_id.checked_sub(start_sequence_id)
+                .and_then(|difference| difference.checked_add(1))
+                .ok_or(Error::<T>::InvalidRange)?;
+            ensure!(u64::from(event_count) <= span, Error::<T>::InvalidRange);
+            ensure!(
+                if event_count == 1 {
+                    start_sequence_id == end_sequence_id && first_event_hash == last_event_hash
+                } else {
+                    first_event_hash != last_event_hash
+                },
+                Error::<T>::InvalidRange
+            );
             ensure!(!Checkpoints::<T>::contains_key(checkpoint_id), Error::<T>::RecordAlreadyExists);
             ensure!(signature_verified, Error::<T>::SignatureRequired);
             ensure!(!raw_private_evidence_included, Error::<T>::PrivateEvidenceForbidden);
@@ -193,6 +208,7 @@ pub mod pallet {
             ensure!(!AnchorReceipts::<T>::contains_key(receipt_id), Error::<T>::RecordAlreadyExists);
             ensure!(provider_readback_verified, Error::<T>::ProviderReadbackRequired);
             let intent = AnchorIntents::<T>::get(intent_id).ok_or(Error::<T>::IntentMissing)?;
+            ensure!(network_id == intent.target_network, Error::<T>::NetworkMismatch);
             AnchorReceipts::<T>::insert(receipt_id, AnchorReceipt {
                 intent_id,
                 root: intent.root,

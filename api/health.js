@@ -69,7 +69,7 @@ export default function handler(request, response) {
     service: 'CHLOM Chain Evidence Fabric',
     canonicalService: 'chlom-protocol',
     role: 'rights_rules_roles_revenue_records_remedies_authority',
-    version: '1.2.0',
+    version: '1.3.0',
     status: providerReadback ? 'OPERATIONAL' : 'BINDING_REQUIRED',
     readinessStatus,
     readiness_status: readinessStatus,

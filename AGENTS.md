@@ -1,7 +1,9 @@
-# CHLOM Phase 2 Agent Contract
+# CHLOM Core Agent Contract — Phase 3 Execute
 
 ## Mission
 Build CHLOM as CrownThrive's governed rights and institutional operating system for Rights, Rules, Roles, Revenue, Records, and Remedies.
+
+CHLOM itself is the protocol/control-plane/ledger system. LEX is one consuming application. Do not treat a LEX workspace release as completion of the core. The September 20 founder scope clarification governs future implementation and release reports; preserve earlier component evidence as history.
 
 ## Current architecture
 - Cloud-first, API-first, event-driven, multi-tenant, human-governed.

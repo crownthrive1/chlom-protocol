@@ -10,6 +10,9 @@ members = [
   "pallets/oracle",
   "pallets/checkpoint",
   "integration-tests",
+  "pallets/utility",
+  "pallets/policy",
+  "utility-policy-tests",
 ]
 resolver = "2"
 
@@ -37,6 +40,9 @@ pallet-chlom-settlement = { path = "pallets/settlement", default-features = fals
 pallet-chlom-tokenization = { path = "pallets/tokenization", default-features = false }
 pallet-chlom-oracle = { path = "pallets/oracle", default-features = false }
 pallet-chlom-checkpoint = { path = "pallets/checkpoint", default-features = false }
+
+pallet-chlom-utility = { path = "pallets/utility", default-features = false }
+pallet-chlom-policy = { path = "pallets/policy", default-features = false }
 
 [profile.release]
 panic = "unwind"

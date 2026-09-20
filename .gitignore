@@ -33,3 +33,6 @@ public/documentation/
 
 __pycache__/
 *.pyc
+
+# Native build products; Cargo.lock remains versioned for reproducible builds.
+substrate/chlom-l1/target/

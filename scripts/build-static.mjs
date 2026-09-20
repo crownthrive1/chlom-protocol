@@ -4,6 +4,8 @@ import { posix } from 'node:path';
 
 const required = [
   'public/index.html',
+  'public/core.js',
+  'api/core.js',
   'public/release.html',
   'public/release.js',
   'public/proof-core.js',
@@ -23,7 +25,7 @@ for (const file of required) {
 }
 
 const index = await readFile('public/index.html', 'utf8');
-if (!index.includes('CHLOM Chain Evidence Fabric')) {
+if (!index.includes('CHLOM') || index.includes('<title>CHLOM LEX')) {
   throw new Error('Static control surface identity validation failed.');
 }
 
@@ -32,8 +34,8 @@ await writeFile(
   JSON.stringify(
     {
       schema: 'ct.chlom.static-build.v1',
-      service: 'chlom-chain-evidence-fabric',
-      version: '1.2.0',
+      service: 'chlom-core',
+      version: '1.3.0',
       buildSha: process.env.VERCEL_GIT_COMMIT_SHA || null,
       environment: process.env.VERCEL_ENV || 'local',
     },
@@ -52,6 +54,13 @@ const documentation = [
  ['installation/database/workspace-verification-v1.sql','workspace-verification-v1.sql'],
  ['docs/CHLOM-CHAIN-EVIDENCE-FABRIC.md','architecture.md'],
  ['docs/CHLOM_RELEASE_1_2.md','release-notes.md'],
+ ['docs/CHLOM_CORE_1_3.md','core-release-notes.md'],
+ ['docs/CHLOM_CORE_API.md','core-api.md'],
+ ['docs/CHLOM_CORE_INTERFACE.md','core-interface.md'],
+ ['docs/CHLOM_CORE_SDK.md','core-sdk.md'],
+ ['docs/CHLOM_ZK_VERIFIER.md','zk-verifier.md'],
+ ['docs/architecture/CHLOM_NATIVE_CORE_INTEGRITY_20260920.md','native-integrity.md'],
+ ['docs/architecture/CHLOM_NATIVE_UTILITY_POLICY_CANDIDATE_V1.md','native-utility-policy.md'],
  ['docs/PROTOCOL_API_1_2.md','protocol-api.md'],
  ['LICENSE','license.txt'],
 ];

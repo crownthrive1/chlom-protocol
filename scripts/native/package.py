@@ -154,7 +154,7 @@ def corresponding_source(destination, sha, epoch, temporary):
     (source / "NATIVE_SOURCE_RECEIPT.json").write_text(json.dumps({
         "schema": "chlom.native.corresponding-source.v1", "sourceCommit": sha,
         "cargoLockSha256": digest(native_source / "Cargo.lock"),
-        "build": 'cd substrate/chlom-l1 && WASM_BUILD_RUSTFLAGS="-C link-arg=--allow-undefined-file=$PWD/runtime/sdk-host-imports.txt" cargo build --frozen --release -p chlom-node --features runtime-benchmarks',
+        "build": 'cd substrate/chlom-l1 && WASM_BUILD_WORKSPACE_HINT="$PWD" WASM_BUILD_RUSTFLAGS="-C link-arg=--allow-undefined-file=$PWD/runtime/sdk-host-imports.txt" cargo build --frozen --release -p chlom-node --features runtime-benchmarks',
         "scope": "Exact repository archive plus vendored Cargo dependency source; toolchain and OS build tools remain external.",
     }, indent=2) + "\n")
     archive(source, destination, epoch)

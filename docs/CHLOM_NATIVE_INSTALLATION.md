@@ -99,6 +99,7 @@ For the corresponding-source archive, extract it into an empty directory and run
 
 ```sh
 cd substrate/chlom-l1
+export WASM_BUILD_WORKSPACE_HINT="$PWD"
 export WASM_BUILD_RUSTFLAGS="-C link-arg=--allow-undefined-file=$PWD/runtime/sdk-host-imports.txt"
 CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 CARGO_PROFILE_RELEASE_DEBUG=0 \
   cargo build --frozen --release -p chlom-node --features runtime-benchmarks

@@ -20,6 +20,7 @@ PALLETS = (
     "ChlomSettlement", "ChlomTokenization", "ChlomOracle", "ChlomCheckpoint",
     "ChlomUtility", "ChlomPolicy",
 )
+RPC_RESPONSE_LIMIT = 16 * 1024 * 1024
 
 
 def unused_port():
@@ -36,8 +37,8 @@ def rpc(port, method, params=None):
         {"Content-Type": "application/json"},
     )
     with urllib.request.urlopen(request, timeout=5) as response:
-        raw = response.read(4 * 1024 * 1024 + 1)
-    if len(raw) > 4 * 1024 * 1024:
+        raw = response.read(RPC_RESPONSE_LIMIT + 1)
+    if len(raw) > RPC_RESPONSE_LIMIT:
         raise RuntimeError("RPC response exceeds smoke limit")
     result = json.loads(raw)
     if "error" in result:

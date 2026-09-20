@@ -87,7 +87,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_*.py' -v
 
   public-status-route-smoke:
-    name: Public status-route smoke
+    name: Public v2 read-service contract smoke
     if: >-
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
@@ -95,6 +95,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
       - name: Probe sanitized CHLOM mesh status
         env:
           STATUS_URL: https://tzajnzshmtzjenqulehq.supabase.co/functions/v1/chlom-mesh-status
@@ -106,7 +109,6 @@ jobs:
             curl \
               --silent \
               --show-error \
-              --location \
               --retry 2 \
               --retry-all-errors \
               --retry-delay 2 \
@@ -123,90 +125,6 @@ jobs:
             exit 1
           fi
 
-          python - "${response_file}" <<'PY'
-          import json
-          import sys
-          from pathlib import Path
-
-          path = Path(sys.argv[1])
-          if path.stat().st_size > 262_144:
-              raise SystemExit("status response exceeded the bounded 256 KiB limit")
-
-          try:
-              status = json.loads(path.read_text(encoding="utf-8"))
-          except (OSError, UnicodeError, json.JSONDecodeError) as exc:
-              raise SystemExit(f"status response is not valid UTF-8 JSON: {exc}") from exc
-
-          if not isinstance(status, dict):
-              raise SystemExit("status response must be a JSON object")
-
-          expected = {
-              "contract": "ct.chlom.mesh.status.v1",
-              "service": "ct.chlom.mesh.status.v1",
-              "status": "ok",
-              "decision": "ALLOW",
-              "public_surface": True,
-              "secret_values_exposed": False,
-          }
-          for key, value in expected.items():
-              if status.get(key) != value:
-                  raise SystemExit(
-                      f"status field {key!r} was {status.get(key)!r}; expected {value!r}"
-                  )
-
-          control = status.get("control_plane")
-          if not isinstance(control, dict):
-              raise SystemExit("control_plane must be a JSON object")
-          if control.get("operating_state") != "production_hot":
-              raise SystemExit("control plane is not production_hot")
-          if control.get("fail_closed") is not True:
-              raise SystemExit("control plane is not fail-closed")
-          if control.get("no_secret_exposure") is not True:
-              raise SystemExit("control plane does not attest no_secret_exposure")
-
-          summary = status.get("binding_summary")
-          if not isinstance(summary, dict):
-              raise SystemExit("binding_summary must be a JSON object")
-          total = summary.get("total")
-          if not isinstance(total, int) or total < 1:
-              raise SystemExit("binding_summary.total must be a positive integer")
-          if summary.get("bound") != total:
-              raise SystemExit("not all governed bindings are bound")
-          if summary.get("hold") != 0 or summary.get("degraded") != 0:
-              raise SystemExit("governed bindings include a hold or degradation")
-
-          heartbeat = status.get("latest_heartbeat")
-          if not isinstance(heartbeat, dict) or heartbeat.get("state") != "hot":
-              raise SystemExit("latest heartbeat is not hot")
-          if heartbeat.get("hold_count") != 0 or heartbeat.get("degraded_count") != 0:
-              raise SystemExit("latest heartbeat reports a hold or degradation")
-
-          forbidden_keys = {
-              "api_key",
-              "apikey",
-              "access_token",
-              "authorization",
-              "client_secret",
-              "password",
-              "private_key",
-              "refresh_token",
-              "service_role_key",
-              "token",
-          }
-
-          def reject_secret_keys(value, location="$"):
-              if isinstance(value, dict):
-                  for key, child in value.items():
-                      normalized = str(key).strip().lower().replace("-", "_")
-                      if normalized in forbidden_keys:
-                          raise SystemExit(
-                              f"status response exposed forbidden field {location}.{key}"
-                          )
-                      reject_secret_keys(child, f"{location}.{key}")
-              elif isinstance(value, list):
-                  for index, child in enumerate(value):
-                      reject_secret_keys(child, f"{location}[{index}]")
-
-          reject_secret_keys(status)
-          print("PASS: bounded public hot route returned sanitized ALLOW state")
-          PY
+          python scripts/verify_dail_mesh_status.py \
+            "${response_file}" \
+            --summary-file "${GITHUB_STEP_SUMMARY}"

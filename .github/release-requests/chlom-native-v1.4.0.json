@@ -1,0 +1,11 @@
+{
+  "release_id": "ct.chlom.native.v1.4.0",
+  "tag": "native-v1.4.0",
+  "target": "f45be42eaf8aad80d01c5a65e0b447260b1591a1",
+  "title": "CHLOM Native 1.4.0 \u2014 Substrate node, ten-pallet runtime and local-chain integration",
+  "package": "releases/native-v1.4.0",
+  "release_state": "VERIFIED_IMPLEMENTATION_PREPARE_NATIVE_DRAFT",
+  "publication_ready": true,
+  "draft": true,
+  "prerelease": false
+}

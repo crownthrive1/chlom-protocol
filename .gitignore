@@ -27,3 +27,9 @@ node_modules/
 coverage/
 npm-debug.log*
 public/build.json
+
+# Generated public documentation is copied from reviewed source during build.
+public/documentation/
+
+__pycache__/
+*.pyc

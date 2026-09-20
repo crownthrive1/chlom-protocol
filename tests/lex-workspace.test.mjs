@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {SCHEMA,escapeHTML,importWorkspace,splitRevenue,readiness,hashFile,validateDraft,licenseBrief} from '../public/lex-core.js';
-import handler,{allowedOrigin,cookies} from '../api/lex.js';
+import handler,{allowedOrigin,cookies,lexBackend} from '../api/lex.js';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const request=(method,url,headers={},body)=>({method,url,headers:{host:'lex.test',...headers},...(body===undefined?{}:{body})});
 async function invoke(req){const headers={};let raw='';const res={statusCode:0,setHeader(k,v){headers[k]=v;},end(v){raw=v;}};await handler(req,res);return {status:res.statusCode,headers,data:JSON.parse(raw)};}
@@ -24,3 +24,5 @@ test('LEX rejects cross-origin writes before processing',async()=>{const r=await
 test('LEX rejects unsupported methods and malformed public IDs',async()=>{assert.equal((await invoke(request('DELETE','/api/lex?route=health'))).status,405);assert.equal((await invoke(request('GET','/api/lex?route=resolve&id=private'))).status,400);});
 test('LEX anonymous session has no user or credentials',async()=>{const r=await invoke(request('GET','/api/lex?route=session'));assert.equal(r.status,200);assert.equal(r.data.user,null);assert.equal(r.data.access_token,undefined);});
 test('LEX rejects oversized request bodies',async()=>{const r=await invoke(request('POST','/api/lex?route=save',{origin:'https://lex.test','content-type':'application/json','content-length':'999999'},{}));assert.equal(r.status,413);});
+
+test('LEX forks cannot inherit canonical cloud tenancy',()=>{assert.equal(lexBackend({}),null);assert.equal(lexBackend({VERCEL_PROJECT_ID:'different-project'}),null);assert.equal(lexBackend({CHLOM_LEX_SUPABASE_URL:'https://tenant.test'}),null);assert.equal(lexBackend({CHLOM_LEX_SUPABASE_URL:'http://tenant.test',CHLOM_LEX_SUPABASE_PUBLISHABLE_KEY:'public'}),null);assert.deepEqual(lexBackend({CHLOM_LEX_SUPABASE_URL:'https://tenant.test',CHLOM_LEX_SUPABASE_PUBLISHABLE_KEY:'public'}),{base:'https://tenant.test',key:'public'});assert.ok(lexBackend({VERCEL_PROJECT_ID:'prj_HewLgMjUiVBNCl0FADFbSggSp2QN'}));});

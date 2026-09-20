@@ -58,7 +58,9 @@ async function refreshStatus() {
   const chainCount = Array.isArray(providers) ? providers.length : null;
   $('#chain-state').textContent = chainCount === null ? 'Unavailable' : `${chainCount} configured`;
   label('#identity-badge', core?.protocol ? 'Core status available' : configured ? 'Backend configured' : 'Core not verified', Boolean(core?.protocol));
-  const dail = core?.protocol?.dail || core?.control_plane?.dail;
+  const protocolDail = core?.protocol?.dail;
+  const dail = typeof protocolDail?.integrity_state === 'string' && protocolDail.integrity_state.length > 0
+    ? protocolDail : core?.control_plane?.dail;
   label('#ledger-badge', dail?.integrity_state ? dail.integrity_state.replaceAll('_',' ') : 'Core not verified', dail?.verified_prefix_ok === true && dail?.sequence_span_lag === 0);
   label('#policy-badge', protocol?.policyRegistry === 'configured' ? 'Registry configured' : protocol?.policyRegistry === 'invalid' ? 'Configuration invalid' : 'Registry not configured', protocol?.policyRegistry === 'configured');
   label('#utility-badge', protocol?.utilityRegistry === 'configured' ? 'Registry configured' : protocol?.utilityRegistry === 'invalid' ? 'Configuration invalid' : 'Registry not configured', protocol?.utilityRegistry === 'configured');

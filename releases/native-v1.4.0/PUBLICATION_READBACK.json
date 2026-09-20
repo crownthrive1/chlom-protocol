@@ -1,0 +1,215 @@
+{
+  "schema": "ct.chlom.native.publication-readback.v1",
+  "state": "PUBLISHED_AND_VERIFIED",
+  "observed_at": "2026-09-20T06:06:02.798Z",
+  "repository": "crownthrive1/chlom-protocol",
+  "tag": "native-v1.4.0",
+  "verified_source_commit": "f45be42eaf8aad80d01c5a65e0b447260b1591a1",
+  "implementation_tree": "a00e04eb835868c329c8f0a9670eac2bc2148200",
+  "implementation_pr": 55,
+  "publication_package_pr": 56,
+  "publication_package_commit": "9cafb1eef1ec1ac0961ae33c4da54abb283680fe",
+  "release": {
+    "id": 392321156,
+    "url": "https://github.com/crownthrive1/chlom-protocol/releases/tag/native-v1.4.0",
+    "is_draft": false,
+    "published_at": "2026-09-20T06:04:37Z",
+    "scope": "development-and-local-testnet"
+  },
+  "workflow": {
+    "metadata_publisher_run_id": 35491356950,
+    "native_run_id": 35491365315,
+    "native_run_url": "https://github.com/crownthrive1/chlom-protocol/actions/runs/35491365315",
+    "conclusion": "success",
+    "source_job_id": 106026756042,
+    "native_job_id": 106026770745,
+    "publication_job_id": 106031634362,
+    "completed_log_digests": {
+      "source-job-106026756042.log": {
+        "sha256": "32e280dd23c415cad9be4f0978f00648cf405a8ee545e080bef1427773e7403c",
+        "bytes": 24121
+      },
+      "native-job-106026770745.log": {
+        "sha256": "7fead786244f3191eff2b731d276c0d7959a50a3afdc8227d0d291a166866ee2",
+        "bytes": 504425
+      },
+      "publish-job-106031634362.log": {
+        "sha256": "9f7eac1016cd2680ef1e79aa1fbd381f9c81e92634a4cbdbae762d050ba76492",
+        "bytes": 33922
+      }
+    }
+  },
+  "assets": {
+    "required_count": 18,
+    "observed_count": 18,
+    "total_bytes": 272715486,
+    "byte_readback_verified": true,
+    "sha256sums_verified": true,
+    "verification_actor": "Exact-source GitHub Actions publisher downloaded every release asset and compared bytes before making the draft public. Public API identity, size and digest readback was also performed.",
+    "independent_local_redownload_performed": false,
+    "entries": [
+      {
+        "id": 576238437,
+        "name": "chlom-dev-raw.json",
+        "bytes": 9799738,
+        "sha256": "5c08cfa1893eb582bcb1e773b434f1a12ebfc51fc4183bbeb103f487cd4c4a87",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/chlom-dev-raw.json"
+      },
+      {
+        "id": 576238467,
+        "name": "chlom-dev.json",
+        "bytes": 9796177,
+        "sha256": "c319edb4ec695b98096080eca25d52bbdb9d69e4359db5370142c6c6e76afb84",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/chlom-dev.json"
+      },
+      {
+        "id": 576238501,
+        "name": "chlom-local-raw.json",
+        "bytes": 9802602,
+        "sha256": "e57e21671dd52f8dc9c5daee1e992a378d5efbd1bd672a86b172c3df87af45c8",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/chlom-local-raw.json"
+      },
+      {
+        "id": 576238542,
+        "name": "chlom-local.json",
+        "bytes": 9797384,
+        "sha256": "7b0d7c0d977273e72ae6312fb773407a83cb690ac60e4c60bf5752d904e29d38",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/chlom-local.json"
+      },
+      {
+        "id": 576238578,
+        "name": "chlom-native-corresponding-source.tar.gz",
+        "bytes": 159457832,
+        "sha256": "1e3d429c2ceb848cd8582b8b31bd94a119029018906dc949b7ca7d76ff7aaf1a",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/chlom-native-corresponding-source.tar.gz"
+      },
+      {
+        "id": 576238693,
+        "name": "chlom-node-linux-x86_64.tar.gz",
+        "bytes": 57118438,
+        "sha256": "962103ec4c4deef5591d1a967ca2f713ec4741eba7a187c73112f67e8641e831",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/chlom-node-linux-x86_64.tar.gz"
+      },
+      {
+        "id": 576238752,
+        "name": "chlom-runtime.wasm",
+        "bytes": 4897370,
+        "sha256": "f08082ba86c78fd24b3d40fa1f14cdece5bd894beeb8993304d6514c24fdfa26",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/chlom-runtime.wasm"
+      },
+      {
+        "id": 576238787,
+        "name": "dependency-licenses.json",
+        "bytes": 1388817,
+        "sha256": "cf13395a93c58c808c3e69a8af796249f0cbd1a0a9f57faed6412786780445c5",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/dependency-licenses.json"
+      },
+      {
+        "id": 576238813,
+        "name": "native-benchmarks.csv",
+        "bytes": 2647,
+        "sha256": "effd4a3a0ada06a5a97047d67199481d9560894b3107ae2d8f898cb3e40df3c6",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/native-benchmarks.csv"
+      },
+      {
+        "id": 576238830,
+        "name": "native-benchmarks.json",
+        "bytes": 9749,
+        "sha256": "712d76089c7b07a10a1be15c442dabdd4fdf7641b167c6f51d32aa308b5971e8",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/native-benchmarks.json"
+      },
+      {
+        "id": 576238862,
+        "name": "native-calibration-receipt.json",
+        "bytes": 56658,
+        "sha256": "470e3faa42cc5f6008e35cc5af95ef48e7f3d366cab321f4c74604c5649afcc1",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/native-calibration-receipt.json"
+      },
+      {
+        "id": 576238898,
+        "name": "native-calibration.tar.gz",
+        "bytes": 10567443,
+        "sha256": "608810477cc8a11f2141b0a45659ae2b8d5ef62db36f54b64d09c9cd181ba94c",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/native-calibration.tar.gz"
+      },
+      {
+        "id": 576238926,
+        "name": "native-loader.json",
+        "bytes": 2822,
+        "sha256": "42990f06abf063460b7b308ba8b92bbaf0fca44b738fac04f57c85b63cf86d39",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/native-loader.json"
+      },
+      {
+        "id": 576238950,
+        "name": "native-release.json",
+        "bytes": 3315,
+        "sha256": "e60291797a3ce49a2a460c5851200807cf43ed595ef4ed4cd9a30f9598c2fb94",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/native-release.json"
+      },
+      {
+        "id": 576238965,
+        "name": "native-signed-rpc.json",
+        "bytes": 10579,
+        "sha256": "bdfc415aadf8c9e2a2384fce1ffaedba70afdccb09f92caaa8dfcbe984223b06",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/native-signed-rpc.json"
+      },
+      {
+        "id": 576238988,
+        "name": "native-smoke.json",
+        "bytes": 1895,
+        "sha256": "d338046c71c24e3e0c490128abd19ca915cec11e0eba2efe2b38296a427a2f41",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/native-smoke.json"
+      },
+      {
+        "id": 576239007,
+        "name": "native-source-verification.json",
+        "bytes": 495,
+        "sha256": "b82205851a1bc430e1c5c3bc28bab04b1aeb9a7c3bfd015b074574408aeff88f",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/native-source-verification.json"
+      },
+      {
+        "id": 576238405,
+        "name": "SHA256SUMS",
+        "bytes": 1525,
+        "sha256": "2646578a217b4e988dd6c3b2da18a03f7a53afcd24f3e536294702426523ce4a",
+        "url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/SHA256SUMS"
+      }
+    ]
+  },
+  "hosted_acceptance": {
+    "rust_tests_passed": 107,
+    "native_pallets": 10,
+    "signed_transactions_passed": 13,
+    "node_sha256": "4bb07d5fa676ae387716dcb5e8ea46e02bfdab4cee3d6f556c213bfb16135020",
+    "runtime_wasm_sha256": "f08082ba86c78fd24b3d40fa1f14cdece5bd894beeb8993304d6514c24fdfa26",
+    "loader": "PASS",
+    "benchmark_inventory": "PASS",
+    "live_aura_grandpa_rpc_smoke": "PASS",
+    "calibration": "MEASURED_REVIEW_REQUIRED",
+    "measured_dispatches": 28,
+    "candidate_weights_activated": false
+  },
+  "corresponding_source": {
+    "archive_sha256": "1e3d429c2ceb848cd8582b8b31bd94a119029018906dc949b7ca7d76ff7aaf1a",
+    "verification_receipt_sha256": "b82205851a1bc430e1c5c3bc28bab04b1aeb9a7c3bfd015b074574408aeff88f",
+    "verification_receipt_url": "https://github.com/crownthrive1/chlom-protocol/releases/download/native-v1.4.0/native-source-verification.json",
+    "source_commit": "f45be42eaf8aad80d01c5a65e0b447260b1591a1",
+    "after_extraction_verified": true,
+    "empty_cargo_cache_verified": true,
+    "frozen_all_features_metadata_verified": true,
+    "delivered_vendor_paths_verified": true,
+    "verification_basis": "Successful exact-source publisher enforces all four source-verification assertions, matching archive digest, source identity, valid graph digest and positive package counts.",
+    "detailed_receipt_contents_independently_materialized": false
+  },
+  "local_validation": {
+    "source_commit": "77ed7f5080a64e569480e59961de44c44dd9d129",
+    "record": "LOCAL_VALIDATION_77ed7f5.json",
+    "same_source_tree": true,
+    "hosted_binary_identity_distinct": true,
+    "byte_reproducible_build_claimed": false
+  },
+  "native_production_network_activated": false,
+  "wallet_signature_acceptance_performed": false,
+  "paid_fulfillment_activated": false,
+  "historical_manifest_note": "MANIFEST.json preserves the prepublication package state. This appended readback establishes actual public publication without rewriting that history."
+}

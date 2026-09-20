@@ -91,6 +91,10 @@ components:
     maturity: deferred
     native_implementation:
       version: 1.4.0
+      release_tag: native-v1.4.0
+      source_commit: f45be42eaf8aad80d01c5a65e0b447260b1591a1
+      release_url: https://github.com/crownthrive1/chlom-protocol/releases/tag/native-v1.4.0
+      publication_evidence: releases/native-v1.4.0/PUBLICATION_READBACK.json
       scope: development-and-local-testnet
       executable_node_and_wasm: true
       pallet_count: 10

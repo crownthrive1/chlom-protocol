@@ -264,6 +264,9 @@ fn signed_extrinsic(call: RuntimeCall, signer: Sr25519Keyring, nonce: Nonce) -> 
 fn executive_checks_real_signatures_nonce_and_charges_development_fees() {
     use sp_runtime::traits::Header as HeaderT;
     ext().execute_with(|| {
+        // Other dispatcher tests start at block 1 directly. Executive must begin
+        // from genesis block 0 so its first initialized block strictly advances.
+        System::set_block_number(0);
         Executive::initialize_block(&Header::new(
             1,
             Default::default(),

@@ -276,6 +276,14 @@ def main(args):
     if hashlib.sha256(benchmark_stdout.encode()).hexdigest() != benchmarks.get("stdoutSha256"):
         raise RuntimeError("Benchmark output receipt checksum mismatch")
     calibration = calibration_readback(args.calibration, node, wasm, sha)
+    loader = json.loads(args.loader.read_text())
+    if (loader.get("schema") != "chlom.native.loader-readback.v1" or
+            loader.get("accepted") is not True or loader.get("nodeSha256") != digest(node) or
+            loader.get("target") != "x86_64-unknown-linux-gnu" or
+            loader.get("relocationCheck") != "ldd -r passed" or
+            loader.get("unresolvedDependencies") != [] or loader.get("undefinedSymbols") != [] or
+            not loader.get("directDependencies") or not loader.get("runtimePackages")):
+        raise RuntimeError("A clean loader/relocation readback of this exact binary is required")
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     if list(output.iterdir()):
@@ -304,6 +312,8 @@ def main(args):
         shutil.copy2(wasm, output / "chlom-runtime.wasm")
         shutil.copy2(args.smoke, output / "native-smoke.json")
         shutil.copy2(args.e2e, output / "native-signed-rpc.json")
+        shutil.copy2(args.loader, output / "native-loader.json")
+        shutil.copy2(args.loader, package / "native-loader.json")
         shutil.copy2(args.benchmarks, output / "native-benchmarks.json")
         (output / "native-benchmarks.csv").write_text(benchmark_stdout)
         shutil.copy2(args.calibration / "measurement-receipt.json", output / "native-calibration-receipt.json")
@@ -342,6 +352,8 @@ def main(args):
                     "signedTransactionCount": signed_receipt["signedTransactionCount"],
                     "features": ["runtime-benchmarks"],
                     "availableBenchmarkCount": benchmarks["caseCount"],
+                    "runtimeDependencies": {"receipt": "native-loader.json", "packages": loader["runtimePackages"],
+                                            "symbolRequirements": loader["requiredSymbolVersions"], "system": loader["system"]},
                     "calibration": {
                         "receipt": "native-calibration-receipt.json", "archive": "native-calibration.tar.gz",
                         "state": calibration["state"], "measuredDispatchCount": 28,
@@ -367,6 +379,7 @@ if __name__ == "__main__":
     parser.add_argument("--e2e", required=True, type=Path)
     parser.add_argument("--benchmarks", required=True, type=Path)
     parser.add_argument("--calibration", required=True, type=Path)
+    parser.add_argument("--loader", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--version", default="1.4.0")
     parser.add_argument("--commit")

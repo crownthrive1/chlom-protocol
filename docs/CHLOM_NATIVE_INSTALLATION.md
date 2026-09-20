@@ -15,6 +15,7 @@ Use the assets on the [native-v1.4.0 release](https://github.com/crownthrive1/ch
 | `chlom-dev.json`, `chlom-dev-raw.json` | Single-authority development genesis specifications |
 | `chlom-local.json`, `chlom-local-raw.json` | Two-authority local-testnet specifications |
 | `native-release.json` | Exact source commit, toolchain, node/lockfile/runtime hashes and declared scope |
+| `native-loader.json` | Actual ELF dependencies, successful loader/relocation check, symbol requirements and installed package owners for the exact binary |
 | `native-smoke.json` | Actual loopback RPC, metadata, Aura block advance and GRANDPA finality result |
 | `native-calibration-receipt.json`, `native-calibration.tar.gz` | Hardware-scoped measurements of all 28 dispatches from the exact published binary; raw samples and candidate weights retained without activation |
 | `native-benchmarks.json`, `native-benchmarks.csv` | Actual benchmark CLI readback for all ten CHLOM pallets, bound to the node hash; no calibration claim |
@@ -23,7 +24,14 @@ Use the assets on the [native-v1.4.0 release](https://github.com/crownthrive1/ch
 | `chlom-native-corresponding-source.tar.gz` | Exact repository source plus vendored locked Cargo dependencies and offline Cargo configuration |
 | `SHA256SUMS` | SHA-256 checksums for every other top-level release asset |
 
-The Linux artifact is built on Ubuntu 24.04 for `x86_64-unknown-linux-gnu`. Use an equivalent glibc environment or build from source on the deployment host. The file hash detects corruption; compare the release's source commit and trusted publication channel as well.
+The Linux artifact is built on Ubuntu 24.04 for `x86_64-unknown-linux-gnu`. The completed native build's loader inspection resolved `ld-linux-x86-64.so.2`, `libc.so.6`, `libm.so.6`, `libgcc_s.so.1` and `libstdc++.so.6`, with no missing libraries or undefined symbols. Their verified Ubuntu package owners are `libc6`, `libgcc-s1` and `libstdc++6`. Install those runtime packages before starting the downloaded executable:
+
+```sh
+sudo apt-get update
+sudo apt-get install -y libc6 libgcc-s1 libstdc++6
+```
+
+The observed build requires symbol versions through `GLIBC_2.38`, `GLIBCXX_3.4.30` and `CXXABI_1.3.11`; an older distribution's presence of similarly named libraries is insufficient. Ubuntu 24.04 satisfies the inspected requirements. The release asset's `native-loader.json` is authoritative for its exact package versions and full symbol requirements. Use an equivalent environment that satisfies those requirements or build on the deployment host. The file hash detects corruption; compare the release's source commit and trusted publication channel as well.
 
 ```sh
 mkdir chlom-native-1.4
@@ -90,7 +98,7 @@ Install native build tools and the pinned Rust toolchain:
 
 ```sh
 sudo apt-get update
-sudo apt-get install -y clang libclang-dev llvm-dev libssl-dev pkg-config protobuf-compiler
+sudo apt-get install -y binutils clang libclang-dev llvm-dev libssl-dev pkg-config protobuf-compiler
 rustup toolchain install 1.98.1 --profile minimal --component rust-src
 rustup target add wasm32v1-none wasm32-unknown-unknown --toolchain 1.98.1
 ```

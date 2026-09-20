@@ -45,7 +45,7 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 0
-      - name: Resolve exact source and existing release
+      - name: Resolve exact source and release tag
         id: resolve
         env:
           GH_TOKEN: ${{ github.token }}
@@ -81,7 +81,8 @@ jobs:
             [[ "$TAG" =~ ^native-v[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9.-]+)?$ ]]
             git fetch --no-tags origin "refs/tags/$TAG:refs/tags/$TAG"
             test "$(git rev-parse "$TAG^{commit}")" = "$SHA"
-            gh release view "$TAG" --json tagName,isDraft --jq 'select(.isDraft == false) | .tagName' | grep -Fx "$TAG"
+            # Draft metadata is read by the final contents-write job. The read-only
+            # source job binds the build to the existing exact tag without publishing.
           fi
           echo 'build=true' >> "$GITHUB_OUTPUT"
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
@@ -113,7 +114,7 @@ jobs:
       - name: Install native build prerequisites
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang libclang-dev llvm-dev libssl-dev pkg-config protobuf-compiler
+          sudo apt-get install -y --no-install-recommends binutils clang libclang-dev llvm-dev libssl-dev pkg-config protobuf-compiler
           rustup toolchain install 1.98.1 --profile minimal --component rust-src
           rustup target add wasm32v1-none wasm32-unknown-unknown --toolchain 1.98.1
       - uses: Swatinem/rust-cache@v2
@@ -123,6 +124,8 @@ jobs:
           cache-on-failure: true
       - name: Test locked workspace and build node with embedded Wasm
         run: bash scripts/native/build.sh
+      - name: Verify actual runtime libraries and relocation
+        run: python scripts/native/loader-readback.py --node substrate/chlom-l1/target/release/chlom-node --output native-loader.json
       - name: Read benchmark capabilities from the actual developer binary
         run: python scripts/native/benchmark-readback.py --node substrate/chlom-l1/target/release/chlom-node --output native-benchmarks.json
       - name: Verify local Aura blocks, GRANDPA finality, RPC and ten pallets
@@ -158,7 +161,7 @@ jobs:
             SOURCE_ARGS=(--with-source)
             VERSION=${RELEASE_TAG#native-v}
           fi
-          python scripts/native/package.py --node substrate/chlom-l1/target/release/chlom-node --wasm "$WASM" --smoke native-smoke.json --e2e native-signed-rpc.json --benchmarks native-benchmarks.json --calibration native-calibration --output native-artifacts --commit "$SOURCE_SHA" --version "$VERSION" "${SOURCE_ARGS[@]}"
+          python scripts/native/package.py --node substrate/chlom-l1/target/release/chlom-node --wasm "$WASM" --smoke native-smoke.json --e2e native-signed-rpc.json --benchmarks native-benchmarks.json --calibration native-calibration --loader native-loader.json --output native-artifacts --commit "$SOURCE_SHA" --version "$VERSION" "${SOURCE_ARGS[@]}"
           cd native-artifacts
           sha256sum --check SHA256SUMS
       - name: Upload verified artifact custody
@@ -175,6 +178,7 @@ jobs:
           name: chlom-native-diagnostics-${{ needs.source.outputs.sha }}
           path: |
             native-calibration/**
+            native-loader.json
             native-benchmarks.json
             native-smoke.json
             native-signed-rpc.json*
@@ -196,7 +200,7 @@ jobs:
         with:
           name: chlom-native-${{ needs.source.outputs.sha }}
           path: native-artifacts
-      - name: Recheck source, checksums and publish immutable asset set
+      - name: Verify complete asset readback, then publish native draft
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ needs.source.outputs.tag }}
@@ -204,23 +208,4 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"
-          test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$SOURCE_SHA"
-          test "$(jq -r .sourceCommit native-artifacts/native-release.json)" = "$SOURCE_SHA"
-          cd native-artifacts
-          sha256sum --check SHA256SUMS
-          cd ..
-          mkdir existing-assets
-          ASSETS=$(gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name')
-          if [ -n "$ASSETS" ]; then
-            gh release download "$RELEASE_TAG" --dir existing-assets
-          fi
-          for FILE in native-artifacts/*; do
-            NAME=$(basename -- "$FILE")
-            if [ -f "existing-assets/$NAME" ]; then
-              cmp -- "$FILE" "existing-assets/$NAME"
-            else
-              gh release upload "$RELEASE_TAG" "$FILE"
-            fi
-          done
-          gh release view "$RELEASE_TAG" --json tagName,url,assets
+          python scripts/native/publish-assets.py --tag "$RELEASE_TAG" --source "$SOURCE_SHA" --artifacts native-artifacts

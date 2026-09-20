@@ -38,6 +38,7 @@ def validate_fields(request, manifest):
         raise ValueError("Release request and manifest must name the same exact tag and source")
     return {"TAG": tag, "TARGET": target, "TITLE": title, "PACKAGE": package,
             "DRAFT": str(request.get("draft", False)).lower(),
+            "NATIVE_ASSET_HANDOFF": str(tag.startswith("native-v")).lower(),
             "PRERELEASE": str(request.get("prerelease", False)).lower()}
 
 

@@ -1,5 +1,5 @@
 version: 3.0.0
-updated: 2026-08-26
+updated: 2026-09-20
 institutional_phase: phase-3-execute
 components:
   - id: chlom-core
@@ -89,6 +89,16 @@ components:
     name: Dedicated Substrate Network
     status: target-architecture
     maturity: deferred
+    native_implementation:
+      version: 1.4.0
+      scope: development-and-local-testnet
+      executable_node_and_wasm: true
+      pallet_count: 10
+      local_block_production_and_finality_verified: true
+      production_network_activated: false
+      installation: docs/CHLOM_NATIVE_INSTALLATION.md
+      release_contract: docs/CHLOM_NATIVE_RELEASE_1_4.md
+    description: The native node and ten-pallet runtime execute development and local-testnet chains. The dedicated production validator network remains deferred. Published artifact hashes and verification receipts determine acceptance of each native release.
   - id: cross-chain
     name: Cross-Chain Settlement and Attestation Mirror
     status: target-architecture

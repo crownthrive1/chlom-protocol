@@ -25,7 +25,13 @@ class ReleaseRequestValidationTests(unittest.TestCase):
         value = self.validate(self.request())
         self.assertEqual(value["TARGET"], "a" * 40)
         self.assertEqual(value["DRAFT"], "false")
+        self.assertEqual(value["NATIVE_ASSET_HANDOFF"], "true")
         self.assertEqual(value["PRERELEASE"], "true")
+
+    def test_ordinary_core_release_does_not_enter_native_draft_handoff(self):
+        value = self.validate(self.request(tag="core-v1.4.0", package="releases/core-v1.4.0"))
+        self.assertEqual(value["DRAFT"], "false")
+        self.assertEqual(value["NATIVE_ASSET_HANDOFF"], "false")
 
     def test_environment_injection_and_unsafe_paths_are_rejected(self):
         for updates in [

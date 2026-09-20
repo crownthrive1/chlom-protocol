@@ -15,7 +15,7 @@ CHLOM's native distribution adds an executable Substrate node and embedded Wasm 
 | Policy | Approved version history, effective intervals, revocation and provenance references |
 | Node | Persistent state, peer networking, Aura authoring, GRANDPA finality, transaction pool and loopback JSON-RPC defaults |
 | Genesis | Development and two-authority local-testnet presets using public fixture keys and development UNIT balances |
-| Distribution | Linux executable, runtime Wasm, normal/raw specs, actual smoke receipt, hashes, notices and corresponding dependency source |
+| Distribution | Linux executable, verified loader dependencies, runtime Wasm, normal/raw specs, actual smoke receipt, hashes, notices and corresponding dependency source |
 
 Pallet aliases and stable indices are documented in the [runtime contract](https://github.com/crownthrive1/chlom-protocol/blob/native-v1.4.0/substrate/chlom-l1/runtime/README.md). The source is pinned to Polkadot SDK `polkadot-stable2506-7` and Rust 1.98.1. Node/runtime package version is 1.4.0; the new chain starts with runtime spec version 1.
 
@@ -25,7 +25,7 @@ The `CHLOM Native Build and Release` workflow builds the exact tagged source, ru
 
 The workflow also runs on native-code pull requests and preserves review artifacts. It accepts an exact existing native tag/commit through manual dispatch and a validated handoff from the release publisher. The latter handles tags created with GitHub's workflow token, which do not independently trigger downstream tag-push workflows.
 
-Consult the actual `native-release.json`, `native-smoke.json`, `native-benchmarks.json`/`.csv`, `native-calibration-receipt.json`, checksums and Actions run attached to the release for acceptance evidence. This document defines the release contract; it is not a substitute for those results. Host-only tests with `SKIP_WASM_BUILD=1` are insufficient to claim a release binary or executable chain.
+Consult the actual `native-release.json`, `native-loader.json`, `native-smoke.json`, `native-benchmarks.json`/`.csv`, `native-calibration-receipt.json`, checksums and Actions run attached to the release for acceptance evidence. This document defines the release contract; it is not a substitute for those results. Host-only tests with `SKIP_WASM_BUILD=1` are insufficient to claim a release binary or executable chain.
 
 ## Operating boundaries
 

@@ -1,9 +1,9 @@
 {
   "automatic_sanctions_determination": false,
   "dataset": "Specially Designated Nationals (SDN) \u2014 Advanced XML",
-  "dataset_sha256": "1919d7ccdad5a6a4542ca196b746613ae7cdf218b94192ab77cf04f06b9793dd",
-  "detected_at_utc": "2026-10-06T00:02:37.916857+00:00",
-  "detection_run": "https://github.com/crownthrive1/chlom-protocol/actions/runs/37391824439",
+  "dataset_sha256": "3d43f641650e7c3cb11303784d6329e3a50d2df14a1497541ddeef5d69090695",
+  "detected_at_utc": "2026-10-08T23:20:07.530141+00:00",
+  "detection_run": "https://github.com/crownthrive1/chlom-protocol/actions/runs/37858818672",
   "human_review_required": true,
   "note": "A source-feed change is a compliance review signal only. It is not an automatic sanctions determination about any person, customer, transaction, or asset.",
   "published_date": null,
